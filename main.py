@@ -4,7 +4,7 @@
 from utils import *
 from common import constants
 from core.scene import SceneManager
-
+from scenes.ingame import *
 
 class Main:
 
@@ -13,6 +13,7 @@ class Main:
     ### ====================================================================================================
     def __init__(self):
         self.sceneMgr = SceneManager()
+        self.sceneMgr.addScene( "InGame", InGame() )
         
 
     ### ====================================================================================================
@@ -41,7 +42,7 @@ class Main:
     ### key is taken from : arcade.key.xxx
     ### ====================================================================================================
     def mainKeyEvent(self, key, isPressed):
-        print(f"key={key} - isPressed={isPressed}")
+        #print(f"key={key} - isPressed={isPressed}")
         self.sceneMgr.dispatchKeyEvent(key, isPressed)
 
 
@@ -50,7 +51,7 @@ class Main:
     ### buttonName can be "A", "B", "X", "Y", "LB", "RB", "VIEW", "MENU", "LSTICK", "RSTICK"
     ### ====================================================================================================
     def mainButtonEvent(self, gamepadNum,buttonName,isPressed):
-        print(f"GamePad={gamepadNum} - ButtonNum={buttonName} - isPressed={isPressed}")
+        #print(f"GamePad={gamepadNum} - ButtonNum={buttonName} - isPressed={isPressed}")
         self.sceneMgr.dispatchGamepadButtonEvent(gamepadNum, buttonName, isPressed)
 
 
@@ -59,7 +60,7 @@ class Main:
     ### axisName can be "X", "Y", "RX", "RY", "Z"
     ### ====================================================================================================
     def mainAxisEvent(self, gamepadNum,axisName,analogValue):
-        print(f"GamePad={gamepadNum} - AxisName={axisName} - Value={analogValue}")
+        #print(f"GamePad={gamepadNum} - AxisName={axisName} - Value={analogValue}")
         self.sceneMgr.dispatchGamepadAxisEvent(gamepadNum, axisName, analogValue)
 
 
@@ -67,7 +68,7 @@ class Main:
     ### MOUSE MOTION EVENTS
     ### ====================================================================================================
     def mainMouseMotionEvent(self,x,y,dx,dy):
-        print(f"MOUSE MOTION : x={x}/y={y} dx={dx}/dy={dy}")
+        #print(f"MOUSE MOTION : x={x}/y={y} dx={dx}/dy={dy}")
         self.sceneMgr.dispatchMouseMotionEvent(x, y, dx, dy)
 
 
@@ -76,6 +77,6 @@ class Main:
     ### mouse name can be "MOUSE_1", "MOUSE_2", ...
     ### ====================================================================================================
     def mainMouseButtonEvent(self,buttonName,x,y,isPressed):
-        print(f"MOUSE BUTTON : x={x}/y={y} buttonNum={buttonName} isPressed={isPressed}")
+        #print(f"MOUSE BUTTON : x={x}/y={y} buttonNum={buttonName} isPressed={isPressed}")
         self.sceneMgr.dispatchMouseButtonEvent(buttonName, x, y, isPressed)
 

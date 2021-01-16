@@ -4,6 +4,8 @@
 ## ============================================================
 class InputInterface():
 
+    ALL_GAMEPADS_ID = -1
+
     ## -------------------------------------
     ## Callbacks for input components
     ## -------------------------------------
@@ -105,11 +107,14 @@ class InputManager():
                     inRef.cbClickEvent(action, x, y, isPressed)
 
     def notifyGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
-        idx = self.__getGamepadButtonIndex(gamepadId, buttonName)
-        if idx in self.inputs:
-            for action in self.inputs[idx]:
-                for inRef in self.inputs[idx][action]:
-                    inRef.cbLogicalEvent(action, isPressed)
+        indexes = [ self.__getGamepadButtonIndex(gamepadId, buttonName),
+                    self.__getGamepadButtonIndex(InputInterface.ALL_GAMEPADS_ID, buttonName)
+                  ]
+        for idx in indexes:
+            if idx in self.inputs:
+                for action in self.inputs[idx]:
+                    for inRef in self.inputs[idx][action]:
+                        inRef.cbLogicalEvent(action, isPressed)
 
     def notifyMouseMotionEvent(self, x, y, dx, dy):
         idx = self.__getMouseMotionIndex()
@@ -119,8 +124,13 @@ class InputManager():
                     inRef.cbMotionEvent(action, x, y, dx, dy)
 
     def notifyGamepadAxisEvent(self, gamepadId, axisName, analogValue):
-        idx = self.__getGamepadAxisIndex(gamepadId, axisName)
-        if idx in self.inputs:
-            for action in self.inputs[idx]:
-                for inRef in self.inputs[idx][action]:
-                    inRef.cbAnalogEvent(action, analogValue)
+        indexes = [self.__getGamepadAxisIndex(gamepadId, axisName),
+                   self.__getGamepadAxisIndex(InputInterface.ALL_GAMEPADS_ID, axisName)
+                  ]
+        for idx in indexes:
+            if idx in self.inputs:
+                for action in self.inputs[idx]:
+                    for inRef in self.inputs[idx][action]:
+                        inRef.cbAnalogEvent(action, analogValue)
+
+

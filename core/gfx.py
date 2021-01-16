@@ -2,7 +2,7 @@
 ## IMPORTS
 ## ============================================================
 import arcade
-
+import time
 
 
 ## ============================================================
@@ -34,6 +34,7 @@ class GfxManager():
     def __init__(self):
         self.gfxList = []
         self.gfxDict = {}
+        self.drawList = arcade.SpriteList()
 
 
     ## -------------------------------------
@@ -85,6 +86,7 @@ class GfxManager():
     ## Main process methods
     ## -------------------------------------
     def updateAllGfx(self, deltaTime):
+#        measure = time.time()
         # init list of gfx elements to remove
         ref2Remove = []
         # browse every gfx element and update
@@ -104,10 +106,13 @@ class GfxManager():
         # remove useless gfx elements
         for ref in ref2Remove:
             self.remove(ref)
+#        measure = time.time()-measure
+#        print(f"UPDATE GFX = {measure}")
 
     def drawAllGfx(self):
+#        measure = time.time()
         # prepare Sprite List to draw
-        drawList = arcade.SpriteList()
+        self.drawList = arcade.SpriteList()
         for row in self.gfxList:
             ref  = row[0]
             type = row[1]
@@ -115,20 +120,22 @@ class GfxManager():
             if vis:
                 if (type & GfxManager.SINGLE) == GfxManager.SINGLE:
                     # Add single sprite to draw list
-                    drawList.append(ref)
+                    self.drawList.append(ref)
                 elif (type & GfxManager.LIST) == GfxManager.LIST:
                     # add sprite list to draw list
-                    drawList.extend(ref)
+                    self.drawList.extend(ref)
                 elif (type & GfxManager.PARTICLES) == GfxManager.PARTICLES:
                     # add all particles of emitter [TODO] not sure it works : to be tested !!
-                    drawList.extend(ref._particles)
+                    self.drawList.extend(ref._particles)
             else:
                 # the list is sorted so , if we reached a False
                 # value in the "visible" property, that means
                 # there is no mre gfx to display
                 break
         # Draw the prepared list
-        drawList.draw()
+        self.drawList.draw()
+#        measure = time.time()-measure
+#        print(f"UPDATE DRW = {measure}")
 
 
     ## -------------------------------------

@@ -46,5 +46,5 @@ class ScriptManager():
     ## -------------------------------------
     def updateAllScripts(self, deltaTime):
         for s in self.scripts:
-            s.updateScript(deltaTime)
+            self.scripts[s].updateScript(deltaTime)
 

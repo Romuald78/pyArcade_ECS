@@ -39,7 +39,10 @@ class SceneManager():
             self.scenes[sceneName] = sceneRef
             # select this scene if this is the first to be added
             if len(self.scenes) == 1:
-                self.selectNewScene(sceneName)
+                self.currentSceneName = sceneName
+                self.currentTime      = 0
+                self.maxTime          = sceneRef.getTransitionTimeIN()
+                self.color            = sceneRef.getTransitionColorIN()
         else:
             raise ValueError(f"[ERR] cannot add scene '{sceneName}' : already in the list !")
 
@@ -137,7 +140,7 @@ class SceneManager():
             # draw color mask in case of transitions
             clr = self.__getTransitionColor()
             if clr != None:
-               arcade.draw_rectangle_filled(0,0,constants.SCREEN_WIDTH,constants.SCREEN_HEIGHT,clr)
+               arcade.draw_rectangle_filled(constants.SCREEN_WIDTH//2,constants.SCREEN_HEIGHT//2,constants.SCREEN_WIDTH,constants.SCREEN_HEIGHT,clr)
 
 
     ## -------------------------------------
@@ -219,9 +222,9 @@ class Scene():
         return 1.0
 
     def getTransitionColorIN(self):
-        return (0,0,0)
+        return (0,255,0)
 
     def getTransitionColorOUT(self):
-        return (0,0,0)
+        return (255,0,0)
 
 

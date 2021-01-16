@@ -90,6 +90,8 @@ class MyGame(arcade.Window):
         else:
             print("There are no Gamepad connected !")
             self.gamepads = None
+        # FPS counter
+        self.frameTime = []
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -108,6 +110,7 @@ class MyGame(arcade.Window):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
         arcade.start_render()
         self.process.draw()
+        arcade.draw_text(str(int(60/sum(self.frameTime))),12,12,(255,255,255))
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
@@ -117,6 +120,8 @@ class MyGame(arcade.Window):
     def update(self, delta_time):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.update(delta_time)
+        self.frameTime.append(delta_time)
+        self.frameTime = self.frameTime[-60:]
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
