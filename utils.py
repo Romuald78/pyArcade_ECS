@@ -26,15 +26,17 @@ def drawText(params):
 def createFixedSprite(params):
     # retrieve parameters
     filePath    = params["filePath"  ]
-    size        = None if "size" not in params else params["size"]
+    size        = None              if "size"        not in params else params["size"]
     filterColor = (255,255,255,255) if "filterColor" not in params else params["filterColor"]
-    isMaxRatio  = False if "isMaxRatio" not in params else params["isMaxRatio"]
-    position    = (0,0) if "position" not in params else params["position"]
+    isMaxRatio  = False             if "isMaxRatio"  not in params else params["isMaxRatio"]
+    position    = (0,0)             if "position"    not in params else params["position"]
+    flipH       = False             if "flipH"       not in params else params["flipH"]
+    flipV       = False             if "flipv"       not in params else params["flipV"]
 
     # load texture for sprite
     spr = arcade.AnimatedTimeSprite()
     spr.color = filterColor
-    spr.append_texture(arcade.load_texture(filePath))
+    spr.append_texture(arcade.load_texture(filePath, flipped_horizontally=flipH, flipped_vertically=flipV))
     # set dimensions
     spr.update_animation()
     if size != None:

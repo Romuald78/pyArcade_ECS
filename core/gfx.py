@@ -38,7 +38,7 @@ class GfxManager():
 
 
     ## -------------------------------------
-    ## Register methods
+    ## Private methods
     ## -------------------------------------
     def __addAndSort(self, ref, data):
         # add into the dictionary
@@ -49,7 +49,37 @@ class GfxManager():
         self.gfxList.append([ref,]+data)
         # sort the list
         self.gfxList = sorted(self.gfxList, key=lambda x: (-x[3], -x[2]))
+        # Update draw list
+        self.__fillDrawList()
 
+    def __fillDrawList(self):
+        # prepare Sprite List to draw
+        self.drawList = arcade.SpriteList()
+        for row in self.gfxList:
+            ref  = row[0]
+            type = row[1]
+            vis  = row[3]
+            if vis:
+                if (type & GfxManager.SINGLE) == GfxManager.SINGLE:
+                    # Add single sprite to draw list
+                    self.drawList.append(ref)
+                elif (type & GfxManager.LIST) == GfxManager.LIST:
+                    # add sprite list to draw list
+                    self.drawList.extend(ref)
+                elif (type & GfxManager.PARTICLES) == GfxManager.PARTICLES:
+                    # add all particles of emitter
+                    # self.drawList.extend(ref._particles) ????
+                    raise ValueError("[TODO] particle emitters are not handled yet in the GFX system !")
+            else:
+                # the list is sorted so , if we reached a False
+                # value in the "visible" property, that means
+                # there is no mre gfx to display
+                break
+
+
+    ## -------------------------------------
+    ## Register methods
+    ## -------------------------------------
     def registerFixedSprite(self, ref, zIndex, isVisible=True):
         data = [GfxManager.FIXED_SPRITE, zIndex, isVisible]
         self.__addAndSort(ref, data)
@@ -80,13 +110,14 @@ class GfxManager():
             if ref == row[1]:
                 self.gfxList.remove(row)
                 return
+        # Recompute draw list
+        self.__fillDrawList()
 
 
     ## -------------------------------------
     ## Main process methods
     ## -------------------------------------
     def updateAllGfx(self, deltaTime):
-#        measure = time.time()
         # init list of gfx elements to remove
         ref2Remove = []
         # browse every gfx element and update
@@ -106,36 +137,9 @@ class GfxManager():
         # remove useless gfx elements
         for ref in ref2Remove:
             self.remove(ref)
-#        measure = time.time()-measure
-#        print(f"UPDATE GFX = {measure}")
 
     def drawAllGfx(self):
-#        measure = time.time()
-        # prepare Sprite List to draw
-        self.drawList = arcade.SpriteList()
-        for row in self.gfxList:
-            ref  = row[0]
-            type = row[1]
-            vis  = row[3]
-            if vis:
-                if (type & GfxManager.SINGLE) == GfxManager.SINGLE:
-                    # Add single sprite to draw list
-                    self.drawList.append(ref)
-                elif (type & GfxManager.LIST) == GfxManager.LIST:
-                    # add sprite list to draw list
-                    self.drawList.extend(ref)
-                elif (type & GfxManager.PARTICLES) == GfxManager.PARTICLES:
-                    # add all particles of emitter [TODO] not sure it works : to be tested !!
-                    self.drawList.extend(ref._particles)
-            else:
-                # the list is sorted so , if we reached a False
-                # value in the "visible" property, that means
-                # there is no mre gfx to display
-                break
-        # Draw the prepared list
         self.drawList.draw()
-#        measure = time.time()-measure
-#        print(f"UPDATE DRW = {measure}")
 
 
     ## -------------------------------------

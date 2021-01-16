@@ -200,6 +200,7 @@ class Scene():
         self.inputMgr.notifyKeyEvent(key, isPressed)
 
     def onMouseButtonEvent(self, buttonName, x, y, isPressed):
+        print(f"scene onBUtton {buttonName}")
         self.inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed)
 
     def onMouseMotionEvent(self, x, y, dx, dy):

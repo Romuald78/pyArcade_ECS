@@ -6,6 +6,7 @@ import arcade
 from common import constants
 from main import Main
 import os
+import time
 
 
 ### ====================================================================================================
@@ -45,6 +46,7 @@ class MyGame(arcade.Window):
                  "RY",
                  "Z",
                 ]
+
 
     # ----------------------------------
     # PRIVATE METHODS FOR INPUT MANAGEMENT
@@ -91,7 +93,9 @@ class MyGame(arcade.Window):
             print("There are no Gamepad connected !")
             self.gamepads = None
         # FPS counter
-        self.frameTime = []
+        self.updateTime  = []
+        self.drawTime    = []
+        self.frameTime   = []
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -108,9 +112,15 @@ class MyGame(arcade.Window):
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_draw(self):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
+        measure = time.time()
         arcade.start_render()
         self.process.draw()
-        arcade.draw_text(str(int(60/sum(self.frameTime))),12,12,(255,255,255))
+        measure = time.time() - measure
+        self.drawTime.append(measure)
+        self.drawTime = self.drawTime[-60:]
+        arcade.draw_text("FPS   : "+str(int(60 / sum(self.frameTime))), 12, 12, (255, 255, 255))
+        arcade.draw_text("Draw  : "+str(round(sum(self.updateTime)*50/3,3))+"ms"      , 12, 24, (255, 255, 255))
+        arcade.draw_text("Update: "+str(round(sum(self.drawTime  )*50/3,3))+"ms"      , 12, 36, (255, 255, 255))
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
@@ -119,7 +129,11 @@ class MyGame(arcade.Window):
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def update(self, delta_time):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
+        measure = time.time()
         self.process.update(delta_time)
+        measure = time.time() - measure
+        self.updateTime.append(measure)
+        self.updateTime = self.updateTime[-60:]
         self.frameTime.append(delta_time)
         self.frameTime = self.frameTime[-60:]
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
@@ -169,8 +183,8 @@ class MyGame(arcade.Window):
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def onCrossMove(self, gamepadNum, xValue, yValue):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
-        self.process.mainAxisEvent(gamepadNum, "x", xValue)
-        self.process.mainAxisEvent(gamepadNum, "y", yValue)
+        self.process.mainAxisEvent(gamepadNum, "X", xValue)
+        self.process.mainAxisEvent(gamepadNum, "Y", yValue)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
@@ -195,15 +209,15 @@ class MyGame(arcade.Window):
     # MOUSE BUTTON PRESSED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_mouse_press(self, x, y, button, modifiers):
-        button = "mouse_"+str(button)
-        self.process.mainMouseButtonEvent(x,y,button,True)
+        buttonName = "M" + str(button)
+        self.process.mainMouseButtonEvent(buttonName,x,y,True)
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # MOUSE BUTTON RELEASED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_mouse_release(self, x, y, button, modifiers):
-        button = "MOUSE_"+str(button)
-        self.process.mainMouseButtonEvent(x,y,button,False)
+        buttonName = "M" + str(button)
+        self.process.mainMouseButtonEvent(buttonName,x,y,False)
 
 
 
