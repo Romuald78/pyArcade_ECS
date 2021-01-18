@@ -48,5 +48,5 @@ class ScriptSystem():
     ## -------------------------------------
     def updateAllScripts(self, deltaTime):
         for s in self.scripts:
-            self.scripts[s].updateScript(deltaTime)
+            self.scripts[s].updateScript(s, deltaTime)
 

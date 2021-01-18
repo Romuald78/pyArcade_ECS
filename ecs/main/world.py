@@ -32,9 +32,11 @@ class World():
                 compRef  = comps[compName]
                 compType = compRef.getType()
 
+                # -------------------- SCRIPTS --------------------
                 if compType == Component.TYPE_SCRIPT:
                     self.__scriptMgr.add(compName,compRef)
 
+                # -------------------- INPUTS --------------------
                 elif compType == Component.TYPE_KEYBOARD:
                     key    = compRef.getKey()
                     action = compRef.getActionName()
@@ -61,9 +63,19 @@ class World():
                     action = compRef.getActionName()
                     self.__inputMgr.registerAxis(ctrlID,axis,action,compRef)
 
-                elif compType == Component.TYPE_RENDER:
-                    # TODO handle render components !!!!!!!!!!!!
-                    pass
+                # -------------------- GFX --------------------
+                elif compType == Component.TYPE_SIMPLE_SPRITE:
+                    z   = compRef.getZIndex()
+                    vis = True
+                    self.__gfxMgr.registerGfx(compRef, z, vis)
+
+                elif compType == Component.TYPE_SIMPLE_LIST:
+                    z   = compRef.getZIndex()
+                    vis = True
+                    self.__gfxMgr.registerGfx(compRef, z, vis)
+
+                # TODO handle other components !!!!!!!!!!!!
+
 
     def removeEntity(self, entName):
         if entName in self.__entities:

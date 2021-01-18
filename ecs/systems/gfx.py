@@ -10,7 +10,7 @@ import arcade
 ## ============================================================
 ## GFX MANAGER
 ## ============================================================
-from ecs.todo.gfx import Gfx
+from ecs.components.gfx import Gfx
 
 
 class GfxSystem():
@@ -145,7 +145,7 @@ class GfxSystem():
                 # update particle emitters (normal or bursts)
                 ref.update(deltaTime)
                 # Remove burst id finished
-                if type == Gfx.BURST_EMITTER:
+                if type == Gfx.TYPE_BURST:
                     if ref.can_reap():
                         ref2Remove.append(ref)
         # remove useless gfx elements

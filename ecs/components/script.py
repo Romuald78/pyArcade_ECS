@@ -17,7 +17,7 @@ class Script(Component):
         return Component.TYPE_SCRIPT
 
     # method to override in the user components
-    def updateScript(self, deltaTime):
+    def updateScript(self, scriptName, deltaTime):
         raise ValueError("[ERR] updateScriptinterface method not implemented yet !")
 
 

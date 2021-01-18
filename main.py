@@ -2,7 +2,7 @@
 ### IMPORTS
 ### ====================================================================================================
 from ecs.systems.scene import SceneSystem
-from userScenes.inGame import *
+from shmup.scenes.inGame import *
 
 
 class Main:

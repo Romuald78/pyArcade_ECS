@@ -20,7 +20,7 @@ class SceneSystem():
         self.nextSceneName    = None
         # Pause mode
         self.onPause          = False
-        # Dict of userScenes
+        # Dict of shmup
         self.scenes           = {}
         # Time and color used in the transition process
         self.currentTime      = 1

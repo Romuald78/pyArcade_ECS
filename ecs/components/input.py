@@ -217,15 +217,17 @@ class MouseMotion(Input):
 class GamepadAxis(Input):
 
     # Constructor
-    def __init__(self, actionName, gamepadID, axisName):
+    def __init__(self, actionName, gamepadID, axisName, deadZone=0.2):
         # parent constructor
         super().__init__(actionName)
         # store fields
-        self.ctrlID   = gamepadID
-        self.axis     = axisName
-        self.value    = 0
-        self.minValue = -0.5        # used to normalize the output
-        self.maxValue =  0.5        # used to normalize the output
+        self.ctrlID    = gamepadID
+        self.axis      = axisName
+        self.dead      = deadZone
+        self.value     = 0
+        self.minValue  = -0.5        # used to normalize the output
+        self.maxValue  =  0.5        # used to normalize the output
+        self.lastValue = 0
 
     # Event information
     def getValue(self):
@@ -236,6 +238,8 @@ class GamepadAxis(Input):
         return self.ctrlID
     def getAxis(self):
         return self.axis
+    def getLastValue(self):
+        return self.lastValue
 
     # Override parent method
     def getType(self):
@@ -250,11 +254,16 @@ class GamepadAxis(Input):
             self.minValue = analogValue
         if analogValue > self.maxValue:
             self.maxValue = analogValue
+        # Then, check dead zone
+        if abs(analogValue) < self.dead:
+            analogValue = 0
         # Then, normalize
         if analogValue >= 0:
             analogValue /=  self.maxValue
         else:
             analogValue /= -self.minValue
         # Finally, store value
+        if analogValue != 0:
+            self.lastValue = analogValue
         self.value = analogValue
 
