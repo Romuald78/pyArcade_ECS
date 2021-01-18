@@ -1,21 +1,22 @@
-
 ## ============================================================
-## SCRIPT INTERFACE
+## IMPORTS
 ## ============================================================
-class ScriptInterface():
-
-    ## -------------------------------------
-    ## Callbacks for script components
-    ## -------------------------------------
-    def updateScript(self, deltaTime):
-        raise ValueError("[ERR] interface method not implemented yet !")
+from ecs.components.script import Script
 
 
 
 ## ============================================================
 ## SCRIPT MANAGER
 ## ============================================================
-class ScriptManager():
+
+class ScriptSystem():
+
+    ## -------------------------------------
+    ## private methods
+    ## -------------------------------------
+    def __checkType(self, ref):
+        if not isinstance(ref, Script):
+            raise ValueError(f"[ERR] add script : bad object type. It should be ScriptInterface !\n{ref}")
 
     ## -------------------------------------
     ## Constructor
@@ -30,15 +31,16 @@ class ScriptManager():
     def add(self, scriptName, scriptRef):
         # Check the script name is already in the dict
         if scriptName in self.scripts:
-            raise ValueError("[ERR] add : script already registered in the dict !")
+            raise ValueError(f"[ERR] add script : name '{scriptName}' already registered in the dict !")
+        # check type
+        self.__checkType(scriptRef)
         # Add script reference
         self.scripts[scriptName] = scriptRef
 
-    def remove(self, ref):
-        for s in self.scripts:
-            if self.scripts[s] == ref:
-                self.scripts.pop(s)
-                return
+    def remove(self, scriptName):
+        # browse dict and remove when found
+        if scriptName in self.scripts:
+            self.scripts.pop(scriptName)
 
 
     ## -------------------------------------

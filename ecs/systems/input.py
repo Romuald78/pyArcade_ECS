@@ -1,38 +1,30 @@
 
 ## ============================================================
-## INPUT INTERFACE
+## IMPORTS
 ## ============================================================
-class InputInterface():
-
-    ALL_GAMEPADS_ID = -1
-
-    ## -------------------------------------
-    ## Callbacks for input components
-    ## -------------------------------------
-    def cbLogicalEvent(self, action, isPressed):
-        raise ValueError("[ERR] interface method not implemented yet !")
-
-    def cbClickEvent(self, action, x, y, isPressed):
-        raise ValueError("[ERR] interface method not implemented yet !")
-
-    def cbMotionEvent(self, action, x, y, dx, dy):
-        raise ValueError("[ERR] interface method not implemented yet !")
-
-    def cbAnalogEvent(self, action, analogValue):
-        raise ValueError("[ERR] interface method not implemented yet !")
+from ecs.components.input import Input
 
 
 
 ## ============================================================
 ## INPUT MANAGER
 ## ============================================================
-class InputManager():
+
+class InputSystem():
 
     ## -------------------------------------
     ## Constructor
     ## -------------------------------------
     def __init__(self):
         self.inputs = {}
+
+
+    ## -------------------------------------
+    ## Type method
+    ## -------------------------------------
+    def __checkType(self, ref):
+        if not isinstance(ref, Input):
+            raise ValueError(f"[ERR] check input: bad object type. It should be Input !\n{ref}")
 
 
     ## -------------------------------------
@@ -51,9 +43,11 @@ class InputManager():
         return "Mmotion"
 
     def __getGamepadAxisIndex(self,gamepadId, axisName):
-        return "G" + str(gamepadId) + "B" + axisName
+        return "G" + str(gamepadId) + "A" + axisName
 
     def __fillData(self, idx, actionName, inputRef):
+        # Check type
+        self.__checkType(inputRef)
         # create index in the dictionnary
         if idx not in self.inputs:
             self.inputs[idx] = {}
@@ -63,6 +57,8 @@ class InputManager():
         # fill the input reference list
         if inputRef not in self.inputs[idx][actionName]:
             self.inputs[idx][actionName].append(inputRef)
+        else:
+            raise ValueError(f"[ERR] register input : ref is already in the list for action '{actionName}' and index '{idx}'")
 
 
     ## -------------------------------------
@@ -72,19 +68,19 @@ class InputManager():
         idx = self.__getKeyIndex(key)
         self.__fillData(idx, actionName, inputRef)
 
-    def registerMouseButton(self, buttonName, actionName, inputRef):
+    def registerClick(self, buttonName, actionName, inputRef):
         idx = self.__getMouseButtonIndex(buttonName)
         self.__fillData(idx, actionName, inputRef)
 
-    def registerGamepadButton(self, gamepadId, buttonName, actionName, inputRef):
+    def registerButton(self, gamepadId, buttonName, actionName, inputRef):
         idx = self.__getGamepadButtonIndex(gamepadId, buttonName)
         self.__fillData(idx, actionName, inputRef)
 
-    def registerMouseMotion(self,actionName, inputRef):
+    def registerMouse(self, actionName, inputRef):
         idx = self.__getMouseMotionIndex()
         self.__fillData(idx, actionName, inputRef)
 
-    def registerGamepadAxis(self,gamepadId, axisName, actionName, inputRef):
+    def registerAxis(self, gamepadId, axisName, actionName, inputRef):
         idx = self.__getGamepadAxisIndex(gamepadId, axisName)
         self.__fillData(idx, actionName, inputRef)
 
@@ -97,40 +93,38 @@ class InputManager():
         if idx in self.inputs:
             for action in self.inputs[idx]:
                 for inRef in self.inputs[idx][action]:
-                    inRef.cbLogicalEvent(action, isPressed)
+                    inRef.keyboardEvent(action, isPressed)
 
     def notifyMouseButtonEvent(self, buttonName, x, y, isPressed):
         idx = self.__getMouseButtonIndex(buttonName)
         if idx in self.inputs:
             for action in self.inputs[idx]:
                 for inRef in self.inputs[idx][action]:
-                    inRef.cbClickEvent(action, x, y, isPressed)
+                    inRef.mouseButtonEvent(action, x, y, isPressed)
 
     def notifyGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
         indexes = [ self.__getGamepadButtonIndex(gamepadId, buttonName),
-                    self.__getGamepadButtonIndex(InputInterface.ALL_GAMEPADS_ID, buttonName)
+                    self.__getGamepadButtonIndex(Input.ALL_GAMEPADS_ID, buttonName)
                   ]
         for idx in indexes:
             if idx in self.inputs:
                 for action in self.inputs[idx]:
                     for inRef in self.inputs[idx][action]:
-                        inRef.cbLogicalEvent(action, isPressed)
+                        inRef.gamepadButtonEvent(action, gamepadId, isPressed)
 
     def notifyMouseMotionEvent(self, x, y, dx, dy):
         idx = self.__getMouseMotionIndex()
         if idx in self.inputs:
             for action in self.inputs[idx]:
                 for inRef in self.inputs[idx][action]:
-                    inRef.cbMotionEvent(action, x, y, dx, dy)
+                    inRef.mouseMotionEvent(action, x, y, dx, dy)
 
     def notifyGamepadAxisEvent(self, gamepadId, axisName, analogValue):
         indexes = [self.__getGamepadAxisIndex(gamepadId, axisName),
-                   self.__getGamepadAxisIndex(InputInterface.ALL_GAMEPADS_ID, axisName)
+                   self.__getGamepadAxisIndex(Input.ALL_GAMEPADS_ID, axisName)
                   ]
         for idx in indexes:
             if idx in self.inputs:
                 for action in self.inputs[idx]:
                     for inRef in self.inputs[idx][action]:
-                        inRef.cbAnalogEvent(action, analogValue)
-
-
+                        inRef.gamepadAxisEvent(action, gamepadId, analogValue)

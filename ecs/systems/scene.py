@@ -3,16 +3,13 @@
 ## ============================================================
 import arcade
 from common import constants
-from core.input import InputManager
-from core.gfx import GfxManager
-from core.script import ScriptManager
 
 
 
 ## ============================================================
 ## SCENE MANAGER (driven by the main class)
 ## ============================================================
-class SceneManager():
+class SceneSystem():
 
     ## -------------------------------------
     ## Constructor
@@ -23,7 +20,7 @@ class SceneManager():
         self.nextSceneName    = None
         # Pause mode
         self.onPause          = False
-        # Dict of scenes
+        # Dict of userScenes
         self.scenes           = {}
         # Time and color used in the transition process
         self.currentTime      = 1
@@ -165,67 +162,4 @@ class SceneManager():
     def dispatchGamepadAxisEvent(self, gamepadNum, axisName, analogValue):
         if self.currentSceneName != None:
             self.scenes[self.currentSceneName].onGamepadAxisEvent(gamepadNum, axisName, analogValue)
-
-
-
-## ============================================================
-## SCENE class (extended by the user scenes)
-## ============================================================
-class Scene():
-
-    ## -------------------------------------
-    ## Constructor
-    ## -------------------------------------
-    def __init__(self):
-        self.inputMgr  = InputManager()
-        self.gfxMgr    = GfxManager()
-        self.scriptMgr = ScriptManager()
-
-
-    ## -------------------------------------
-    ## Main methods
-    ## -------------------------------------
-    def update(self, deltaTime):
-        self.scriptMgr.updateAllScripts(deltaTime)
-        self.gfxMgr.updateAllGfx(deltaTime)
-
-    def draw(self):
-        self.gfxMgr.drawAllGfx()
-
-
-    ## -------------------------------------
-    ## Notify inputs
-    ## -------------------------------------
-    def onKeyEvent(self,key, isPressed):
-        self.inputMgr.notifyKeyEvent(key, isPressed)
-
-    def onMouseButtonEvent(self, buttonName, x, y, isPressed):
-        print(f"scene onBUtton {buttonName}")
-        self.inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed)
-
-    def onMouseMotionEvent(self, x, y, dx, dy):
-        self.inputMgr.notifyMouseMotionEvent(x, y, dx, dy)
-
-    def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
-        self.inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed)
-
-    def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
-        self.inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue)
-
-
-    ## -------------------------------------
-    ## Get transition times and colors
-    ## -------------------------------------
-    def getTransitionTimeIN(self):
-        return 1.0
-
-    def getTransitionTimeOUT(self):
-        return 1.0
-
-    def getTransitionColorIN(self):
-        return (0,255,0)
-
-    def getTransitionColorOUT(self):
-        return (255,0,0)
-
 

@@ -1,10 +1,9 @@
 ### ====================================================================================================
 ### IMPORTS
 ### ====================================================================================================
-from utils import *
-from common import constants
-from core.scene import SceneManager
-from scenes.ingame import *
+from ecs.systems.scene import SceneSystem
+from userScenes.inGame import *
+
 
 class Main:
 
@@ -12,9 +11,9 @@ class Main:
     ### CONSTRUCTOR
     ### ====================================================================================================
     def __init__(self):
-        self.sceneMgr = SceneManager()
+        self.sceneMgr = SceneSystem()
         self.sceneMgr.addScene( "InGame", InGame() )
-        
+
 
     ### ====================================================================================================
     ### INIT

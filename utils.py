@@ -23,7 +23,7 @@ def drawText(params):
     # draw text according to configuration
     arcade.draw_text(text=message,start_x=x,start_y=y,color=color,font_size=size,anchor_x=alignH,anchor_y=alignV,rotation=angle,bold=bold,italic=italic)
 
-def createFixedSprite(params):
+def createSimpleSprite(params):
     # retrieve parameters
     filePath    = params["filePath"  ]
     size        = None              if "size"        not in params else params["size"]

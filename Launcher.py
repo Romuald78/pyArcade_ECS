@@ -230,6 +230,7 @@ def main():
     os.chdir(file_path)
 
     game = MyGame(constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT, TITLE)
+    game.set_vsync(True)
     game.setup()
     arcade.run()
 
