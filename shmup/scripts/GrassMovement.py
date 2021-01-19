@@ -1,42 +1,41 @@
-from ecs.systems.script import Script
-import random
-from random import randint
-
+from ecs.systems.scriptSystem import Script
 
 class GrassMovement(Script):
 
-    def __init__(self, characterEnt, grassEnt, ratio):
+    def __init__(self, characterList, grassEnt, ratio):
         # store objects
-        self.charSprite = characterEnt.getComponent("Panda").getGfx()
+        self.charList = characterList
         self.grassList  = grassEnt.getComponent("Grass")
-        self.moveComp   = characterEnt.getComponent("inputAnalogX")
         self.ratio = ratio
 
     def updateScript(self, scriptName, deltaTime):
-        DIST    = 64
-        MAX_ANG = 85
+        DIST      = 96
+        MAX_ANG   = 90
         # check if the character is near the grass sprites
-        for i in range(self.grassList.size()):
-            g = self.grassList.getSprite(i)
-            # get refs
-            refChar  = self.charSprite.center_y - (self.charSprite.height/2)
-            refGrass = g.center_y
-            # get deltas
-            dX = g.center_x - self.charSprite.center_x
-            dY = abs(refChar-refGrass)
-            # Set rotation by default
-            random.seed((1+g.center_x)*(2+g.center_y))
-            g.angle *= self.ratio + (random.random() * ((1-self.ratio)//2) )
-            if abs(g.angle) < 1 :
-                g.angle = 0
-            # Check dY
-            if dY <= g.height//0.1:
-                if abs(dX)<=DIST:
-                    # Turn grass around character AND according to direction
-                    if dX >= 0:
+        for charac in self.charList:
+            charSprite = charac.getComponent("idleR").getGfx()
+            for i in range(self.grassList.size()):
+                # get refs
+                g = self.grassList.getSprite(i)
+                refChar  = charSprite.center_y - (charSprite.height/2)
+                refGrass = g.center_y
+                # get deltas
+                dX = g.center_x - charSprite.center_x
+                dY = abs(refChar-refGrass)
+                # Grass is near
+                if dY <= g.height//0.1 and abs(dX)<=DIST:
+                    # Compute bend force according to distance
+                    bendForce = ((DIST-abs(dX))/DIST)
+                    finalAng = MAX_ANG*bendForce
+                    # Bend according to bend force and direction
+                    dir = 1
+                    if dX<0:
+                        dir = -1
+                    # modify direction according to current grass angle
+                    if abs(g.angle) > MAX_ANG * 0.5:
+                        dir = -g.angle/abs(g.angle)
+                    # update target angle
+                    g.angle = min(finalAng, max(-finalAng, g.angle-dir*MAX_ANG/8))
+                else:
+                    g.angle *= self.ratio
 
-                        if self.moveComp.getLastValue() > 0:
-                            g.angle = max(-(DIST - dX) * MAX_ANG / DIST, g.angle - (MAX_ANG / 2))
-                    else:
-                        if self.moveComp.getLastValue() < 0:
-                            g.angle = min((DIST+dX) * MAX_ANG / DIST, g.angle + (MAX_ANG / 2))

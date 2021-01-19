@@ -1,3 +1,5 @@
+# TODO allow to add several scripts with the same names !!! use a Dict of List !
+
 ## ============================================================
 ## IMPORTS
 ## ============================================================

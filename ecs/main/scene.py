@@ -26,6 +26,15 @@ class Scene():
 
 
     ## -------------------------------------
+    ## Gfx Component management
+    ## -------------------------------------
+    def setVisible(self, gfxComp, val):
+        self.__world.gfxMgr.setVisible(gfxComp.getGfx(), val)
+    def isVisible(self, gfxComp):
+        return self.__world.gfxMgr.isVisible(gfxComp.getGfx())
+
+
+    ## -------------------------------------
     ## Main methods
     ## -------------------------------------
     def update(self, deltaTime):

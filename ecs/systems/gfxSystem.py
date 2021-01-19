@@ -30,52 +30,66 @@ class GfxSystem():
 
 
     ## -------------------------------------
-    ## Private methods
+    ## Type checking
     ## -------------------------------------
     def __checkType(self, ref):
         if not isinstance(ref, Gfx):
             raise ValueError(f"[ERR] check gfx : bad object type. It should be Gfx !\n{ref}")
 
-    def __fillDrawList(self):
+
+    ## -------------------------------------
+    ## Draw List
+    ## -------------------------------------
+    def __addRefInDrawList(self, ref, type):
+        if (type & Gfx.SINGLE) == Gfx.SINGLE:
+            # Add single sprite to draw list
+            self.drawList.append(ref)
+        elif (type & Gfx.LIST) == Gfx.LIST:
+            # add sprite list to draw list
+            self.drawList.extend(ref)
+        elif (type & Gfx.PARTICLES) == Gfx.PARTICLES:
+            # add all particles of emitter
+            # TODO : check if it works to get the particle spriteList from an emitter ??
+            self.drawList.extend(ref._particles)
+            raise ValueError("[TODO] particle emitters are not handled yet in the GFX system !")
+
+    def __clearDrawList(self):
+        while len(self.drawList) > 0:
+            self.drawList.remove(self.drawList[0])
+
+    def __rebuildDrawList(self):
+        print("Rebuild DRAW list")
         # prepare Sprite List to draw
-        self.drawList = arcade.SpriteList()
+        self.__clearDrawList()
         for row in self.gfxList:
             ref  = row[0]
             type = row[1]
             vis  = row[3]
             if vis:
-                if (type & Gfx.SINGLE) == Gfx.SINGLE:
-                    # Add single sprite to draw list
-                    self.drawList.append(ref)
-                elif (type & Gfx.LIST) == Gfx.LIST:
-                    # add sprite list to draw list
-                    self.drawList.extend(ref)
-                elif (type & Gfx.PARTICLES) == Gfx.PARTICLES:
-                    # add all particles of emitter
-                    # TODO : check if it works to get the particle spriteList from an emitter ??
-                    self.drawList.extend(ref._particles)
-                    raise ValueError("[TODO] particle emitters are not handled yet in the GFX system !")
-            else:
-                # the list is sorted so , if we reached a False
-                # value in the "visible" property, that means
-                # there is no mre gfx to display
+                self.__addRefInDrawList(ref, type)
+
+
+    ## -------------------------------------
+    ## Gfx List
+    ## -------------------------------------
+    def __addEntryInGfxList(self, entry):
+        gfx   = entry[0]
+        zIdx  = entry[2]
+        isVis = entry[3]
+        # Search for the index to insert
+        inserted = False
+        for i in range(len(self.gfxList)):
+            prevZ = self.gfxList[i][2]
+            if prevZ < zIdx:
+                # insert into list
+                self.gfxList.insert(i, entry)
+                inserted = True
                 break
-
-    def __sortOnly(self):
-        # sort the list
-        self.gfxList = sorted(self.gfxList, key=lambda x: (-x[3], -x[2]))
-        # Update draw list
-        self.__fillDrawList()
-
-    def __addAndSort(self, ref, data):
-        # add into the dictionary
-        if ref in self.gfxDict:
-            raise ValueError("[ERR] addAndSort : gfx already registered in the dict !")
-        self.gfxDict[ref] = data
-        # Add into the list
-        self.gfxList.append([ref, ] + data)
-        # sort the list
-        self.__sortOnly()
+        # check for append
+        if not inserted:
+            self.gfxList.append(entry)
+        # rebuild draw list
+        self.__rebuildDrawList()
 
 
     ## -------------------------------------
@@ -85,35 +99,16 @@ class GfxSystem():
         # check type
         self.__checkType(cmpRef)
         # get arcade gfx ref
-        gfxRef = cmpRef.getGfx()
+        ref = cmpRef.getGfx()
         # prepare data
         data = [cmpRef.getType(), zIndex, isVisible]
-        # add data and sort gfx lists
-        self.__addAndSort(gfxRef, data)
-
-#    def registerFixedSprite(self, ref, zIndex, isVisible=True):
-#        data = [GfxInterface.FIXED_SPRITE, zIndex, isVisible]
-#        self.__addAndSort(ref, data)
-
-#    def registerFixedSpriteList(self, ref, zIndex, isVisible=True):
-#        data = [GfxInterface.FIXED_LIST, zIndex, isVisible]
-#        self.__addAndSort(ref, data)
-
-#    def registerAnimatedSprite(self, ref, zIndex, isVisible=True):
-#        data = [GfxInterface.ANIMATED_SPRITE, zIndex, isVisible]
-#        self.__addAndSort(ref, data)
-
-#    def registerAnimatedSpriteList(self, ref, zIndex, isVisible=True):
-#        data = [GfxInterface.ANIMATED_LIST, zIndex, isVisible]
-#        self.__addAndSort(ref, data)
-
-#    def registerParticleEmitter(self, ref, zIndex, isVisible=True):
-#        data = [GfxInterface.SIMPLE_EMITTER, zIndex, isVisible]
-#        self.__addAndSort(ref, data)
-
-#    def registerParticleBurst(self, ref, zIndex, isVisible=True):
-#        data = [GfxInterface.BURST_EMITTER, zIndex, isVisible]
-#        self.__addAndSort(ref, data)
+        # add into the dictionary
+        if ref in self.gfxDict:
+            raise ValueError("[ERR] addAndSort : gfx already registered in the dict !")
+        self.gfxDict[ref] = data
+        # update Entry list
+        self.__addEntryInGfxList([ref,] + data)
+        pass
 
     def removeGfx(self, ref):
         # No need to sort list when removing
@@ -125,7 +120,8 @@ class GfxSystem():
         # TODO [PERF] :
         # just remove ref from the draw list instead of recreating a new one ?
         # may be not possible for particle emitters as we added a field of the ref ?
-        self.__fillDrawList()
+        # rebuild draw list
+        self.__rebuildDrawList()
 
 
     ## -------------------------------------
@@ -174,6 +170,8 @@ class GfxSystem():
             raise ValueError("[ERR] isVisible : gfx not in the dict !")
         return self.gfxDict[ref][2]
 
+
+    # TODO : old version to rework !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def setZIndex(self, ref, newZ):
         # update dictionary
         if ref not in self.gfxDict:
@@ -201,12 +199,17 @@ class GfxSystem():
             # update dict
             self.gfxDict[ref][2] = newVisible
             # update list
-            for g in self.gfxList:
-                if g[0] == ref:
-                    g[3] = newVisible
-                    # update is done, now sort lists
-                    self.__sortOnly()
-                    # just exit process
+            for i in range(len(self.gfxList)):
+                # found the reference in the list
+                if self.gfxList[i][0] == ref:
+                    # set new value
+                    self.gfxList[i][3] = newVisible
+                    # if the value is False, just remove ref from drawList (as it must be in the list
+                    if not newVisible:
+                        self.drawList.remove(ref)
+                    else:
+                        #TODO : how to add the ref at the correct index without recreating new List
+                        self.__rebuildDrawList()
                     return
             # if we reached this statement, that means
             # the ref is not in the list but is in the dict

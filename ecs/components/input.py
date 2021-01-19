@@ -234,7 +234,7 @@ class GamepadAxis(Input):
         self.value     = 0
         self.minValue  = -0.5        # used to normalize the output
         self.maxValue  =  0.5        # used to normalize the output
-        self.lastValue = 0
+        self.lastValue = 1.0
 
     # Event information
     def getValue(self):

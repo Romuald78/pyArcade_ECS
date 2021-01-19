@@ -1,7 +1,7 @@
 from ecs.components.component import Component
-from ecs.systems.gfx import GfxSystem
-from ecs.systems.input import InputSystem
-from ecs.systems.script import ScriptSystem
+from ecs.systems.gfxSystem import GfxSystem
+from ecs.systems.inputSystem import InputSystem
+from ecs.systems.scriptSystem import ScriptSystem
 
 
 class World():
@@ -13,9 +13,9 @@ class World():
         # attach scene to this world
         self.scene = scn
         # Create systems
-        self.__inputMgr  = InputSystem()
-        self.__gfxMgr    = GfxSystem()
-        self.__scriptMgr = ScriptSystem()
+        self.inputMgr  = InputSystem()
+        self.gfxMgr    = GfxSystem()
+        self.scriptMgr = ScriptSystem()
         # prepare entity dict
         self.__entities = {}
 
@@ -24,6 +24,9 @@ class World():
     ## Entity management
     ## -------------------------------------
     def addEntity(self,entName, entRef):
+        print("-------------------------------")
+        print("ENTITY "+entName)
+        print("-------------------------------")
         if not entName in self.__entities:
             self.__entities[entName] = entRef
             # Register all components
@@ -34,45 +37,50 @@ class World():
 
                 # -------------------- SCRIPTS --------------------
                 if compType == Component.TYPE_SCRIPT:
-                    self.__scriptMgr.add(compName,compRef)
+                    self.scriptMgr.add(compName, compRef)
 
                 # -------------------- INPUTS --------------------
                 elif compType == Component.TYPE_KEYBOARD:
                     key    = compRef.getKey()
                     action = compRef.getActionName()
-                    self.__inputMgr.registerKey(key,action,compRef)
+                    self.inputMgr.registerKey(key, action, compRef)
 
                 elif compType == Component.TYPE_GAMEPAD_BUTTON:
                     ctrlID = compRef.getGamepadID()
                     button = compRef.getButton()
                     action = compRef.getActionName()
-                    self.__inputMgr.registerButton(ctrlID,button,action,compRef)
+                    self.inputMgr.registerButton(ctrlID, button, action, compRef)
 
                 elif compType == Component.TYPE_MOUSE_BUTTON:
                     button = compRef.getButton()
                     action = compRef.getActionName()
-                    self.__inputMgr.registerClick(button,action,compRef)
+                    self.inputMgr.registerClick(button, action, compRef)
 
                 elif compType == Component.TYPE_MOUSE_MOTION:
                     action = compRef.getActionName()
-                    self.__inputMgr.registerMouse(action,compRef)
+                    self.inputMgr.registerMouse(action, compRef)
 
                 elif compType == Component.TYPE_GAMEPAD_AXIS:
                     ctrlID = compRef.getGamepadID()
                     axis   = compRef.getAxis()
                     action = compRef.getActionName()
-                    self.__inputMgr.registerAxis(ctrlID,axis,action,compRef)
+                    self.inputMgr.registerAxis(ctrlID, axis, action, compRef)
 
                 # -------------------- GFX --------------------
                 elif compType == Component.TYPE_SIMPLE_SPRITE:
                     z   = compRef.getZIndex()
                     vis = True
-                    self.__gfxMgr.registerGfx(compRef, z, vis)
+                    self.gfxMgr.registerGfx(compRef, z, vis)
+
+                elif compType == Component.TYPE_ANIM_SPRITE:
+                    z   = compRef.getZIndex()
+                    vis = True
+                    self.gfxMgr.registerGfx(compRef, z, vis)
 
                 elif compType == Component.TYPE_SIMPLE_LIST:
                     z   = compRef.getZIndex()
                     vis = True
-                    self.__gfxMgr.registerGfx(compRef, z, vis)
+                    self.gfxMgr.registerGfx(compRef, z, vis)
 
                 # TODO handle other components !!!!!!!!!!!!
 
@@ -98,29 +106,29 @@ class World():
     ## Main methods
     ## -------------------------------------
     def update(self, deltaTime):
-        self.__scriptMgr.updateAllScripts(deltaTime)
-        self.__gfxMgr.updateAllGfx(deltaTime)
+        self.scriptMgr.updateAllScripts(deltaTime)
+        self.gfxMgr.updateAllGfx(deltaTime)
 
     def draw(self):
-        self.__gfxMgr.drawAllGfx()
+        self.gfxMgr.drawAllGfx()
 
 
     ## -------------------------------------
     ## Input event methods
     ## -------------------------------------
     def onKeyEvent(self,key, isPressed):
-        self.__inputMgr.notifyKeyEvent(key, isPressed)
+        self.inputMgr.notifyKeyEvent(key, isPressed)
 
     def onMouseButtonEvent(self, buttonName, x, y, isPressed):
-        self.__inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed)
+        self.inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed)
 
     def onMouseMotionEvent(self, x, y, dx, dy):
-        self.__inputMgr.notifyMouseMotionEvent(x, y, dx, dy)
+        self.inputMgr.notifyMouseMotionEvent(x, y, dx, dy)
 
     def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
-        self.__inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed)
+        self.inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed)
 
     def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
-        self.__inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue)
+        self.inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue)
 
 

@@ -9,17 +9,18 @@ class GrassFactory():
     def __init__(self, scn):
         self.scene  = scn
 
-    def create(self, refX, refY, refW, zIndex, grassW, grassH, clrFilter=(255,255,255)):
+    def create(self, scn, refX, refY, refW, zIndex, grassW, grassH, clrFilter=(255,255,255)):
         # Create entity
         entity = Entity()
         # Create GfxSpriteList
-        lst = GfxSimpleSpriteList(zIndex)
+        lst = GfxSimpleSpriteList(scn, zIndex)
         # Create all sprite using param structure
         for i in range(refW // grassW):
+            pos = ((i * grassW) + randint(0, grassW//2) - (grassW//4) + refX, refY)
             params = {
                 "filePath": f"images/grass.png",
                 "size": (grassW, grassH),
-                "position": ((i * grassW) + randint(0, grassW//2) - (grassW//4) + refX, refY),
+                "position": pos,
                 "filterColor": clrFilter
             }
             if random() >= 0.3:

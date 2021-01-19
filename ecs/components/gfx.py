@@ -12,48 +12,36 @@ from utils import *
 ## ============================================================
 class Gfx(Component):
 
-    # upper class contains the zIndex field
-    def __init__(self):
-        self.zIndex = 0
+    # constructor
+    def __init__(self, scn):
+        self.scene = scn
+        self.zIndex  = 0
+        self.gfx     = None
+        self.gfxType = None
 
-    # Get arcade gfx object
+    # arcade gfx object
     def getGfx(self):
-        raise ValueError("[ERR] gfx : getGfx method seems to be not implemented !")
+        if self.gfx == None:
+            raise ValueError("[ERR] gfx : gfx reference has not been set yet !")
+        return self.gfx
     # type method
     def getType(self):
-        raise ValueError("[ERR] gfx : getType method has not been implemented yet !")
-
+        if self.gfxType == None:
+            raise ValueError("[ERR] gfx : gfxType reference has not been set yet !")
+        return self.gfxType
     # Z-Index
     def getZIndex(self):
         return self.zIndex
-    def setZIndex(self,newZ):
-        self.zIndex = newZ
+    # Visible
+    def setVisible(self,val):
+        if self.gfxType == None:
+            raise ValueError("[ERR] setVisible : gfxType reference has not been set yet !")
+        self.scene.setVisible(self, val)
+    def isVisible(self):
+        if self.gfxType == None:
+            raise ValueError("[ERR] getVisible : gfxType reference has not been set yet !")
+        return self.scene.isVisible(self)
 
-    # Position
-    def move(self, dx, dy):
-        raise ValueError("[ERR] gfx : move method has not been implemented yet !")
-    def setPosition(self, newPos):
-        raise ValueError("[ERR] gfx : setPosition method has not been implemented yet !")
-    def getPosition(self):
-        raise ValueError("[ERR] gfx : getPosition method has not been implemented yet !")
-
-    # Orientation
-    # TODO add the way to rotate from any pivot position
-    def rotate(self, offset, multiplier, pivotPos=None):
-        # first multiply then add offset
-        raise ValueError("[ERR] gfx : rotate method has not been implemented yet !")
-    def setAngle(self, newAngle, pivotPos=None):
-        raise ValueError("[ERR] gfx : setAngle method has not been implemented yet !")
-    def getAngle(self):
-        raise ValueError("[ERR] gfx : getAngle method has not been implemented yet !")
-
-    # Scale
-    def setScale(self,newScale):
-        raise ValueError("[ERR] gfx : setScale method has not been implemented yet !")
-    def getScale(self):
-        raise ValueError("[ERR] gfx : getScale method has not been implemented yet !")
-
-    # TODO add other methods to manipulate Gfx objects
 
 
 ## ============================================================
@@ -61,20 +49,12 @@ class Gfx(Component):
 ## ============================================================
 
 #-----------------------------------
-class GfxSimpleSprite(Gfx):
+class GfxOneSPrite(Gfx):
 
     # Constructor
-    def __init__(self,params, zIdx=0):
+    def __init__(self, scn):
         # call to parent constructor
-        super().__init__()
-        # create Gfx element
-        self.gfx = createSimpleSprite(params)
-        self.setZIndex(zIdx)
-    # Override parent methods
-    def getType(self):
-        return Component.TYPE_SIMPLE_SPRITE
-    def getGfx(self):
-        return self.gfx
+        super().__init__(scn)
 
     # Position
     def move(self, dx, dy):
@@ -97,21 +77,48 @@ class GfxSimpleSprite(Gfx):
         return self.gfx.angle
 
     # Scale
-    def setScale(self,newScale):
+    def setScale(self, newScale):
         self.gfx.scale = newScale
     def getScale(self):
         return self.gfx.scale
+
+
+#-----------------------------------
+class GfxSimpleSprite(GfxOneSPrite):
+
+    # Constructor
+    def __init__(self, scn, params, zIdx=0):
+        # call to parent constructor
+        super().__init__(scn)
+        # set type
+        self.gfxType = Component.TYPE_SIMPLE_SPRITE
+        # create Gfx element
+        self.gfx     = createSimpleSprite(params)
+        self.zIndex  = zIdx
+
+#-----------------------------------
+class GfxAnimatedSprite(GfxOneSPrite):
+
+    # Constructor
+    def __init__(self, scn, params, zIdx=0):
+        # call to parent constructor
+        super().__init__(scn)
+        # set type
+        self.gfxType = Component.TYPE_ANIM_SPRITE
+        # create Gfx element
+        self.gfx     = createAnimatedSprite(params)
+        self.zIndex  = zIdx
 
 #-----------------------------------
 class GfxSimpleSpriteList(Gfx):
 
     # Constructor
-    def __init__(self, zIdx=0):
+    def __init__(self, scn, zIdx=0):
         # call to parent constructor
-        super().__init__()
+        super().__init__(scn)
         # create Gfx element
         self.gfx = arcade.SpriteList()
-        self.setZIndex(zIdx)
+        self.zIndex = zIdx
 
     # Override parent method
     def addSprite(self, params):
@@ -155,19 +162,6 @@ class GfxSimpleSpriteList(Gfx):
 
 
 
-#-----------------------------------
-class GfxAnimatedSprite(Gfx):
-
-    # Constructor
-    def __init__(self,params):
-        # call to parent constructor
-        super().__init__()
-        # create Gfx element
-        self.gfx = createAnimatedSprite(params)
-    # Override parent method
-    def getType(self):
-        return Component.TYPE_ANIM_SPRITE
-    # TODO add component methods
 
 
 
