@@ -1,22 +1,3 @@
-
-## ============================================================
-## INPUT INTERFACES
-## ============================================================
-from ecs.components.component import Component
-
-
-class Input(Component):
-
-    # Constants
-    ALL_GAMEPADS_ID = -1
-
-    def __init__(self,actionName):
-        self.name = actionName
-    def getType(self):
-        raise ValueError("[ERR] Input getType() method not implemented yet !")
-    def getActionName(self):
-        return self.name
-
 # TODO ??? :
 # For the moment, one instance handles one event.
 # Use lists/dicts in order to make one component
@@ -24,6 +5,32 @@ class Input(Component):
 # that should solve the fact that actioName parameter
 # in callbacks is not used (so does the gamepadID)
 
+
+## ============================================================
+## IMPORTS
+## ============================================================
+from ecs.components.component import Component
+
+
+
+## ============================================================
+## INPUT UPPER CLASS
+## ============================================================
+class Input(Component):
+    # Constants
+    ALL_GAMEPADS_ID = -1
+    # the upper class contains the action name of the input
+    def __init__(self,actionName):
+        self.name = actionName
+    def getType(self):
+        raise ValueError("[ERR] Input getType() method not implemented yet !")
+    def getActionName(self):
+        return self.name
+
+
+## ============================================================
+## LOWER CLASSES
+## ============================================================
 
 # ----------------------------------------------------------
 # KEYBOARD

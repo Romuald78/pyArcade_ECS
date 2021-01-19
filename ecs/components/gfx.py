@@ -1,20 +1,24 @@
 
 ## ============================================================
-## GFX GENERIC INTERFACE
+## IMPORTS
 ## ============================================================
 from ecs.components.component import Component
 from utils import *
 
+
+
+## ============================================================
+## GFX UPPER CLASS
+## ============================================================
 class Gfx(Component):
 
-    # Constructor
+    # upper class contains the zIndex field
     def __init__(self):
         self.zIndex = 0
 
     # Get arcade gfx object
     def getGfx(self):
         raise ValueError("[ERR] gfx : getGfx method seems to be not implemented !")
-
     # type method
     def getType(self):
         raise ValueError("[ERR] gfx : getType method has not been implemented yet !")
@@ -22,7 +26,6 @@ class Gfx(Component):
     # Z-Index
     def getZIndex(self):
         return self.zIndex
-
     def setZIndex(self,newZ):
         self.zIndex = newZ
 
