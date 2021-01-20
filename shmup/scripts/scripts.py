@@ -1,10 +1,10 @@
-from common.constants import SCREEN_WIDTH
+from shmup.common.constants import SCREEN_WIDTH
 from ecs.components.script import Script
-
 
 class MoveAnalog(Script):
 
     def __init__(self, gfx, xAxis, spd, disappear=None, visMove=None, isLeft=True):
+        super().__init__()
         self.gfx           = gfx
         self.xAxis         = xAxis
         self.speed         = spd
@@ -44,6 +44,7 @@ class MoveAnalog(Script):
 
 class Disappear(Script):
     def __init__(self, button):
+        super().__init__()
         self.button = button
         self.showing = True
 

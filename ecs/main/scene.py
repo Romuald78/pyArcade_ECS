@@ -2,6 +2,8 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
+import arcade
+
 from ecs.main.world import World
 
 
@@ -14,53 +16,80 @@ class Scene():
     ## -------------------------------------
     ## Constructor
     ## -------------------------------------
-    def __init__(self):
-        self.__world = World(self)
+    def __init__(self, W, H):
+        self._world = World(self)
+        self._consoleDebug = False
+        self._drawDebug    = False
+        self._dimensions   = (W,H)
 
 
     ## -------------------------------------
     ## Entity management
     ## -------------------------------------
-    def addEntity(self,nam, ref):
-        self.__world.addEntity(nam, ref)
+    def addEntity(self,ref):
+        self._world.addEntity(ref)
+    def getEntitiesByName(self, entNam):
+        return self._world.getEntitiesByName(entNam)
+    def getNbEntities(self):
+        return self._world.getNbEntities()
+    def getEntityList(self):
+        return self._world.getAllEntities()
 
 
     ## -------------------------------------
     ## Gfx Component management
     ## -------------------------------------
     def setVisible(self, gfxComp, val):
-        self.__world.gfxMgr.setVisible(gfxComp.getGfx(), val)
+        self._world._gfxMgr.setVisible(gfxComp.getGfx(), val)
     def isVisible(self, gfxComp):
-        return self.__world.gfxMgr.isVisible(gfxComp.getGfx())
+        return self._world._gfxMgr.isVisible(gfxComp.getGfx())
 
 
     ## -------------------------------------
     ## Main methods
     ## -------------------------------------
     def update(self, deltaTime):
-        self.__world.update(deltaTime)
+        self._world.update(deltaTime)
 
     def draw(self):
-        self.__world.draw()
+        self._world.draw()
 
 
     ## -------------------------------------
     ## Notify inputs
     ## -------------------------------------
     def onKeyEvent(self,key, isPressed):
-        self.__world.onKeyEvent(key, isPressed)
+        self._world.onKeyEvent(key, isPressed)
 
     def onMouseButtonEvent(self, buttonName, x, y, isPressed):
-        self.__world.onMouseButtonEvent(buttonName, x, y, isPressed)
+        self._world.onMouseButtonEvent(buttonName, x, y, isPressed)
 
     def onMouseMotionEvent(self, x, y, dx, dy):
-        self.__world.onMouseMotionEvent(x, y, dx, dy)
+        self._world.onMouseMotionEvent(x, y, dx, dy)
 
     def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
-        self.__world.onGamepadButtonEvent(gamepadId, buttonName, isPressed)
+        self._world.onGamepadButtonEvent(gamepadId, buttonName, isPressed)
 
     def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
-        self.__world.onGamepadAxisEvent(gamepadId, axisName, analogValue)
+        self._world.onGamepadAxisEvent(gamepadId, axisName, analogValue)
+
+
+    ## -------------------------------------
+    ## DEBUG
+    ## -------------------------------------
+    def getDimensions(self):
+        return self._dimensions
+    def setDebugMode(self, consoleDebug, drawDebug):
+        self._consoleDebug = consoleDebug
+        self._drawDebug    = drawDebug
+    def displayDebugInfo(self):
+        if self._consoleDebug:
+            msg = "Your scene has no 'displayDebugInfo' method implemented yet !"
+            print(msg)
+    def drawDebugInfo(self):
+        if self._drawDebug:
+            msg = "Your scene has no 'drawDebugInfo' method implemented yet !"
+            arcade.draw_text(msg, 20, self._dimensions[1]-20, (255,255,255), 12)
 
 
     ## -------------------------------------

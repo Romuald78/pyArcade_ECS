@@ -2,8 +2,7 @@
 ## IMPORTS
 ## ============================================================
 import arcade
-from common import constants
-
+from shmup.common import constants
 
 
 ## ============================================================
@@ -126,18 +125,25 @@ class SceneSystem():
             self.__updateTransition(deltaTime)
             # check if we are not in pause mode
             if not self.onPause:
+                scn = self.scenes[self.currentSceneName];
+                # Display debug info on console output
+                scn.displayDebugInfo()
                 # update
-                self.scenes[self.currentSceneName].update(deltaTime)
+                scn.update(deltaTime)
 
     def drawCurrentScene(self):
         # we need at least one scene
         if self.currentSceneName != None:
             # draw current scene
-            self.scenes[self.currentSceneName].draw()
+            scn = self.scenes[self.currentSceneName]
+            scn.draw()
+            # Draw debug info on screen
+            scn.drawDebugInfo()
             # draw color mask in case of transitions
             clr = self.__getTransitionColor()
             if clr != None:
-               arcade.draw_rectangle_filled(constants.SCREEN_WIDTH//2,constants.SCREEN_HEIGHT//2,constants.SCREEN_WIDTH,constants.SCREEN_HEIGHT,clr)
+               arcade.draw_rectangle_filled(constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 2,
+                                            constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT, clr)
 
 
     ## -------------------------------------

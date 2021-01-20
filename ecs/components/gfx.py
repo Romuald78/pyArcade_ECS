@@ -13,34 +13,37 @@ from utils import *
 class Gfx(Component):
 
     # constructor
-    def __init__(self, scn):
-        self.scene = scn
-        self.zIndex  = 0
-        self.gfx     = None
-        self.gfxType = None
+    def __init__(self, scn, compName=None):
+        if compName==None:
+            compName = "GFX"
+        super().__init__(compName)
+        self._scene     = scn
+        self._zIndex    = 0
+        self._arcadeGfx = None
+        self._gfxType   = None
 
     # arcade gfx object
     def getGfx(self):
-        if self.gfx == None:
-            raise ValueError("[ERR] gfx : gfx reference has not been set yet !")
-        return self.gfx
+        if self._arcadeGfx == None:
+            raise ValueError("[ERR] gfx : arcade gfx reference has not been set yet !")
+        return self._arcadeGfx
     # type method
     def getType(self):
-        if self.gfxType == None:
+        if self._gfxType == None:
             raise ValueError("[ERR] gfx : gfxType reference has not been set yet !")
-        return self.gfxType
+        return self._gfxType
     # Z-Index
     def getZIndex(self):
-        return self.zIndex
+        return self._zIndex
     # Visible
     def setVisible(self,val):
-        if self.gfxType == None:
+        if self._gfxType == None:
             raise ValueError("[ERR] setVisible : gfxType reference has not been set yet !")
-        self.scene.setVisible(self, val)
+        self._scene.setVisible(self, val)
     def isVisible(self):
-        if self.gfxType == None:
+        if self._gfxType == None:
             raise ValueError("[ERR] getVisible : gfxType reference has not been set yet !")
-        return self.scene.isVisible(self)
+        return self._scene.isVisible(self)
 
 
 
@@ -52,167 +55,188 @@ class Gfx(Component):
 class GfxOneSPrite(Gfx):
 
     # Constructor
-    def __init__(self, scn):
+    def __init__(self, scn, compName=None):
+        if compName == None:
+            compName = "1SPRITE"
         # call to parent constructor
-        super().__init__(scn)
+        super().__init__(scn, compName)
 
     # Position
     def move(self, dx, dy):
-        self.gfx.center_x += dx
-        self.gfx.center_y += dy
+        self._arcadeGfx.center_x += dx
+        self._arcadeGfx.center_y += dy
     def setPosition(self, newPos):
-        self.gfx.center_x = newPos[0]
-        self.gfx.center_y = newPos[1]
+        self._arcadeGfx.center_x = newPos[0]
+        self._arcadeGfx.center_y = newPos[1]
     def getPosition(self):
-        return (self.gfx.center_x, self.gfx.center_y)
+        return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
 
     # Orientation
     def rotate(self, offset, multiplier=1.0, pivotPos=None):
         # TODO ? is there a problem not to be in a specific range like [0-360] or [-180-180] ?
-        self.gfx.angle *= multiplier
-        self.gfx.angle += offset
+        self._arcadeGfx.angle *= multiplier
+        self._arcadeGfx.angle += offset
     def setAngle(self, newAngle, pivotPos=None):
-        self.gfx.angle = newAngle
+        self._arcadeGfx.angle = newAngle
     def getAngle(self):
-        return self.gfx.angle
+        return self._arcadeGfx.angle
 
     # Scale
     def setScale(self, newScale):
-        self.gfx.scale = newScale
+        self._arcadeGfx.scale = newScale
     def getScale(self):
-        return self.gfx.scale
-
+        return self._arcadeGfx.scale
 
 #-----------------------------------
 class GfxSimpleSprite(GfxOneSPrite):
 
     # Constructor
-    def __init__(self, scn, params, zIdx=0):
+    def __init__(self, scn, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "FixedSPrite"
         # call to parent constructor
-        super().__init__(scn)
+        super().__init__(scn,compName)
         # set type
-        self.gfxType = Component.TYPE_SIMPLE_SPRITE
+        self._gfxType   = Component.TYPE_SIMPLE_SPRITE
         # create Gfx element
-        self.gfx     = createSimpleSprite(params)
-        self.zIndex  = zIdx
+        self._arcadeGfx = createSimpleSprite(params)
+        self._zIndex    = zIdx
 
 #-----------------------------------
 class GfxAnimatedSprite(GfxOneSPrite):
 
     # Constructor
-    def __init__(self, scn, params, zIdx=0):
+    def __init__(self, scn, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "AnimSPrite"
         # call to parent constructor
-        super().__init__(scn)
+        super().__init__(scn,compName)
         # set type
-        self.gfxType = Component.TYPE_ANIM_SPRITE
+        self._gfxType   = Component.TYPE_ANIM_SPRITE
         # create Gfx element
-        self.gfx     = createAnimatedSprite(params)
-        self.zIndex  = zIdx
+        self._arcadeGfx = createAnimatedSprite(params)
+        self._zIndex    = zIdx
+
+
 
 #-----------------------------------
-class GfxSimpleSpriteList(Gfx):
+class GfxSpriteList(Gfx):
 
     # Constructor
-    def __init__(self, scn, zIdx=0):
+    def __init__(self, scn, compName=None):
+        if compName == None:
+            compName = "SPRITELIST"
         # call to parent constructor
-        super().__init__(scn)
-        # create Gfx element
-        self.gfx = arcade.SpriteList()
-        self.zIndex = zIdx
+        super().__init__(scn, compName)
 
-    # Override parent method
+    # Filling
     def addSprite(self, params):
-        newSprite = createSimpleSprite(params)
-        self.gfx.append(newSprite)
-    def getType(self):
-        return Component.TYPE_SIMPLE_LIST
-    def getGfx(self):
-        return self.gfx
+        raise ValueError("[ERR] GfxSPriteList - add : this method has not been implemented yet !")
 
-    # orientation
-    def rotate(self, offset, mult, pivotPos=None):
-        for gfx in self.gfx:
+    # Position
+    def move(self, dx, dy):
+        for gfx in self._arcadeGfx:
+            gfx.center_x += dx
+            gfx.center_y += dy
+
+    # Orientation
+    def rotate(self, offset, mult=1, pivotPos=None):
+        for gfx in self._arcadeGfx:
             gfx.angle *= mult
             gfx.angle += offset
 
     # List management
     def size(self):
-        return len(self.gfx)
+        return len(self._arcadeGfx)
     def getSprite(self,index):
-        return self.gfx[index]
-    # TODO add component methods
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return self._arcadeGfx[index]
 
 #-----------------------------------
-class GfxAnimatedSpriteList(Gfx):
+class GfxSimpleSpriteList(GfxSpriteList):
 
     # Constructor
-    def __init__(self):
+    def __init__(self, scn, zIdx=0, compName=None):
+        if compName == None:
+            compName = "FixedList"
         # call to parent constructor
-        super().__init__()
+        super().__init__(scn,compName)
+        # set type
+        self._gfxType   = Component.TYPE_SIMPLE_SPRITE
         # create Gfx element
-        self.gfx = arcade.SpriteList()
+        self._arcadeGfx = arcade.SpriteList()
+        self._zIndex = zIdx
+
+    # Override parent method
+    def addSprite(self, params):
+        newSprite = createSimpleSprite(params)
+        self._arcadeGfx.append(newSprite)
+
+#-----------------------------------
+class GfxAnimatedSpriteList(GfxSpriteList):
+
+    def __init__(self, scn, zIdx=0, compName=None):
+        if compName == None:
+            compName = "AnimList"
+        # call to parent constructor
+        super().__init__(scn,compName)
+        # set type
+        self._gfxType   = Component.TYPE_SIMPLE_SPRITE
+        # create Gfx element
+        self._arcadeGfx = arcade.SpriteList()
+        self._zIndex    = zIdx
+
     # Override parent method
     def addSprite(self, params):
         newSprite = createAnimatedSprite(params)
-        self.gfx.append(newSprite)
-    def getType(self):
-        return Component.TYPE_ANIM_LIST
-    # TODO add component methods
+        self._arcadeGfx.append(newSprite)
+
 
 
 #-----------------------------------
 class GfxSimpleEmitter(Gfx):
 
-    # Constructor
-    def __init__(self, params):
+    def __init__(self, scn, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "Emitter"
         # call to parent constructor
-        super().__init__()
+        super().__init__(scn,compName)
+        # set type
+        self._gfxType   = Component.TYPE_EMITTER
         # create Gfx element
-        self.gfx = createParticleEmitter(params)
-    # Override parent method
-    def getType(self):
-        return Component.TYPE_EMITTER
-    # TODO add component methods
+        self._arcadeGfx = createParticleEmitter(params)
+        self._zIndex    = zIdx
 
+    # position
+    def move(self, dx, dy):
+        self._arcadeGfx.center_x += dx
+        self._arcadeGfx.center_y += dy
+    def setPosition(self, newPos):
+        self._arcadeGfx.center_x = newPos[0]
+        self._arcadeGfx.center_y = newPos[1]
+    def getPosition(self):
+        return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
 
 #-----------------------------------
 class GfxBurstEmitter(Gfx):
 
-    # Constructor
-    def __init__(self,params):
+    def __init__(self, scn, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "Burst"
         # call to parent constructor
-        super().__init__()
+        super().__init__(scn,compName)
+        # set type
+        self._gfxType   = Component.TYPE_BURST
         # create Gfx element
-        self.gfx = createParticleBurst(params)
-    # Override parent method
-    def getType(self):
-        return Component.TYPE_BURST
-    # TODO add component methods
+        self._arcadeGfx = createParticleBurst(params)
+        self._zIndex    = zIdx
 
-
-
+    # position
+    def move(self, dx, dy):
+        self._arcadeGfx.center_x += dx
+        self._arcadeGfx.center_y += dy
+    def setPosition(self, newPos):
+        self._arcadeGfx.center_x = newPos[0]
+        self._arcadeGfx.center_y = newPos[1]
+    def getPosition(self):
+        return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
 

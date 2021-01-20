@@ -24,31 +24,40 @@ class ScriptSystem():
     ## Constructor
     ## -------------------------------------
     def __init__(self):
-        self.scripts = {}
-
+        self._scrByName = {}
+        self._scrByRef  = {}
 
     ## -------------------------------------
     ## Registering methods
     ## -------------------------------------
-    def add(self, scriptName, scriptRef):
-        # Check the script name is already in the dict
-        if scriptName in self.scripts:
-            raise ValueError(f"[ERR] add script : name '{scriptName}' already registered in the dict !")
+    def add(self, scriptRef):
         # check type
         self.__checkType(scriptRef)
-        # Add script reference
-        self.scripts[scriptName] = scriptRef
+        # Get script name
+        scriptName = scriptRef.getName()
+        # Add script into name dict
+        if scriptName not in self._scrByName:
+            self._scrByName[scriptName] = []
+        if scriptRef in self._scrByName[scriptName]:
+            raise ValueError("[ERR] scriptSystem add : component is already in the name dict !")
+        self._scrByName[scriptName].append(scriptRef)
+        # Add script into ref dict
+        if scriptRef in self._scrByRef:
+            raise ValueError("[ERR] scriptSystem add : component is already in the ref dict !")
+        self._scrByRef[scriptRef] = scriptName
 
-    def remove(self, scriptName):
+    def remove(self, scriptRef):
         # browse dict and remove when found
-        if scriptName in self.scripts:
-            self.scripts.pop(scriptName)
+        if scriptRef in self._scrByRef:
+            self._scrByRef.pop(scriptRef)
 
 
     ## -------------------------------------
     ## Main method
     ## -------------------------------------
     def updateAllScripts(self, deltaTime):
-        for s in self.scripts:
-            self.scripts[s].updateScript(s, deltaTime)
+        for ref in self._scrByRef:
+            if ref.isEnabled():
+                ref.updateScript(ref.getName(), deltaTime)
+
 

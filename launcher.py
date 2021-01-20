@@ -3,7 +3,7 @@
 ### ====================================================================================================
 import arcade
 
-from common import constants
+from shmup.common import constants
 from main import Main
 import os
 import time
