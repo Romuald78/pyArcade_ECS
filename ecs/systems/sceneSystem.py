@@ -58,7 +58,7 @@ class SceneSystem():
     ## -------------------------------------
     def selectNewScene(self,sceneName):
         # Set the next scene if not currently in transition
-        if self.nextSceneName != None:
+        if self.nextSceneName == None:
             self.nextSceneName = sceneName
             self.maxTime       = self.scenes[self.currentSceneName].getTransitionTimeOUT()
             self.currentTime   = 0
@@ -95,7 +95,7 @@ class SceneSystem():
                 self.color            = self.scenes[self.nextSceneName].getTransitionColorIN()
                 self.nextSceneName    = None
         # IN Phase
-        if self.nextSceneName == None:
+        else:
             # saturate the current time
             self.currentTime = min(self.maxTime, self.currentTime)
 
@@ -125,7 +125,7 @@ class SceneSystem():
             self.__updateTransition(deltaTime)
             # check if we are not in pause mode
             if not self.onPause:
-                scn = self.scenes[self.currentSceneName];
+                scn = self.scenes[self.currentSceneName]
                 # Display debug info on console output
                 scn.displayDebugInfo()
                 # update
@@ -137,13 +137,13 @@ class SceneSystem():
             # draw current scene
             scn = self.scenes[self.currentSceneName]
             scn.draw()
-            # Draw debug info on screen
-            scn.drawDebugInfo()
             # draw color mask in case of transitions
             clr = self.__getTransitionColor()
             if clr != None:
                arcade.draw_rectangle_filled(constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 2,
                                             constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT, clr)
+            # Draw debug info on screen
+            scn.drawDebugInfo()
 
 
     ## -------------------------------------

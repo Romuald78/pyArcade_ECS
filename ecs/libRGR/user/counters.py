@@ -28,7 +28,7 @@ class UserCounter(User):
     def set(self, newVal):
         self._value = newVal
         self.__saturate()
-    def update(self, diff):
+    def modify(self, diff):
         self._value += diff
         self.__saturate()
 

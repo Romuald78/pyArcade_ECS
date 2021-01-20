@@ -1,38 +1,63 @@
 import arcade
 
+from ecs.components.gfx import GfxSimpleSprite, GfxAnimatedSprite
+from ecs.components.input import Keyboard, GamepadAxis, Input
 from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ecs.libRGR.user.counters import UserCounter
 from ecs.main.entity import Entity
 from ecs.main.scene import Scene
+from shmup.scripts.test2_scripts import ModifLife, MoveGfx, MoveStick, SelectScene
 
 
-class InGame(Scene):
+class SceneTest2(Scene):
 
-    def __init__(self):
+    def __init__(self, sceneMgr):
         # Init parent
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT)
+        super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT)
         self.setDebugMode(False, True)
 
         # Create Entity
         entity = Entity("TestEntity")
 
         # Create components
-        life = UserCounter(0,1000,750, True, "LIFE")
+        params = {
+            "filePath": f"images/ninja.png",
+            "spriteBox": (7, 1, 120, 120),
+            "startIndex": 1,
+            "endIndex": 6,
+            "frameDuration": 1 / 24,
+            "size": (150, 150)
+        }
+        ninjaGfx  = GfxAnimatedSprite(self, params, 0, "Ninja")
+        params = {
+            "filePath": f"images/panda.png",
+            "size": (125 // 2, 239 // 2)
+        }
+        pandaGfx  = GfxSimpleSprite(self, params, 10, "Panda")
+        keyUp     = Keyboard("IncreaseLife", arcade.key.UP  , "KeyUP"  )
+        keyDown   = Keyboard("DecreaseLife", arcade.key.DOWN, "KeyDOWN")
+        keyP      = Keyboard("SelectScene", arcade.key.P, "KeyP")
+        axisX     = GamepadAxis("movePandaX", Input.ALL_GAMEPADS_ID,"X",0.2,"AxisX")
+        axisY     = GamepadAxis("movePandaY", Input.ALL_GAMEPADS_ID,"Y",0.2,"AxisY")
+        life      = UserCounter(0,10,5, True, "Life")
+        modifLife = ModifLife(keyUp, keyDown, life, "ModifLife")
+        moveGfx   = MoveGfx(ninjaGfx, life, "MoveGfx")
+        moveStick = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
+        select    = SelectScene(self, keyP, "PauseGame")
 
         # add components to entity
+        entity.addComponent(ninjaGfx)
+        entity.addComponent(pandaGfx)
+        entity.addComponent(keyUp)
+        entity.addComponent(keyDown)
+        entity.addComponent(keyP)
+        entity.addComponent(axisX)
+        entity.addComponent(axisY)
         entity.addComponent(life)
+        entity.addComponent(modifLife)
+        entity.addComponent(moveGfx)
+        entity.addComponent(moveStick)
+        entity.addComponent(select)
 
         # Add entity to scene
         self.addEntity(entity)
-
-    def drawDebugInfo(self):
-        refX = 20
-        refY = SCREEN_HEIGHT-20
-        entities = self.getEntityList()
-        for ent in entities:
-            arcade.draw_text(ent.getName(), refX, refY, (255, 255, 255), 12)
-            refY -= 15
-            components = ent.getComponentList()
-            for comp in components:
-                arcade.draw_text(comp.getName(), refX+50, refY, (255, 255, 255), 12)
-                refY -= 15

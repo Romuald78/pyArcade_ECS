@@ -39,6 +39,36 @@ class Component():
     # User defined
     TYPE_USER_MASK     = 0x8000
     TYPE_USER          = TYPE_USER_MASK | 0x01
+    # User Strings
+    TYPE_INFO = {
+        TYPE_SCRIPT         : {"name" : "Script",
+                               "color": (255,64,64)},
+        TYPE_MOUSE_BUTTON   : {"name": "MouseButton",
+                               "color": (80,80,255)},
+        TYPE_MOUSE_MOTION   : {"name": "MouseMotion",
+                               "color": (80,80,255)},
+        TYPE_KEYBOARD       : {"name": "Key",
+                               "color": (128,128,255)},
+        TYPE_GAMEPAD_BUTTON : {"name": "GamepadButton",
+                               "color": (160,160,255)},
+        TYPE_GAMEPAD_AXIS   : {"name": "GamepadAxis",
+                               "color": (160,160,255)},
+        TYPE_SIMPLE_SPRITE  : {"name": "FixedSprite",
+                               "color": (255,255,0)},
+        TYPE_ANIM_SPRITE    : {"name": "AnimSprite",
+                               "color": (255,255,0)},
+        TYPE_SIMPLE_LIST    : {"name": "FixedSpriteList",
+                               "color": (192,192,0)},
+        TYPE_ANIM_LIST      : {"name": "AnimSpriteList",
+                               "color": (192,192,0)},
+        TYPE_EMITTER        : {"name": "Emitter",
+                               "color": (255,255,64)},
+        TYPE_BURST          : {"name": "Burst",
+                               "color": (255,255,64)},
+        TYPE_USER           : {"name": "User",
+                               "color": (192,192,192)},
+    }
+
 
     #---------------------------------------------
     # COMPONENT ID
@@ -73,4 +103,12 @@ class Component():
     # this way it is easier to dispatch it to the correct system
     def getType(self):
         raise ValueError("[ERR] Component getType() method has not been implemented yet !")
+    def getTypeName(self):
+        t = self.getType()
+        s = Component.TYPE_INFO[t]["name"]
+        return s
+    def getTypeColor(self):
+        t = self.getType()
+        c = Component.TYPE_INFO[t]["color"]
+        return c
 

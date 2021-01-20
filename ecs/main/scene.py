@@ -16,8 +16,9 @@ class Scene():
     ## -------------------------------------
     ## Constructor
     ## -------------------------------------
-    def __init__(self, W, H):
-        self._world = World(self)
+    def __init__(self, scnMgr, W, H):
+        self._sceneMgr     = scnMgr
+        self._world        = World(self)
         self._consoleDebug = False
         self._drawDebug    = False
         self._dimensions   = (W,H)
@@ -56,6 +57,13 @@ class Scene():
 
 
     ## -------------------------------------
+    ## Scene management
+    ## -------------------------------------
+    def selectNewScene(self, sceneName):
+        self._sceneMgr.selectNewScene(sceneName)
+
+
+    ## -------------------------------------
     ## Notify inputs
     ## -------------------------------------
     def onKeyEvent(self,key, isPressed):
@@ -88,23 +96,33 @@ class Scene():
             print(msg)
     def drawDebugInfo(self):
         if self._drawDebug:
-            msg = "Your scene has no 'drawDebugInfo' method implemented yet !"
-            arcade.draw_text(msg, 20, self._dimensions[1]-20, (255,255,255), 12)
-
+            # arcade.draw_rectangle_filled(self._dimensions[0]//2, self._dimensions[1]//2, self._dimensions[0], self._dimensions[1],(128,128,128,128))
+            refX = 15
+            entities = self.getEntityList()
+            for ent in entities:
+                refY = self._dimensions[1] - 20
+                arcade.draw_text(ent.getName(), refX, refY, (64, 255, 64), 14)
+                refY -= 18
+                components = ent.getComponentList()
+                for comp in components:
+                    n = comp.getName()
+                    s = comp.getTypeName()
+                    c = comp.getTypeColor()
+                    msg = f"{n} ({s})"
+                    arcade.draw_text(msg, refX + 10, refY, c, 12)
+                    refY -= 15
+                # next entity is displayed to the right
+                refX += 140
 
     ## -------------------------------------
     ## Get transition times and colors
     ## -------------------------------------
     def getTransitionTimeIN(self):
-        return 1.0
-
+        return 1
     def getTransitionTimeOUT(self):
-        return 1.0
-
+        return 1
     def getTransitionColorIN(self):
         return (0,255,0)
-
     def getTransitionColorOUT(self):
         return (255,0,0)
-
 

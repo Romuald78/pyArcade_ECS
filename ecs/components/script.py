@@ -13,8 +13,12 @@ from ecs.components.component import Component
 class Script(Component):
 
     # Constructor. Init the isActive flag
-    def __init__(self):
-        super().__init__()
+    def __init__(self, compName=None):
+        if compName == None:
+            compName = "SCRIPT"
+        # Parent constructor
+        super().__init__(compName)
+        # By default this script is enabled
         self.isActive = True
 
     # Setters / Getters to handle the isActive flag

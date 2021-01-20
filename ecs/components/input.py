@@ -20,7 +20,11 @@ class Input(Component):
     # Constants
     ALL_GAMEPADS_ID = -1
     # the upper class contains the action name of the input
-    def __init__(self,actionName):
+    def __init__(self,actionName, compName=None):
+        if compName == None:
+            compName = "INPUT"
+        #parent constructor
+        super().__init__(compName)
         self.name = actionName
     def getType(self):
         raise ValueError("[ERR] Input getType() method not implemented yet !")
@@ -38,9 +42,11 @@ class Input(Component):
 class Keyboard(Input):
 
     # Constructor
-    def __init__(self, actionName, key):
+    def __init__(self, actionName, key, compName=None):
+        if compName == None:
+            compName = "KEYBOARD"
         # parent constructor
-        super().__init__(actionName)
+        super().__init__(actionName, compName)
         # store fields
         self.keyValue    = key
         self.risingEdge  = False    # from 'released' to 'pressed'
@@ -224,9 +230,11 @@ class MouseMotion(Input):
 class GamepadAxis(Input):
 
     # Constructor
-    def __init__(self, actionName, gamepadID, axisName, deadZone=0.2):
+    def __init__(self, actionName, gamepadID, axisName, deadZone=0.2, compName=None):
+        if compName == None:
+            compName = "AXIS"
         # parent constructor
-        super().__init__(actionName)
+        super().__init__(actionName, compName)
         # store fields
         self.ctrlID    = gamepadID
         self.axis      = axisName

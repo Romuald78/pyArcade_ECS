@@ -69,25 +69,33 @@ class MyGame(arcade.Window):
     # ----------------------------------
     # CONSTRUCTOR
     # ----------------------------------
-    def __init__(self, width, height, title):
-        #init application window
-        super().__init__(width, height, title)
-        # init process object
+    def __init__(self, width, height, title, fullScreen):
+        # Init application window
+        super().__init__(width, height, title, fullScreen)
+
+        # TODO fit application size to screen resolution
+        #  Resize and center application windows in order
+        # to fit with the current screen resolution
+        # arcade.set_background_color(arcade.color.AMAZON)
+        # self.set_fullscreen(True)
+        # self.set_viewport(0, 1920*2, 0, 1080*2)
+
+        # Init process object
         self.process = Main()
-        # set application window background color
+        # Set application window background color
         arcade.set_background_color(arcade.color.BLACK)
         # Store gamepad list
         self.gamepads = arcade.get_joysticks()
-        # check every connected gamepad
+        # Check every connected gamepad
         if self.gamepads:
             for g in self.gamepads:
-                #link all gamepad callbacks to the current class methods
+                # Link all gamepad callbacks to the current class methods
                 g.open()
                 g.on_joybutton_press   = self.__onButtonPressed
                 g.on_joybutton_release = self.__onButtonReleased
                 g.on_joyhat_motion     = self.__onCrossMove
                 g.on_joyaxis_motion    = self.__onAxisMove
-            # transform list into a dictionary to get its index faster
+            # Transform list into a dictionary to get its index faster
             self.gamepads = { self.gamepads[idx]:idx for idx in range(len(self.gamepads)) }
         else:
             print("There are no Gamepad connected !")
@@ -121,6 +129,8 @@ class MyGame(arcade.Window):
         arcade.draw_text("FPS   : "+str(int(60 / sum(self.frameTime))), 12, 12, (255, 255, 255))
         arcade.draw_text("Draw  : "+str(round(sum(self.updateTime)*50/3,3))+"ms"      , 12, 24, (255, 255, 255))
         arcade.draw_text("Update: "+str(round(sum(self.drawTime  )*50/3,3))+"ms"      , 12, 36, (255, 255, 255))
+
+        arcade.draw_text("[X]", 2000, 1200, (255,0,0))
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
@@ -143,10 +153,13 @@ class MyGame(arcade.Window):
     # KEY PRESSED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_key_press(self, key, modifiers):
-        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         # Close application if ESCAPE key is hit
         if key == arcade.key.ESCAPE:
             self.close()
+        # switch between full screen and window mode
+        if key == arcade.key.F11:
+            self.set_fullscreen(not self.fullscreen)
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.mainKeyEvent(key, True)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -192,9 +205,10 @@ class MyGame(arcade.Window):
     # GAMEPAD AXIS events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def onAxisMove(self, gamepadNum, axisName, analogValue):
-        #- - - - - - - - - - - - - - - - - - - - - - - - -#
+        # normalize the Z axis
         if axisName == "z":
             analogValue = -analogValue
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.mainAxisEvent(gamepadNum,axisName.upper(),analogValue)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
@@ -203,21 +217,31 @@ class MyGame(arcade.Window):
     # MOUSE MOTION events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_mouse_motion(self, x, y, dx, dy):
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.mainMouseMotionEvent(x,y,dx,dy)
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
+
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # MOUSE BUTTON PRESSED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_mouse_press(self, x, y, button, modifiers):
+        # normalize button name
         buttonName = "M" + str(button)
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.mainMouseButtonEvent(buttonName,x,y,True)
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
+
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # MOUSE BUTTON RELEASED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_mouse_release(self, x, y, button, modifiers):
+        # Normalize the button name
         buttonName = "M" + str(button)
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.mainMouseButtonEvent(buttonName,x,y,False)
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
 
@@ -229,7 +253,12 @@ def main():
     file_path = os.path.dirname(os.path.abspath(__file__))
     os.chdir(file_path)
 
-    game = MyGame(constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT, TITLE)
+    width      = constants.SCREEN_WIDTH
+    height     = constants.SCREEN_HEIGHT
+    title      = TITLE
+    fullScreen = False
+
+    game = MyGame(width, height, title, fullScreen)
     game.set_vsync(True)
     game.setup()
     arcade.run()

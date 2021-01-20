@@ -34,6 +34,7 @@ def createSimpleSprite(params):
     flipV       = False             if "flipv"       not in params else params["flipV"]
 
     # load texture for sprite
+    # TODO used non deprecated sprite classes (a 'fixed sprite' class from arcade)
     spr = arcade.AnimatedTimeSprite()
     spr.color = filterColor
     spr.append_texture(arcade.load_texture(filePath, flipped_horizontally=flipH, flipped_vertically=flipV))
@@ -68,6 +69,7 @@ def createAnimatedSprite(params):
     # get sprite box (nb sprites X, nb Y, size X size Y)
     nbX, nbY, szW, szH = spriteBox
     # Instanciate sprite object
+    # TODO used non deprecated sprite classes (AnimatedTimeBasedSprite class from arcade)
     spr = arcade.AnimatedTimeSprite()
     spr.color = filterColor
     # Read Horizontal first, then vertical
