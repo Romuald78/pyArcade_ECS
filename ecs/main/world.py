@@ -34,48 +34,40 @@ class World():
         compType = compRef.getType()
         # SCRIPT component
         if compType == Component.TYPE_SCRIPT:
-            # TODO check component is well added into the system | 1
             self._scriptMgr.add(compRef)
         # INPUT KEYBOARD component
         elif compType == Component.TYPE_KEYBOARD:
             key    = compRef.getKey()
             action = compRef.getActionName()
-            # TODO check component is well added into the system |
             self._inputMgr.registerKey(key, action, compRef)
         # INPUT GAMEPAD BUTTON component
         elif compType == Component.TYPE_GAMEPAD_BUTTON:
             ctrlID = compRef.getGamepadID()
             button = compRef.getButton()
             action = compRef.getActionName()
-            # TODO check component is well added into the system |
             self._inputMgr.registerButton(ctrlID, button, action, compRef)
         # INPUT MOUSE BUTTON component
         elif compType == Component.TYPE_MOUSE_BUTTON:
             button = compRef.getButton()
             action = compRef.getActionName()
-            # TODO check component is well added into the system |
             self._inputMgr.registerClick(button, action, compRef)
         # INPUT MOUSE MOTION component
         elif compType == Component.TYPE_MOUSE_MOTION:
             action = compRef.getActionName()
-            # TODO check component is well added into the system |
             self._inputMgr.registerMouse(action, compRef)
         # INPUT GAMEPAD AXIS component
         elif compType == Component.TYPE_GAMEPAD_AXIS:
             ctrlID = compRef.getGamepadID()
             axis = compRef.getAxis()
             action = compRef.getActionName()
-            # TODO check component is well added into the system |
             self._inputMgr.registerAxis(ctrlID, axis, action, compRef)
         # GFX components
         elif (compType & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
             z = compRef.getZIndex()
             vis = True
-            # TODO check component is well added into the system |
             self._gfxMgr.registerGfx(compRef, z, vis)
         # USER components
         elif compType == Component.TYPE_USER:
-            # TODO check component is well added into the system |
             self._idleMgr.add(compRef)
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")

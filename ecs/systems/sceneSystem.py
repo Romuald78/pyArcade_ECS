@@ -124,9 +124,6 @@ class SceneSystem():
         if self.currentSceneName != None:
             # update transition information
             self.__updateTransition(deltaTime)
-
-            # TODO pause mode does not work anymore (????)
-
             # Get scene ref
             scn = self.scenes[self.currentSceneName]
             # Display debug info on console output
