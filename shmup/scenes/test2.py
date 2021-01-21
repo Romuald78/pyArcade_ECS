@@ -1,6 +1,6 @@
 import arcade
 
-from ecs.components.gfx import GfxSimpleSprite, GfxAnimatedSprite
+from ecs.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxSimpleEmitter
 from ecs.components.input import Keyboard, GamepadAxis, Input
 from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ecs.libRGR.user.counters import UserCounter
@@ -29,17 +29,36 @@ class SceneTest2(Scene):
             "size": (150, 150)
         }
         ninjaGfx  = GfxAnimatedSprite(self, params, 0, "Ninja")
+
         params = {
             "filePath": f"images/panda.png",
             "size": (125 // 2, 239 // 2)
         }
         pandaGfx  = GfxSimpleSprite(self, params, 10, "Panda")
+
+        params = {  "x0"          : 1000,
+                    "y0"          : 500,
+                    "partNB"      : 100,
+                    "partSize"    : 239,
+                    "partScale"   : 0.25,
+                    "partSpeed"   : 5.0,
+                    "maxLifeTime" : 1.0,
+                    "color"       : (255,255,0),
+                    "startAlpha"  : 100,
+                    "endAlpha"    : 0,
+                    "spriteBox"   : (1,1,125,239),
+                    "spriteSelect": (0,0),
+                    "imagePath"   : "images/panda.png"
+        }
+        emitterGfx = GfxSimpleEmitter(self, params, 50, "SimpleEmitter")
+
         keyUp     = Keyboard("IncreaseLife", arcade.key.UP  , "KeyUP"  )
         keyDown   = Keyboard("DecreaseLife", arcade.key.DOWN, "KeyDOWN")
         keyP      = Keyboard("SelectScene", arcade.key.P, "KeyP")
         axisX     = GamepadAxis("movePandaX", Input.ALL_GAMEPADS_ID,"X",0.2,"AxisX")
         axisY     = GamepadAxis("movePandaY", Input.ALL_GAMEPADS_ID,"Y",0.2,"AxisY")
         life      = UserCounter(0,10,5, True, "Life")
+        life2     = UserCounter(0,10,5, True, "Life")
         modifLife = ModifLife(keyUp, keyDown, life, "ModifLife")
         moveGfx   = MoveGfx(ninjaGfx, life, "MoveGfx")
         moveStick = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
@@ -52,12 +71,16 @@ class SceneTest2(Scene):
         # add components to entity
         entity.addComponent(ninjaGfx)
         entity.addComponent(pandaGfx)
+        entity.addComponent(emitterGfx)
         entity.addComponent(keyUp)
         entity.addComponent(keyDown)
         entity.addComponent(keyP)
         entity.addComponent(axisX)
         entity.addComponent(axisY)
         entity.addComponent(life)
+
+        entity.addComponent(life2)
+
         entity.addComponent(modifLife)
         entity.addComponent(moveGfx)
         entity.addComponent(moveStick)
@@ -65,3 +88,4 @@ class SceneTest2(Scene):
 
         # Add entity to scene
         self.addEntity(entity)
+

@@ -1,4 +1,8 @@
-# TODO put single Sprite in a 1-size-spriteList to be more generic ?
+# FEATURE : Merge gfx classes
+# put a single Sprite in a 1-size-spriteList
+# to be more generic ? We would only have GfxSpriteList
+# that would be easier to handle. let's see
+
 
 ## ============================================================
 ## IMPORTS
@@ -28,6 +32,11 @@ class GfxSystem():
         self.gfxDict = {}
         self.drawList = arcade.SpriteList()
 
+        # FEATURE : handle drawList in a better way
+        # use a separate list for emitters
+        # this list is not z-sorted for the moment
+        self.emitters = []
+
 
     ## -------------------------------------
     ## Type checking
@@ -48,10 +57,9 @@ class GfxSystem():
             # add sprite list to draw list
             self.drawList.extend(ref)
         elif (type & Gfx.PARTICLES) == Gfx.PARTICLES:
-            # add all particles of emitter
-            # TODO : check if it works to get the particle spriteList from an emitter ??
-            self.drawList.extend(ref._particles)
-            raise ValueError("[TODO] particle emitters are not handled yet in the GFX system !")
+            # FEATURE : handle drawList in a clever way
+            # add all particles of emitter in a separate list
+            self.emitters.append(ref)
 
     def __clearDrawList(self):
         while len(self.drawList) > 0:
@@ -118,8 +126,9 @@ class GfxSystem():
             if ref == row[1]:
                 self.gfxList.remove(row)
                 return
+
         # Recompute draw list
-        # TODO [PERF] :
+        # FEATURE  : handle drawList in a clever way
         # just remove ref from the draw list instead of recreating a new one ?
         # may be not possible for particle emitters as we added a field of the ref ?
         # rebuild draw list
@@ -146,7 +155,7 @@ class GfxSystem():
                 # Particle emitters
                 elif (type & Gfx.SIMPLE) != Gfx.SIMPLE:
                     # update particle emitters (normal or bursts)
-                    ref.update(deltaTime)
+                    ref.update()
                     # Remove burst emitters if finished
                     if type == Gfx.TYPE_BURST:
                         if ref.can_reap():
@@ -156,7 +165,13 @@ class GfxSystem():
             self.removeGfx(ref)
 
     def drawAllGfx(self):
+        # FEATURE : handle drawList in a clever way
+        # Draw all sprites
         self.drawList.draw()
+        # Draw emitters separately in front of all the scene for the moment
+        #all emitters are not z-sorted
+        for emit in self.emitters:
+            emit.draw()
 
 
     ## -------------------------------------
@@ -177,8 +192,8 @@ class GfxSystem():
             raise ValueError("[ERR] isVisible : gfx not in the dict !")
         return self.gfxDict[ref][2]
 
-
-    # TODO : old version to rework !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # FEATURE : handle drawList, emitter list, etc... in a clever way
+    # old version -> to rework !
     def setZIndex(self, ref, newZ):
         # update dictionary
         if ref not in self.gfxDict:
@@ -197,6 +212,7 @@ class GfxSystem():
                     return
             raise ValueError("[ERR] setZIndex : gfx not in the list !")
 
+    # BUG : ref must be Gfx component ref, not an arcade Gfx element -> rework
     def setVisible(self, ref, newVisible):
         # update dictionary
         if ref not in self.gfxDict:
@@ -211,11 +227,13 @@ class GfxSystem():
                 if self.gfxList[i][0] == ref:
                     # set new value
                     self.gfxList[i][3] = newVisible
-                    # if the value is False, just remove ref from drawList (as it must be in the list
+                    # if the value is False, just remove ref from
+                    # drawList (as it is already sorted in the list)
                     if not newVisible:
                         self.drawList.remove(ref)
                     else:
-                        #TODO : how to add the ref at the correct index without recreating new List
+                        # FEATURE  : handle drawList in a clever way
+                        # QUESTION : how to add the ref at the correct index without recreating new List
                         self.__rebuildDrawList()
                     return
             # if we reached this statement, that means

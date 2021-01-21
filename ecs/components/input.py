@@ -1,4 +1,4 @@
-# TODO ??? :
+# FEATURE : improve the data structure to handle inputs
 # For the moment, one instance handles one event.
 # Use lists/dicts in order to make one component
 # handle multiple events ?

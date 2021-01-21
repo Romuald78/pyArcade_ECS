@@ -9,7 +9,7 @@ class Component():
     # TYPE VALUES
     #---------------------------------------------
     # Use of numeric values instead of calling isinstance()
-    # TODO : use some patterns like visitor instead of multiple "if" ??
+    # TASK : use some patterns like visitor instead of multiple "if" ??
 
     # Scripts
     TYPE_SCRIPT_MASK    = 0x1000

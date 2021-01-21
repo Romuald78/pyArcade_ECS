@@ -73,8 +73,8 @@ class MyGame(arcade.Window):
         # Init application window
         super().__init__(width, height, title, fullScreen)
 
-        # TODO fit application size to screen resolution
-        #  Resize and center application windows in order
+        # BUG : fit application size to screen resolution
+        # Resize and center application windows in order
         # to fit with the current screen resolution
         # arcade.set_background_color(arcade.color.AMAZON)
         # self.set_fullscreen(True)

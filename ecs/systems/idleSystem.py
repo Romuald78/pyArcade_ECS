@@ -1,4 +1,3 @@
-# TODO allow to add several components with the same names !!! use a Dict of List !
 
 ## ============================================================
 ## IMPORTS
@@ -25,7 +24,8 @@ class IdleSystem():
     ## Constructor
     ## -------------------------------------
     def __init__(self):
-        self.idleComps = {}
+        self._refList  = {}
+        self._nameList = {}
 
 
     ## -------------------------------------
@@ -36,13 +36,17 @@ class IdleSystem():
         self.__checkType(idleRef)
         # get name
         idleName = idleRef.getName()
-        # Check the component name is already in the dict
-        if idleName in self.idleComps:
-            raise ValueError(f"[ERR] add script : name '{idleName}' already registered in the dict !")
-        # Add script reference
-        self.idleComps[idleName] = idleRef
+        # Add into name list
+        if idleName not in self._nameList:
+            self._nameList[idleName] = []
+        if idleRef in self._nameList[idleName]:
+            raise ValueError(f"[ERR] IDLE add : script already in the name list !")
+        self._nameList[idleName].append(idleRef)
+        # Add into ref list
+        if idleRef in self._refList:
+            raise ValueError(f"[ERR] IDLE add : script already in the ref list !")
+        self._refList[idleRef] = idleName
 
-    def remove(self, scriptName):
-        pass
-
+    # IMPROVE : add methods to improve IdleSystem
+    # methods like remove / getCompByName / getCompByRef / getNbComps / getAllComps / doesCompExist / ...
 

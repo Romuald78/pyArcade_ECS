@@ -1,4 +1,8 @@
-# TODO Add remove entity method + all the links with the different systems
+# FEATURE Add method to remove entity
+# add all the links with the different systems
+# in order to remove the components inside the
+# requested entity
+
 
 
 from ecs.components.component import Component

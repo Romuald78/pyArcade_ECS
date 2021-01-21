@@ -72,8 +72,9 @@ class GfxOneSPrite(Gfx):
         return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
 
     # Orientation
+    # QUESTION : is there a problem not to be in a specific range like [0-360] or [-180-180] ?
+    # FEATURE  : improve methods to handle pivot points
     def rotate(self, offset, multiplier=1.0, pivotPos=None):
-        # TODO ? is there a problem not to be in a specific range like [0-360] or [-180-180] ?
         self._arcadeGfx.angle *= multiplier
         self._arcadeGfx.angle += offset
     def setAngle(self, newAngle, pivotPos=None):

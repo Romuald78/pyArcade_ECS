@@ -1,8 +1,8 @@
-# TODO FEATURE : add remove method and link to the different systems ?
+# FEATURE : add remove method and link to the different systems ?
 # May be an easier way is to go via Entity : destroy request sent to the scene
 # So the access to the systems can be done
 
-# TODO WARNING :
+# BUG : component not added into the world
 # adding a component in an entity
 # AFTER an entity has been added to
 # the world, makes this component
