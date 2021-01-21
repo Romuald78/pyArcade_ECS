@@ -20,16 +20,12 @@ class InputSystem():
 
 
     ## -------------------------------------
-    ## Type method
+    ## Private methods
     ## -------------------------------------
     def __checkType(self, ref):
         if not isinstance(ref, Input):
             raise ValueError(f"[ERR] check input: bad object type. It should be Input !\n{ref}")
 
-
-    ## -------------------------------------
-    ## Index methods
-    ## -------------------------------------
     def __getKeyIndex(self, key):
         return "K" + str(key)
 
@@ -60,6 +56,9 @@ class InputSystem():
         else:
             raise ValueError(f"[ERR] register input : ref is already in the list for action '{actionName}' and index '{idx}'")
 
+    def __isExecutionAllowed(self, inRef, isOnPause):
+        return inRef.isEnabled() and (not isOnPause or inRef.isEnabledOnPause())
+
 
     ## -------------------------------------
     ## Registering methods
@@ -88,21 +87,23 @@ class InputSystem():
     ## -------------------------------------
     ## Notification methods
     ## -------------------------------------
-    def notifyKeyEvent(self, key, isPressed):
+    def notifyKeyEvent(self, key, isPressed, isOnPause):
         idx = self.__getKeyIndex(key)
         if idx in self.inputs:
             for action in self.inputs[idx]:
                 for inRef in self.inputs[idx][action]:
-                    inRef.keyboardEvent(action, isPressed)
+                    if self.__isExecutionAllowed(inRef, isOnPause) :
+                        inRef.keyboardEvent(action, isPressed)
 
-    def notifyMouseButtonEvent(self, buttonName, x, y, isPressed):
+    def notifyMouseButtonEvent(self, buttonName, x, y, isPressed, isOnPause):
         idx = self.__getMouseButtonIndex(buttonName)
         if idx in self.inputs:
             for action in self.inputs[idx]:
                 for inRef in self.inputs[idx][action]:
-                    inRef.mouseButtonEvent(action, x, y, isPressed)
+                    if self.__isExecutionAllowed(inRef, isOnPause) :
+                        inRef.mouseButtonEvent(action, x, y, isPressed)
 
-    def notifyGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
+    def notifyGamepadButtonEvent(self, gamepadId, buttonName, isPressed, isOnPause):
         indexes = [ self.__getGamepadButtonIndex(gamepadId, buttonName),
                     self.__getGamepadButtonIndex(Input.ALL_GAMEPADS_ID, buttonName)
                   ]
@@ -110,16 +111,18 @@ class InputSystem():
             if idx in self.inputs:
                 for action in self.inputs[idx]:
                     for inRef in self.inputs[idx][action]:
-                        inRef.gamepadButtonEvent(action, gamepadId, isPressed)
+                        if self.__isExecutionAllowed(inRef, isOnPause):
+                            inRef.gamepadButtonEvent(action, gamepadId, isPressed)
 
-    def notifyMouseMotionEvent(self, x, y, dx, dy):
+    def notifyMouseMotionEvent(self, x, y, dx, dy, isOnPause):
         idx = self.__getMouseMotionIndex()
         if idx in self.inputs:
             for action in self.inputs[idx]:
                 for inRef in self.inputs[idx][action]:
-                    inRef.mouseMotionEvent(action, x, y, dx, dy)
+                    if self.__isExecutionAllowed(inRef, isOnPause) :
+                        inRef.mouseMotionEvent(action, x, y, dx, dy)
 
-    def notifyGamepadAxisEvent(self, gamepadId, axisName, analogValue):
+    def notifyGamepadAxisEvent(self, gamepadId, axisName, analogValue, isOnPause):
         indexes = [self.__getGamepadAxisIndex(gamepadId, axisName),
                    self.__getGamepadAxisIndex(Input.ALL_GAMEPADS_ID, axisName)
                   ]
@@ -127,4 +130,5 @@ class InputSystem():
             if idx in self.inputs:
                 for action in self.inputs[idx]:
                     for inRef in self.inputs[idx][action]:
-                        inRef.gamepadAxisEvent(action, gamepadId, analogValue)
+                        if self.__isExecutionAllowed(inRef, isOnPause):
+                            inRef.gamepadAxisEvent(action, gamepadId, analogValue)

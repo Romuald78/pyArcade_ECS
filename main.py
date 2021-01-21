@@ -12,7 +12,7 @@ class Main:
     ### ====================================================================================================
     def __init__(self):
         self.sceneMgr = SceneSystem()
-        self.sceneMgr.addScene( "TEST2", SceneTest2(self.sceneMgr) )
+        self.sceneMgr.addScene( SceneTest2(self.sceneMgr,"TEST2") )
 
 
     ### ====================================================================================================

@@ -30,7 +30,8 @@ class SceneSystem():
     ## -------------------------------------
     ## Scene list management
     ## -------------------------------------
-    def addScene(self, sceneName, sceneRef):
+    def addScene(self, sceneRef):
+        sceneName = sceneRef.getName()
         if sceneName not in self.scenes:
             self.scenes[sceneName] = sceneRef
             # select this scene if this is the first to be added
@@ -123,19 +124,22 @@ class SceneSystem():
         if self.currentSceneName != None:
             # update transition information
             self.__updateTransition(deltaTime)
-            # check if we are not in pause mode
-            if not self.onPause:
-                scn = self.scenes[self.currentSceneName]
-                # Display debug info on console output
-                scn.displayDebugInfo()
-                # update
-                scn.update(deltaTime)
+
+            # TODO pause mode does not work anymore (????)
+
+            # Get scene ref
+            scn = self.scenes[self.currentSceneName]
+            # Display debug info on console output
+            scn.displayDebugInfo()
+            # update
+            scn.update(deltaTime)
+
 
     def drawCurrentScene(self):
         # we need at least one scene
         if self.currentSceneName != None:
-            # draw current scene
             scn = self.scenes[self.currentSceneName]
+            # draw current scene
             scn.draw()
             # draw color mask in case of transitions
             clr = self.__getTransitionColor()

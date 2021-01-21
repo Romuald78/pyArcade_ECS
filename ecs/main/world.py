@@ -123,9 +123,9 @@ class World():
     ## -------------------------------------
     ## Main methods
     ## -------------------------------------
-    def update(self, deltaTime):
-        self._scriptMgr.updateAllScripts(deltaTime)
-        self._gfxMgr.updateAllGfx(deltaTime)
+    def update(self, deltaTime, isOnPause):
+        self._scriptMgr.updateAllScripts(deltaTime, isOnPause)
+        self._gfxMgr.updateAllGfx(deltaTime, isOnPause)
 
     def draw(self):
         self._gfxMgr.drawAllGfx()
@@ -134,18 +134,18 @@ class World():
     ## -------------------------------------
     ## Input event methods
     ## -------------------------------------
-    def onKeyEvent(self,key, isPressed):
-        self._inputMgr.notifyKeyEvent(key, isPressed)
+    def onKeyEvent(self,key, isPressed, isOnPause):
+        self._inputMgr.notifyKeyEvent(key, isPressed, isOnPause)
 
-    def onMouseButtonEvent(self, buttonName, x, y, isPressed):
-        self._inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed)
+    def onMouseButtonEvent(self, buttonName, x, y, isPressed,isOnPause):
+        self._inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed,isOnPause)
 
-    def onMouseMotionEvent(self, x, y, dx, dy):
-        self._inputMgr.notifyMouseMotionEvent(x, y, dx, dy)
+    def onMouseMotionEvent(self, x, y, dx, dy,isOnPause):
+        self._inputMgr.notifyMouseMotionEvent(x, y, dx, dy,isOnPause)
 
-    def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
-        self._inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed)
+    def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed,isOnPause):
+        self._inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed,isOnPause)
 
-    def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
-        self._inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue)
+    def onGamepadAxisEvent(self, gamepadId, axisName, analogValue,isOnPause):
+        self._inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue,isOnPause)
 

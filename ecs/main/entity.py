@@ -20,6 +20,7 @@ class Entity():
         Entity._maxEntID += 1
         return Entity._maxEntID
 
+
     ## -------------------------------------
     ## Constructor
     ## -------------------------------------

@@ -55,9 +55,13 @@ class ScriptSystem():
     ## -------------------------------------
     ## Main method
     ## -------------------------------------
-    def updateAllScripts(self, deltaTime):
+    def updateAllScripts(self, deltaTime, isOnPause):
+        # Browse all scripts
         for ref in self._scrByRef:
+            # check if this component is enabled
             if ref.isEnabled():
-                ref.updateScript(ref.getName(), deltaTime)
+                #check if this component is enabled during pause or it is not the pause
+                if ref.isEnabledOnPause() or (not isOnPause):
+                    ref.updateScript(ref.getName(), deltaTime)
 
 

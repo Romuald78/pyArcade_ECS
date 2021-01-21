@@ -89,6 +89,22 @@ class Component():
         if compName == None:
             compName = "COMP"
         self._name = f"c_{compName}_{self._ID}"
+        # By default this component is disabled when the
+        # scene is on pause; That means NO UPDATE (scripts or animated sprites)
+        self.execOnPause = False
+        # By default this script is enabled
+        self.isActive = True
+
+
+    #---------------------------------------------
+    # SETTERS
+    #---------------------------------------------
+    # On Pause behavior
+    def enableOnPause(self):
+        self.execOnPause = True
+    def disableOnPause(self):
+        self.execOnPause = False
+
 
     #---------------------------------------------
     # GETTERS
@@ -112,3 +128,17 @@ class Component():
         c = Component.TYPE_INFO[t]["color"]
         return c
 
+    # On Pause behavior
+    def isEnabledOnPause(self):
+        return self.execOnPause
+    def isDisabledOnPause(self):
+        return not self.execOnPause
+
+    def enable(self):
+        self.isActive = True
+    def disable(self):
+        self.isActive = False
+    def isEnabled(self):
+        return self.isActive
+    def isDisabled(self):
+        return not self.isActive

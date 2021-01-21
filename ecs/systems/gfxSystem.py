@@ -101,7 +101,7 @@ class GfxSystem():
         # get arcade gfx ref
         ref = cmpRef.getGfx()
         # prepare data
-        data = [cmpRef.getType(), zIndex, isVisible]
+        data = [cmpRef.getType(), zIndex, isVisible, cmpRef]
         # add into the dictionary
         if ref in self.gfxDict:
             raise ValueError("[ERR] addAndSort : gfx already registered in the dict !")
@@ -110,7 +110,9 @@ class GfxSystem():
         self.__addEntryInGfxList([ref,] + data)
         pass
 
-    def removeGfx(self, ref):
+    def removeGfx(self, cmpRef):
+        # get arcade gfx ref
+        ref = cmpRef.getGfx()
         # No need to sort list when removing
         for row in self.gfxList:
             if ref == row[1]:
@@ -127,23 +129,28 @@ class GfxSystem():
     ## -------------------------------------
     ## Main process methods
     ## -------------------------------------
-    def updateAllGfx(self, deltaTime):
+    def updateAllGfx(self, deltaTime, isOnPause):
         # init list of gfx elements to remove
         ref2Remove = []
         # browse every gfx element and update
         for row in self.gfxList:
-            ref  = row[0]
-            type = row[1]
-            if (type & Gfx.ANIMATED) == Gfx.ANIMATED:
-                # update animated sprites
-                ref.update_animation(deltaTime)
-            elif (type & Gfx.SIMPLE) != Gfx.SIMPLE:
-                # update particle emitters (normal or bursts)
-                ref.update(deltaTime)
-                # Remove burst id finished
-                if type == Gfx.TYPE_BURST:
-                    if ref.can_reap():
-                        ref2Remove.append(ref)
+            ref    = row[0]
+            type   = row[1]
+            cmpRef = row[4]
+            # Check pause behavior (no update if paused)
+            if cmpRef.isEnabledOnPause() or (not isOnPause):
+                # Animated sprites or spritelists
+                if (type & Gfx.ANIMATED) == Gfx.ANIMATED:
+                    # update animated sprites
+                    ref.update_animation(deltaTime)
+                # Particle emitters
+                elif (type & Gfx.SIMPLE) != Gfx.SIMPLE:
+                    # update particle emitters (normal or bursts)
+                    ref.update(deltaTime)
+                    # Remove burst emitters if finished
+                    if type == Gfx.TYPE_BURST:
+                        if ref.can_reap():
+                            ref2Remove.append(ref)
         # remove useless gfx elements
         for ref in ref2Remove:
             self.removeGfx(ref)

@@ -44,7 +44,7 @@ class MoveStick(Script):
         self.gfx.setPosition((300*self.xAxis.getValue()+1200, -300*self.yAxis.getValue()+500))
 
 
-class SelectScene(Script):
+class PauseScene(Script):
 
     def __init__(self, scn, key, compName=None):
         super().__init__(compName)
@@ -54,6 +54,9 @@ class SelectScene(Script):
 
     def updateScript(self, scriptName, deltaTime):
         if self.key.hasBeenPressed():
-            self.scene.selectNewScene("TEST2")
+            if self.scene.isPaused():
+                self.scene.resume()
+            else:
+                self.scene.pause()
 
 

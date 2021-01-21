@@ -18,18 +18,6 @@ class Script(Component):
             compName = "SCRIPT"
         # Parent constructor
         super().__init__(compName)
-        # By default this script is enabled
-        self.isActive = True
-
-    # Setters / Getters to handle the isActive flag
-    def enable(self):
-        self.isActive = True
-    def disable(self):
-        self.isActive = False
-    def isEnabled(self):
-        return self.isActive
-    def isDisabled(self):
-        return not self.isActive
 
     # method to get current type
     def getType(self):

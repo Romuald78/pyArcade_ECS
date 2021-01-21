@@ -6,14 +6,14 @@ from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ecs.libRGR.user.counters import UserCounter
 from ecs.main.entity import Entity
 from ecs.main.scene import Scene
-from shmup.scripts.test2_scripts import ModifLife, MoveGfx, MoveStick, SelectScene
+from shmup.scripts.test2_scripts import ModifLife, MoveGfx, MoveStick, PauseScene
 
 
 class SceneTest2(Scene):
 
-    def __init__(self, sceneMgr):
+    def __init__(self, sceneMgr, sceneName):
         # Init parent
-        super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT)
+        super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         self.setDebugMode(False, True)
 
         # Create Entity
@@ -43,7 +43,11 @@ class SceneTest2(Scene):
         modifLife = ModifLife(keyUp, keyDown, life, "ModifLife")
         moveGfx   = MoveGfx(ninjaGfx, life, "MoveGfx")
         moveStick = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
-        select    = SelectScene(self, keyP, "PauseGame")
+        pause     = PauseScene(self, keyP, "PauseGame")
+
+        # Configure some components to be still active in the scene when paused
+        keyP.enableOnPause()
+        pause.enableOnPause()
 
         # add components to entity
         entity.addComponent(ninjaGfx)
@@ -57,7 +61,7 @@ class SceneTest2(Scene):
         entity.addComponent(modifLife)
         entity.addComponent(moveGfx)
         entity.addComponent(moveStick)
-        entity.addComponent(select)
+        entity.addComponent(pause)
 
         # Add entity to scene
         self.addEntity(entity)
