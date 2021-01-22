@@ -2,17 +2,22 @@
 ### IMPORTS
 ### ====================================================================================================
 from ecs.core.systems.sceneSystem import SceneSystem
-from shmup.scenes.test2 import *
+from shmup.scenes.ingame import InGame
+from shmup.scenes.selection import Selection
+from shmup.scenes.splash import SplashScreen
 
 
 class Main:
+
 
     ### ====================================================================================================
     ### CONSTRUCTOR
     ### ====================================================================================================
     def __init__(self):
         self.sceneMgr = SceneSystem()
-        self.sceneMgr.addScene( SceneTest2(self.sceneMgr,"TEST2") )
+        self.sceneMgr.addScene( SplashScreen(self.sceneMgr, "SPLASH"   ) )
+        self.sceneMgr.addScene( Selection   (self.sceneMgr, "SELECTION") )
+        self.sceneMgr.addScene( InGame      (self.sceneMgr, "INGAME"   ) )
 
 
     ### ====================================================================================================

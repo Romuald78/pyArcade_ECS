@@ -1,3 +1,8 @@
+# FEATURE : set the viewport correctly according to the scene dimensions + application dimensions
+
+# FEATURE : create a console print debug function
+# so when the console debug mode is enabled, all these print function are written
+
 
 ## ============================================================
 ## IMPORTS
@@ -26,15 +31,14 @@ class Scene():
     ## -------------------------------------
     ## Constructor
     ## -------------------------------------
-    def __init__(self, scnMgr, W, H, sceneName=None):
+    def __init__(self, scnMgr, W, H, sceneName):
         self._sceneMgr     = scnMgr
         self._world        = World(self)
         self._consoleDebug = False
         self._drawDebug    = False
         self._dimensions   = (W,H)
         self._ID = Scene.getNewID()
-        if sceneName == None:
-            sceneName = "SCENE"
+        self._rawName      = sceneName
         self._sceneName    = f"s_{sceneName}_{self._ID}"
 
 
@@ -73,14 +77,15 @@ class Scene():
     ## -------------------------------------
     ## Scene management
     ## -------------------------------------
+    def getRawName(self):
+        return self._rawName
     def getName(self):
         return self._sceneName
-
     def getID(self):
         return self._ID
 
-    def selectNewScene(self, sceneName):
-        self._sceneMgr.selectNewScene(sceneName)
+    def selectNewScene(self, rawName, params=None):
+        self._sceneMgr.selectNewScene(rawName, params)
 
     def pause(self):
         self._sceneMgr.pause()
@@ -132,24 +137,20 @@ class Scene():
             a = ["[_]", "[o]"][not self.isPaused()]
             msg = f"{a} {self.getName()}"
             arcade.draw_text(msg, refX, refY, (255,255,255), 14)
-
             # Scene entities
             entities = self.getEntityList()
             for ent in entities:
-                refY = self._dimensions[1] - 38
-                arcade.draw_text(ent.getName(), refX+15, refY, (64, 255, 64), 14)
                 refY -= 18
+                arcade.draw_text(ent.getName(), refX+15, refY, (64, 255, 64), 14)
                 components = ent.getComponentList()
                 for comp in components:
+                    refY -= 18
                     n = comp.getName()
                     s = comp.getTypeName()
                     c = comp.getTypeColor()
                     a = ["[_]", "[o]"][comp.isEnabled() and (not self.isPaused() or comp.isEnabledOnPause())]
                     msg = f"{a} {n} ({s})"
                     arcade.draw_text(msg, refX + 30, refY, c, 12)
-                    refY -= 15
-                # next entity is displayed to the right
-                refX += 140
 
     ## -------------------------------------
     ## Get transition times and colors

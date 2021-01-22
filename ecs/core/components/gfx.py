@@ -3,6 +3,19 @@
 # to be more generic ? We would only have GfxSpriteList
 # that would be easier to handle in GfxSystem class. let's see
 
+# FEATURE : add a GfxFont component
+# > use the olf script that generates png file from a .ttf file
+# this script generates the JAVA file with all the font map
+# just adapt this script to generate map for Python ;-)
+# > then creates the component that will generate one sprite
+# from both map file and png file
+# add some fields like H/V alignment (left, center, ...)
+# position must be related to this anchor point
+# add some methods to get width heigth, etc...
+# This component will be more efficient with static messages
+# in order not to regenerate the Sprite List and lose some time
+# to be continued ...
+
 
 ## ============================================================
 ## IMPORTS

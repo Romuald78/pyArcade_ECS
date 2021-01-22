@@ -6,6 +6,7 @@
 # in callbacks is not used (so does the gamepadID)
 
 
+
 ## ============================================================
 ## IMPORTS
 ## ============================================================
@@ -90,15 +91,18 @@ class Keyboard(Input):
 class GamepadButton(Input):
 
     # Constructor
-    def __init__(self, actionName, gamepadID, buttonName):
+    def __init__(self, actionName, gamepadID, buttonName, compName=None):
+        if compName == None:
+            compName = "G_BUTTON"
         # parent constructor
-        super().__init__(actionName)
+        super().__init__(actionName, compName)
         # store fields
         self.ctrlID      = gamepadID
         self.button      = buttonName
         self.risingEdge  = False    # from 'released' to 'pressed'
         self.fallingEdge = False    # from 'pressed' to 'released'
         self.value       = False    # current state
+        self.lastCtrlID  = gamepadID
 
     # Event information
     def isPressed(self):
@@ -115,6 +119,8 @@ class GamepadButton(Input):
     # Field getters
     def getGamepadID(self):
         return self.ctrlID
+    def getLastGamepadID(self):
+        return self.lastCtrlID
     def getButton(self):
         return self.button
 
@@ -124,8 +130,9 @@ class GamepadButton(Input):
 
     # Callback
     def gamepadButtonEvent(self, action, gamepadId, isPressed):
-        # Store current state
+        # Store current state and last gamepadID
         self.value = isPressed
+        self.lastCtrlID = gamepadId
         # Store either rising or falling edge
         if isPressed:
             self.risingEdge  = True

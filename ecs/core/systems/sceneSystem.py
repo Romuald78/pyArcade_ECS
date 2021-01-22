@@ -17,6 +17,7 @@ class SceneSystem():
         # Scene names used in the main process
         self.currentSceneName = None
         self.nextSceneName    = None
+        self.nextSceneParams  = None
         # Pause mode
         self.onPause          = False
         # Dict of shmup
@@ -31,7 +32,7 @@ class SceneSystem():
     ## Scene list management
     ## -------------------------------------
     def addScene(self, sceneRef):
-        sceneName = sceneRef.getName()
+        sceneName = sceneRef.getRawName()
         if sceneName not in self.scenes:
             self.scenes[sceneName] = sceneRef
             # select this scene if this is the first to be added
@@ -57,13 +58,17 @@ class SceneSystem():
     ## -------------------------------------
     ## Scene control
     ## -------------------------------------
-    def selectNewScene(self,sceneName):
+    def initCurrentScene(self, params):
+        self.scenes[self.currentSceneName].init(params)
+
+    def selectNewScene(self,sceneName, params=None):
         # Set the next scene if not currently in transition
         if self.nextSceneName == None:
-            self.nextSceneName = sceneName
-            self.maxTime       = self.scenes[self.currentSceneName].getTransitionTimeOUT()
-            self.currentTime   = 0
-            self.color         = self.scenes[self.currentSceneName].getTransitionColorOUT()
+            self.nextSceneName   = sceneName
+            self.nextSceneParams = params
+            self.maxTime         = self.scenes[self.currentSceneName].getTransitionTimeOUT()
+            self.currentTime     = 0
+            self.color           = self.scenes[self.currentSceneName].getTransitionColorOUT()
         else:
             raise ValueError(f"[ERR] cannot select scene {sceneName} : transition in progress !")
 
@@ -89,6 +94,10 @@ class SceneSystem():
         # OUT phase
         if self.nextSceneName != None:
             if self.currentTime >= self.maxTime:
+                # First time we arrive here, we check for params
+                if self.nextSceneParams != None:
+                    self.scenes[self.nextSceneName].init(self.nextSceneParams)
+                    self.nextSceneParams = None
                 # switch to IN phase
                 self.currentSceneName = self.nextSceneName
                 self.currentTime     -= self.maxTime
