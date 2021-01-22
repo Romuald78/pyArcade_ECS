@@ -7,9 +7,8 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
-import arcade
-from ecs.components.gfx import Gfx
-from random import randint
+from ecs.core.components.gfx import Gfx
+
 
 ## ============================================================
 ## GFX MANAGER

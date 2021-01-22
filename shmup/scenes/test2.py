@@ -1,11 +1,12 @@
 import arcade
 
-from ecs.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxSimpleEmitter
-from ecs.components.input import Keyboard, GamepadAxis, Input
+from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxSimpleEmitter
+from ecs.core.components.input import Keyboard, GamepadAxis, Input
+from ecs.user.script.gfxpos import LimitPosition, Follow
 from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from ecs.components.idle.counters import UserCounter
-from ecs.main.entity import Entity
-from ecs.main.scene import Scene
+from ecs.user.idle.counters import UserCounter
+from ecs.core.main.entity import Entity
+from ecs.core.main.scene import Scene
 from shmup.scripts.test2_scripts import ModifLife, MoveGfx, MoveStick, PauseScene, ShowHidePanda
 
 
@@ -54,6 +55,14 @@ class SceneTest2(Scene):
         }
         emitterGfx = GfxSimpleEmitter(self, params, 30, "SimpleEmitter")
 
+        #===== PANDA Gfx Simple sprite Component =====
+        params = {
+            "filePath": f"images/grass.png",
+            "size": (200, 200)
+        }
+        grassGfx  = GfxSimpleSprite(self, params, 40, "Grass")
+
+
         #===== Input Components =====
         keyUp     = Keyboard("IncreaseLife", arcade.key.UP  , "KeyUP"  )
         keyDown   = Keyboard("DecreaseLife", arcade.key.DOWN, "KeyDOWN")
@@ -73,6 +82,8 @@ class SceneTest2(Scene):
         moveStick = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
         pause     = PauseScene(self, keyP, "PauseGame")
         showHide  = ShowHidePanda(keyAdd, keySub, keyX, pandaGfx)
+        limitPos  = LimitPosition(pandaGfx, (1000,1920, 1080,350), "LimitPandaPos")
+        follow    = Follow(pandaGfx, grassGfx, "FollowPanda")
 
         # Configure some components to be still active in the scene when paused
         keyP.enableOnPause()
@@ -84,6 +95,7 @@ class SceneTest2(Scene):
         entity.addComponent(ninjaGfx)
         entity.addComponent(pandaGfx)
         entity.addComponent(emitterGfx)
+        entity.addComponent(grassGfx)
         # ECS Input Components
         entity.addComponent(keyUp)
         entity.addComponent(keyDown)
@@ -101,6 +113,8 @@ class SceneTest2(Scene):
         entity.addComponent(moveStick)
         entity.addComponent(pause)
         entity.addComponent(showHide)
+        entity.addComponent(limitPos)
+        entity.addComponent(follow)
 
         # Add entity to scene
         self.addEntity(entity)

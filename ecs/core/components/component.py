@@ -37,8 +37,8 @@ class Component():
     TYPE_EMITTER       = TYPE_GFX_MASK | UNLIMITED | PARTICLES
     TYPE_BURST         = TYPE_GFX_MASK | LIMITED   | PARTICLES
     # User defined
-    TYPE_USER_MASK     = 0x8000
-    TYPE_USER          = TYPE_USER_MASK | 0x01
+    TYPE_IDLE_MASK     = 0x8000
+    TYPE_IDLE          = TYPE_IDLE_MASK | 0x01
     # User Strings
     TYPE_INFO = {
         TYPE_SCRIPT         : {"name" : "Script",
@@ -65,7 +65,7 @@ class Component():
                                "color": (255,255,64)},
         TYPE_BURST          : {"name": "Burst",
                                "color": (255,255,64)},
-        TYPE_USER           : {"name": "User",
+        TYPE_IDLE           : {"name": "User",
                                "color": (192,192,192)},
     }
 

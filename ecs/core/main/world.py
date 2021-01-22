@@ -5,11 +5,11 @@
 
 
 
-from ecs.components.component import Component
-from ecs.systems.gfxSystem import GfxSystem
-from ecs.systems.idleSystem import IdleSystem
-from ecs.systems.inputSystem import InputSystem
-from ecs.systems.scriptSystem import ScriptSystem
+from ecs.core.components.component import Component
+from ecs.core.systems.gfxSystem import GfxSystem
+from ecs.core.systems.idleSystem import IdleSystem
+from ecs.core.systems.inputSystem import InputSystem
+from ecs.core.systems.scriptSystem import ScriptSystem
 
 
 class World():
@@ -69,7 +69,7 @@ class World():
         elif (compType & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
             self._gfxMgr.registerGfx(compRef)
         # USER components
-        elif compType == Component.TYPE_USER:
+        elif compType == Component.TYPE_IDLE:
             self._idleMgr.add(compRef)
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")

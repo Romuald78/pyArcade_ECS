@@ -1,4 +1,4 @@
-from ecs.components.script import Script
+from ecs.core.components.script import Script
 
 
 class ModifLife(Script):

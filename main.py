@@ -1,7 +1,7 @@
 ### ====================================================================================================
 ### IMPORTS
 ### ====================================================================================================
-from ecs.systems.sceneSystem import SceneSystem
+from ecs.core.systems.sceneSystem import SceneSystem
 from shmup.scenes.test2 import *
 
 

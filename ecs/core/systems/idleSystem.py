@@ -8,7 +8,7 @@
 ## ============================================================
 ## IDLE MANAGER
 ## ============================================================
-from ecs.components.idle.idle import Idle
+from ecs.core.components.idle import Idle
 
 
 class IdleSystem():

@@ -2,7 +2,7 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
-from ecs.components.component import Component
+from ecs.core.components.component import Component
 
 
 

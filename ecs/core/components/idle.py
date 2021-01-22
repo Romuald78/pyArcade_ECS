@@ -2,7 +2,7 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
-from ecs.components.component import Component
+from ecs.core.components.component import Component
 
 
 
@@ -20,5 +20,5 @@ class Idle(Component):
 
     # method to get current type
     def getType(self):
-        return Component.TYPE_USER
+        return Component.TYPE_IDLE
 

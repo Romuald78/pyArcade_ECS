@@ -4,7 +4,7 @@
 ## ============================================================
 import arcade
 
-from ecs.main.world import World
+from ecs.core.main.world import World
 
 
 
