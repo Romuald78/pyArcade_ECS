@@ -27,7 +27,7 @@ class MoveGfx(Script):
 
     def updateScript(self, scriptName, deltaTime):
         # set the Y value of the sprite to the life value * COEF
-        self.gfx.setPosition((500, self.life.getValue()*80 + 80))
+        self.gfx.setPosition((1025, self.life.getValue()*70 + 80))
 
 
 class MoveStick(Script):
@@ -41,7 +41,7 @@ class MoveStick(Script):
 
     def updateScript(self, scriptName, deltaTime):
         # set the Y value of the sprite to the life value * COEF
-        self.gfx.setPosition((300*self.xAxis.getValue()+1200, -300*self.yAxis.getValue()+500))
+        self.gfx.setPosition((300*self.xAxis.getValue()+1075, -300*self.yAxis.getValue()+500))
 
 
 class PauseScene(Script):
@@ -59,4 +59,26 @@ class PauseScene(Script):
             else:
                 self.scene.pause()
 
+class ShowHidePanda(Script):
 
+    def __init__(self, keyPlus, keyMinus, keyVis, gfxComp, compName=None):
+        super().__init__(compName)
+        # store components
+        self.keyAdd = keyPlus
+        self.keySub = keyMinus
+        self.keyVis = keyVis
+        self.gfx    = gfxComp
+
+    def updateScript(self, scriptName, deltaTime):
+        if self.keyVis.hasBeenPressed():
+            if self.gfx.isVisible():
+                self.gfx.hide()
+            else:
+                self.gfx.show()
+
+        if self.keyAdd.hasBeenPressed():
+            newZ = self.gfx.getZIndex()-11
+            self.gfx.setZIndex(newZ)
+        if self.keySub.hasBeenPressed():
+            newZ = self.gfx.getZIndex()+11
+            self.gfx.setZIndex(newZ)

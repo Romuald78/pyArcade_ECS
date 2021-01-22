@@ -67,9 +67,7 @@ class World():
             self._inputMgr.registerAxis(ctrlID, axis, action, compRef)
         # GFX components
         elif (compType & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
-            z = compRef.getZIndex()
-            vis = True
-            self._gfxMgr.registerGfx(compRef, z, vis)
+            self._gfxMgr.registerGfx(compRef)
         # USER components
         elif compType == Component.TYPE_USER:
             self._idleMgr.add(compRef)

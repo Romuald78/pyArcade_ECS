@@ -1,7 +1,7 @@
-from ecs.components.user import User
+from ecs.components.idle.idle import Idle
 
 
-class UserCounter(User):
+class UserCounter(Idle):
 
     # CONSTRUCTOR
     def __init__(self, minVal, maxVal, initVal, hasLimits=True, compName=None):

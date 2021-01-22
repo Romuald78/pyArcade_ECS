@@ -1,21 +1,19 @@
 # FEATURE : Merge gfx classes
 # put a single Sprite in a 1-size-spriteList
-# to be more generic ? We would only have GfxSpriteList
-# that would be easier to handle. let's see
+# to be more generic ? We would only have GfxSpriteList as gfx components
+# that would be easier to handle here. let's see
 
 
 ## ============================================================
 ## IMPORTS
 ## ============================================================
 import arcade
-
-
+from ecs.components.gfx import Gfx
+from random import randint
 
 ## ============================================================
 ## GFX MANAGER
 ## ============================================================
-from ecs.components.gfx import Gfx
-
 
 class GfxSystem():
 
@@ -23,19 +21,10 @@ class GfxSystem():
     ## Constructor
     ## -------------------------------------
     def __init__(self):
-        # list contains all information
-        # sorted by visible first,
-        # by Z-index then (decreasing order)
-        self.gfxList = []
-        # dict contains all information too
-        # and is used for getter methods (faster)
-        self.gfxDict = {}
-        self.drawList = arcade.SpriteList()
-
-        # FEATURE : handle drawList in a better way
-        # use a separate list for emitters
-        # this list is not z-sorted for the moment
-        self.emitters = []
+        # List of visible Gfx components (sorted by Z, decreasing order)
+        self._visibleComps = []
+        # List of hidden Gfx components (sorted by Z, decreasing order)
+        self._hiddenComps = []
 
 
     ## -------------------------------------
@@ -45,94 +34,82 @@ class GfxSystem():
         if not isinstance(ref, Gfx):
             raise ValueError(f"[ERR] check gfx : bad object type. It should be Gfx !\n{ref}")
 
-
     ## -------------------------------------
-    ## Draw List
+    ## List management
     ## -------------------------------------
-    def __addRefInDrawList(self, ref, type):
-        if (type & Gfx.SINGLE) == Gfx.SINGLE:
-            # Add single sprite to draw list
-            self.drawList.append(ref)
-        elif (type & Gfx.LIST) == Gfx.LIST:
-            # add sprite list to draw list
-            self.drawList.extend(ref)
-        elif (type & Gfx.PARTICLES) == Gfx.PARTICLES:
-            # FEATURE : handle drawList in a clever way
-            # add all particles of emitter in a separate list
-            self.emitters.append(ref)
+    def _getNextIndex(self, myList, zValue):
+        # dichotomy search of the index of a zValue in a descending order sorted list
+        # if the value itself is not found, return the index of the value below zValue
+        minIdx   = 0
+        maxIdx   = len(myList)-1
+        midIdx = (minIdx + maxIdx) // 2
+        # return if empty list
+        if maxIdx == -1:
+            return 0
+        while maxIdx-minIdx > 0:
+            # Compute middle index and value
+            midValue = myList[midIdx].getZIndex()
+            # check which next range will be
+            if midValue > zValue:
+                minIdx = midIdx+1
+            elif midValue < zValue:
+                maxIdx = midIdx-1
+            else:
+                minIdx = midIdx
+                maxIdx = midIdx
+            # compute new mid
+            midIdx = (minIdx + maxIdx) // 2
+        # check if we have to choose min or max index
+        res = midIdx
+        if res < 0:
+            res = 0
+        if myList[midIdx].getZIndex() > zValue:
+            res += 1
+        return res
 
-    def __clearDrawList(self):
-        while len(self.drawList) > 0:
-            self.drawList.remove(self.drawList[0])
+    def _insertComp(self, myList, cmpRef):
+        # Get Z value
+        z = cmpRef.getZIndex()
+        nextIndex = self._getNextIndex(myList, z)
+        myList = myList[:nextIndex] + [cmpRef,] + myList[nextIndex:]
+        return myList
 
-    def __rebuildDrawList(self):
-        print("Rebuild DRAW list")
-        # prepare Sprite List to draw
-        self.__clearDrawList()
-        for row in self.gfxList:
-            ref  = row[0]
-            type = row[1]
-            vis  = row[3]
-            if vis:
-                self.__addRefInDrawList(ref, type)
+    def _addComp(self, cmpRef):
+        # Get visibility value
+        isVis = cmpRef.isVisible()
+        # choose list to insert into
+        if isVis:
+            self._visibleComps = self._insertComp(self._visibleComps, cmpRef)
+        else:
+            self._hiddenComps  = self._insertComp(self._hiddenComps, cmpRef)
 
-
-    ## -------------------------------------
-    ## Gfx List
-    ## -------------------------------------
-    def __addEntryInGfxList(self, entry):
-        gfx   = entry[0]
-        zIdx  = entry[2]
-        isVis = entry[3]
-        # Search for the index to insert
-        inserted = False
-        for i in range(len(self.gfxList)):
-            prevZ = self.gfxList[i][2]
-            if prevZ < zIdx:
-                # insert into list
-                self.gfxList.insert(i, entry)
-                inserted = True
-                break
-        # check for append
-        if not inserted:
-            self.gfxList.append(entry)
-        # rebuild draw list
-        self.__rebuildDrawList()
+    def _findCompIndex(self,myList, compRef):
+        for i in range(len(myList)):
+            if myList[i] == compRef:
+                return i
+        raise ValueError(f"[ERR] gfxSystem : find comp index : the request comp {compRef} is not present in the list")
 
 
     ## -------------------------------------
     ## Register methods
     ## -------------------------------------
-    def registerGfx(self, cmpRef, zIndex, isVisible=True):
+    def registerGfx(self, cmpRef):
         # check type
         self.__checkType(cmpRef)
-        # get arcade gfx ref
-        ref = cmpRef.getGfx()
-        # prepare data
-        data = [cmpRef.getType(), zIndex, isVisible, cmpRef]
-        # add into the dictionary
-        if ref in self.gfxDict:
-            raise ValueError("[ERR] addAndSort : gfx already registered in the dict !")
-        self.gfxDict[ref] = data
-        # update Entry list
-        self.__addEntryInGfxList([ref,] + data)
-        pass
+        # Check presence of comp in both lists
+        if cmpRef in self._visibleComps or cmpRef in self._hiddenComps:
+            raise ValueError("[ERR] GfxSystem, addComp : ref is already registered in lists !")
+        # Add component into lists
+        self._addComp(cmpRef)
 
     def removeGfx(self, cmpRef):
-        # get arcade gfx ref
-        ref = cmpRef.getGfx()
-        # No need to sort list when removing
-        for row in self.gfxList:
-            if ref == row[1]:
-                self.gfxList.remove(row)
-                return
-
-        # Recompute draw list
-        # FEATURE  : handle drawList in a clever way
-        # just remove ref from the draw list instead of recreating a new one ?
-        # may be not possible for particle emitters as we added a field of the ref ?
-        # rebuild draw list
-        self.__rebuildDrawList()
+        # check if component is in a list and remove from it
+        if cmpRef in self._visibleComps:
+            self._visibleComps.remove(cmpRef)
+        elif cmpRef in self._hiddenComps:
+            self._hiddenComps.remove(cmpRef)
+        else:
+            raise ValueError("[ERR] removeGfx : component is not found in any list !")
 
 
     ## -------------------------------------
@@ -141,11 +118,10 @@ class GfxSystem():
     def updateAllGfx(self, deltaTime, isOnPause):
         # init list of gfx elements to remove
         ref2Remove = []
-        # browse every gfx element and update
-        for row in self.gfxList:
-            ref    = row[0]
-            type   = row[1]
-            cmpRef = row[4]
+        # browse every gfx element in the visible list (not the hidden list) and update
+        for cmpRef in self._visibleComps:
+            ref   = cmpRef.getGfx()
+            type  = cmpRef.getType()
             # Check pause behavior (no update if paused)
             if cmpRef.isEnabledOnPause() or (not isOnPause):
                 # Animated sprites or spritelists
@@ -165,79 +141,56 @@ class GfxSystem():
             self.removeGfx(ref)
 
     def drawAllGfx(self):
-        # FEATURE : handle drawList in a clever way
-        # Draw all sprites
-        self.drawList.draw()
-        # Draw emitters separately in front of all the scene for the moment
-        #all emitters are not z-sorted
-        for emit in self.emitters:
-            emit.draw()
+        # FEATURE : handle drawList in a clever way instead of drawing each component 1-by-1
+        for cmpRef in self._visibleComps:
+            ref = cmpRef.getGfx()
+            ref.draw()
 
 
     ## -------------------------------------
     ## Setters / Getters
     ## -------------------------------------
-    def getType(self, ref):
-        if ref not in self.gfxDict:
-            raise ValueError("[ERR] getType : gfx not in the dict !")
-        return self.gfxDict[ref][0]
+    def notifyUpdateZIndex(self, compRef):
+        # check visibility to select the list
+        isVis = compRef.isVisible()
+        if isVis :
+            myList = self._visibleComps
+        else:
+            myList = self._hiddenComps
+        # find comp in the visible list and get the index
+        idx = self._findCompIndex(myList, compRef)
+        # get previous value
+        prevVal = 1000000000
+        if idx > 0:
+            prevVal = myList[idx-1].getZIndex()
+        # get next value
+        nextVal = -1000000000
+        if idx < len(myList)-1:
+            nextVal = myList[idx+1].getZIndex()
+        # check if we have to move it
+        curVal = compRef.getZIndex()
+        if not(prevVal>=curVal and curVal>=nextVal):
+            # we have to move it. First remove it from the list
+            # then reinsert it using existing method
+            # remove ref from visible
+            myList.remove(compRef)
+            # add ref into correct list
+            self._addComp(compRef)
 
-    def getZIndex(self, ref):
-        if ref not in self.gfxDict:
-            raise ValueError("[ERR] getZIndex : gfx not in the dict !")
-        return self.gfxDict[ref][1]
-
-    def isVisible(self, ref):
-        if ref not in self.gfxDict:
-            raise ValueError("[ERR] isVisible : gfx not in the dict !")
-        return self.gfxDict[ref][2]
-
-    # FEATURE : handle drawList, emitter list, etc... in a clever way
-    # old version -> to rework !
-    def setZIndex(self, ref, newZ):
-        # update dictionary
-        if ref not in self.gfxDict:
-            raise ValueError("[ERR] setZIndex : gfx not in the dict !")
-        # update only if we change the value
-        if self.gfxDict[ref][1] != newZ:
-            # update dict
-            self.gfxDict[ref][1] = newZ
-            # update list
-            for g in self.gfxList:
-                if g[0] == ref:
-                    g[2] = newZ
-                    # update is done, now sort lists
-                    self.__sortOnly()
-                    # just exit process
-                    return
-            raise ValueError("[ERR] setZIndex : gfx not in the list !")
-
-    # BUG : ref must be Gfx component ref, not an arcade Gfx element -> rework
-    def setVisible(self, ref, newVisible):
-        # update dictionary
-        if ref not in self.gfxDict:
-            raise ValueError("[ERR] setVisible : gfx not in the dict !")
-        # update only if we change the value
-        if self.gfxDict[ref][2] != newVisible:
-            # update dict
-            self.gfxDict[ref][2] = newVisible
-            # update list
-            for i in range(len(self.gfxList)):
-                # found the reference in the list
-                if self.gfxList[i][0] == ref:
-                    # set new value
-                    self.gfxList[i][3] = newVisible
-                    # if the value is False, just remove ref from
-                    # drawList (as it is already sorted in the list)
-                    if not newVisible:
-                        self.drawList.remove(ref)
-                    else:
-                        # FEATURE  : handle drawList in a clever way
-                        # QUESTION : how to add the ref at the correct index without recreating new List
-                        self.__rebuildDrawList()
-                    return
-            # if we reached this statement, that means
-            # the ref is not in the list but is in the dict
-            raise ValueError("[ERR] setVisible : gfx not in the list but in the dict !!!")
-
-
+    def notifyUpdateVisible(self, compRef):
+        # get visibility field
+        newVis = compRef.isVisible()
+        # Set to visible
+        if newVis:
+            if compRef in self._hiddenComps:
+                # remove ref from hidden
+                self._hiddenComps.remove(compRef)
+                # add ref into correct list
+                self._addComp(compRef)
+        # set to hidden
+        else:
+            if compRef in self._visibleComps:
+                # remove ref from visible
+                self._visibleComps.remove(compRef)
+                # add ref into correct list
+                self._addComp(compRef)

@@ -10,7 +10,7 @@ from ecs.components.component import Component
 ## SCRIPT COMPONENT
 ## ============================================================
 
-class User(Component):
+class Idle(Component):
 
     # constructor
     def __init__(self, compName=None):

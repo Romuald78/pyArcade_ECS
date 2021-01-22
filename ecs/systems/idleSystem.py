@@ -8,7 +8,7 @@
 ## ============================================================
 ## IDLE MANAGER
 ## ============================================================
-from ecs.components.user import User
+from ecs.components.idle.idle import Idle
 
 
 class IdleSystem():
@@ -17,7 +17,7 @@ class IdleSystem():
     ## private methods
     ## -------------------------------------
     def __checkType(self, ref):
-        if not isinstance(ref, User):
+        if not isinstance(ref, Idle):
             raise ValueError(f"[ERR] add script : bad object type. It should be ScriptInterface !\n{ref}")
 
     ## -------------------------------------
@@ -47,6 +47,6 @@ class IdleSystem():
             raise ValueError(f"[ERR] IDLE add : script already in the ref list !")
         self._refList[idleRef] = idleName
 
-    # IMPROVE : add methods to improve IdleSystem
-    # methods like remove / getCompByName / getCompByRef / getNbComps / getAllComps / doesCompExist / ...
+    # FEATURE : add methods to improve IdleSystem
+    # e.g. : remove / getCompByName / getCompByRef / getNbComps / getAllComps / doesCompExist / ...
 

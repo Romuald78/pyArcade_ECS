@@ -3,10 +3,10 @@ import arcade
 from ecs.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxSimpleEmitter
 from ecs.components.input import Keyboard, GamepadAxis, Input
 from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from ecs.libRGR.user.counters import UserCounter
+from ecs.components.idle.counters import UserCounter
 from ecs.main.entity import Entity
 from ecs.main.scene import Scene
-from shmup.scripts.test2_scripts import ModifLife, MoveGfx, MoveStick, PauseScene
+from shmup.scripts.test2_scripts import ModifLife, MoveGfx, MoveStick, PauseScene, ShowHidePanda
 
 
 class SceneTest2(Scene):
@@ -19,7 +19,7 @@ class SceneTest2(Scene):
         # Create Entity
         entity = Entity("TestEntity")
 
-        # Create components
+        #===== NINJA Gfx Animated Sprite Component =====
         params = {
             "filePath": f"images/ninja.png",
             "spriteBox": (7, 1, 120, 120),
@@ -28,14 +28,16 @@ class SceneTest2(Scene):
             "frameDuration": 1 / 24,
             "size": (150, 150)
         }
-        ninjaGfx  = GfxAnimatedSprite(self, params, 0, "Ninja")
+        ninjaGfx  = GfxAnimatedSprite(self, params, 10, "Ninja")
 
+        #===== PANDA Gfx Simple sprite Component =====
         params = {
             "filePath": f"images/panda.png",
             "size": (125 // 2, 239 // 2)
         }
-        pandaGfx  = GfxSimpleSprite(self, params, 10, "Panda")
+        pandaGfx  = GfxSimpleSprite(self, params, 20, "Panda")
 
+        #===== PANDA Gfx Emitter Component =====
         params = {  "x0"          : 1000,
                     "y0"          : 500,
                     "partNB"      : 100,
@@ -50,41 +52,55 @@ class SceneTest2(Scene):
                     "spriteSelect": (0,0),
                     "imagePath"   : "images/panda.png"
         }
-        emitterGfx = GfxSimpleEmitter(self, params, 50, "SimpleEmitter")
+        emitterGfx = GfxSimpleEmitter(self, params, 30, "SimpleEmitter")
 
+        #===== Input Components =====
         keyUp     = Keyboard("IncreaseLife", arcade.key.UP  , "KeyUP"  )
         keyDown   = Keyboard("DecreaseLife", arcade.key.DOWN, "KeyDOWN")
         keyP      = Keyboard("SelectScene", arcade.key.P, "KeyP")
+        keyX      = Keyboard("scrShowHide", arcade.key.X, "KeyX")
+        keyAdd    = Keyboard("FrontLayer", arcade.key.NUM_ADD, "KeyAdd")
+        keySub    = Keyboard("RearLayer", arcade.key.NUM_SUBTRACT, "KeySub")
         axisX     = GamepadAxis("movePandaX", Input.ALL_GAMEPADS_ID,"X",0.2,"AxisX")
         axisY     = GamepadAxis("movePandaY", Input.ALL_GAMEPADS_ID,"Y",0.2,"AxisY")
-        life      = UserCounter(0,10,5, True, "Life")
-        life2     = UserCounter(0,10,5, True, "Life")
+
+        #===== Idle Components =====
+        life      = UserCounter(0,11,5, True, "Life")
+
+        #===== Script Components =====
         modifLife = ModifLife(keyUp, keyDown, life, "ModifLife")
         moveGfx   = MoveGfx(ninjaGfx, life, "MoveGfx")
         moveStick = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
         pause     = PauseScene(self, keyP, "PauseGame")
+        showHide  = ShowHidePanda(keyAdd, keySub, keyX, pandaGfx)
 
         # Configure some components to be still active in the scene when paused
         keyP.enableOnPause()
         pause.enableOnPause()
 
-        # add components to entity
+
+
+        # ECS Gfx Components
         entity.addComponent(ninjaGfx)
         entity.addComponent(pandaGfx)
         entity.addComponent(emitterGfx)
+        # ECS Input Components
         entity.addComponent(keyUp)
         entity.addComponent(keyDown)
         entity.addComponent(keyP)
+        entity.addComponent(keyX)
+        entity.addComponent(keyAdd)
+        entity.addComponent(keySub)
         entity.addComponent(axisX)
         entity.addComponent(axisY)
+        # ECS Idle Components
         entity.addComponent(life)
-
-        entity.addComponent(life2)
-
+        # ECS Script Components
         entity.addComponent(modifLife)
         entity.addComponent(moveGfx)
         entity.addComponent(moveStick)
         entity.addComponent(pause)
+        entity.addComponent(showHide)
 
         # Add entity to scene
         self.addEntity(entity)

@@ -23,7 +23,7 @@ class Script(Component):
     def getType(self):
         return Component.TYPE_SCRIPT
 
-    # method to override in the user components
+    # method to override in the idle components
     def updateScript(self, scriptName, deltaTime):
         raise ValueError("[ERR] updateScriptinterface method not implemented yet !")
 

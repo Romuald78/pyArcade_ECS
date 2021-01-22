@@ -1,3 +1,8 @@
+# FEATURE : Merge gfx classes
+# put a single Sprite in a 1-size-spriteList
+# to be more generic ? We would only have GfxSpriteList
+# that would be easier to handle in GfxSystem class. let's see
+
 
 ## ============================================================
 ## IMPORTS
@@ -21,6 +26,7 @@ class Gfx(Component):
         self._zIndex    = 0
         self._arcadeGfx = None
         self._gfxType   = None
+        self._visible   = True
 
     # arcade gfx object
     def getGfx(self):
@@ -33,17 +39,20 @@ class Gfx(Component):
             raise ValueError("[ERR] gfx : gfxType reference has not been set yet !")
         return self._gfxType
     # Z-Index
+    def setZIndex(self, newZ):
+        self._zIndex = newZ
+        self._scene.notifyUpdateZIndex(self)
     def getZIndex(self):
         return self._zIndex
-    # Visible
-    def setVisible(self,val):
-        if self._gfxType == None:
-            raise ValueError("[ERR] setVisible : gfxType reference has not been set yet !")
-        self._scene.setVisible(self, val)
+    # Visible (set the component field + notify Gfx Manager in order to update the draw list
+    def show(self):
+        self._visible = True
+        self._scene.notifyUpdateVisible(self)
+    def hide(self):
+        self._visible = False
+        self._scene.notifyUpdateVisible(self)
     def isVisible(self):
-        if self._gfxType == None:
-            raise ValueError("[ERR] getVisible : gfxType reference has not been set yet !")
-        return self._scene.isVisible(self)
+        return self._visible
 
 
 

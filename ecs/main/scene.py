@@ -9,7 +9,7 @@ from ecs.main.world import World
 
 
 ## ============================================================
-## SCENE class (extended by the user userScenes)
+## SCENE class (extended by the idle userScenes)
 ## ============================================================
 class Scene():
     # ---------------------------------------------
@@ -54,10 +54,10 @@ class Scene():
     ## -------------------------------------
     ## Gfx Component management
     ## -------------------------------------
-    def setVisible(self, gfxComp, val):
-        self._world._gfxMgr.setVisible(gfxComp.getGfx(), val)
-    def isVisible(self, gfxComp):
-        return self._world._gfxMgr.isVisible(gfxComp.getGfx())
+    def notifyUpdateVisible(self, gfxComp):
+        self._world._gfxMgr.notifyUpdateVisible(gfxComp)
+    def notifyUpdateZIndex(self, gfxComp):
+        self._world._gfxMgr.notifyUpdateZIndex(gfxComp)
 
 
     ## -------------------------------------
