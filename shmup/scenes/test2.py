@@ -2,7 +2,7 @@ import arcade
 
 from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxSimpleEmitter
 from ecs.core.components.input import Keyboard, GamepadAxis, Input
-from ecs.user.script.gfxpos import LimitPosition, Follow
+from ecs.user.script.gfxpos import LimitBox, Follow, LimitCircle
 from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ecs.user.idle.counters import UserCounter
 from ecs.core.main.entity import Entity
@@ -77,13 +77,14 @@ class SceneTest2(Scene):
         life      = UserCounter(0,11,5, True, "Life")
 
         #===== Script Components =====
-        modifLife = ModifLife(keyUp, keyDown, life, "ModifLife")
-        moveGfx   = MoveGfx(ninjaGfx, life, "MoveGfx")
-        moveStick = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
-        pause     = PauseScene(self, keyP, "PauseGame")
-        showHide  = ShowHidePanda(keyAdd, keySub, keyX, pandaGfx)
-        limitPos  = LimitPosition(pandaGfx, (1000,1920, 1080,350), "LimitPandaPos")
-        follow    = Follow(pandaGfx, grassGfx, "FollowPanda")
+        modifLife   = ModifLife(keyUp, keyDown, life, "ModifLife")
+        moveGfx     = MoveGfx(ninjaGfx, life, "MoveGfx")
+        moveStick   = MoveStick(pandaGfx, axisX, axisY, "MoveStick")
+        pause       = PauseScene(self, keyP, "PauseGame")
+        showHide    = ShowHidePanda(keyAdd, keySub, keyX, pandaGfx)
+        limitPos    = LimitBox(pandaGfx, (1000, 1080),(1920, 350), "LimitPandaBox")
+        limitCircle = LimitCircle(pandaGfx, (1075, 500), 200, "LimitPandaCircle")
+        follow      = Follow(pandaGfx, grassGfx, "FollowPanda")
 
         # Configure some components to be still active in the scene when paused
         keyP.enableOnPause()
@@ -114,6 +115,7 @@ class SceneTest2(Scene):
         entity.addComponent(pause)
         entity.addComponent(showHide)
         entity.addComponent(limitPos)
+        entity.addComponent(limitCircle)
         entity.addComponent(follow)
 
         # Add entity to scene
