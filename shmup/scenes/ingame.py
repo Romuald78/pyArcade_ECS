@@ -6,14 +6,15 @@ from ecs.core.main.scene import Scene
 from ecs.user.script.scene import PauseToggle, Pause2Buttons
 from shmup.common.constants import *
 from shmup.factories.player import InGamePlayerFactory
+from shmup.scripts.collisions import PlayerCollision
 
 
 class InGame(Scene):
 
     def _addPauseComponents(self, entity, playerCtrlID):
         # Create components for pause management
-        butPause = GamepadButton("PauseGame", playerCtrlID, "MENU")
-        butResume = GamepadButton("resumeGame", playerCtrlID, "VIEW")
+        butPause = GamepadButton("PauseGame", playerCtrlID, "MENU", "StartButton")
+        butResume = GamepadButton("resumeGame", playerCtrlID, "VIEW", "BackButton")
         scrPause = Pause2Buttons(self, butPause, butResume, "PauseScene")
         butResume.enableOnPause()
         scrPause.enableOnPause()
@@ -36,6 +37,7 @@ class InGame(Scene):
 
         # create Entity for global scene management
         eManagement = Entity("Management")
+        eCollisions = Entity("Collisions")
 
         # Create entities for all players
         ePlayers = []
@@ -51,6 +53,20 @@ class InGame(Scene):
             ePlayer = self.playerFactory.create(playerInfo)
             self.addEntity(ePlayer)
 
+            # Fill player list
+            ePlayers.append(ePlayer)
+
+        # If there are at least two players
+        # create collisions
+        if len(ePlayers) > 1:
+            gfx1    = ePlayers[0].getComponentsByName("ShipGfx")[0]
+            gfx2    = ePlayers[1].getComponentsByName("ShipGfx")[0]
+            collide = PlayerCollision(gfx1, gfx2, 128, 64, eCollisions, "Collide")
+            eManagement.addComponent(collide)
+            pass
+
+        # Add collisions entity
+        self.addEntity(eCollisions)
 
         # Add Management entity in the scene
         self.addEntity(eManagement)

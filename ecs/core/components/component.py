@@ -80,43 +80,51 @@ class Component():
         Component._maxCompID += 1
         return Component._maxCompID
 
+
     #---------------------------------------------
     # CONSTRUCTOR
     #---------------------------------------------
-    # Constructor
     def __init__(self, compName):
         self._ID = Component.getNewID()
         if compName == None:
             compName = "COMP"
-        self._name = f"c_{compName}_{self._ID}"
+        self._name      = compName
+        self._debugName = f"c_{compName}_{self._ID}"
         # By default this component is disabled when the
         # scene is on pause; That means NO UPDATE (scripts or animated sprites)
         self.execOnPause = False
         # By default this script is enabled
         self.isActive = True
+        # owner entity
+        self._entity = None
 
 
     #---------------------------------------------
-    # SETTERS
+    # ENTITY LINK
     #---------------------------------------------
-    # On Pause behavior
-    def enableOnPause(self):
-        self.execOnPause = True
-    def disableOnPause(self):
-        self.execOnPause = False
+    def linkToEntity(self, entRef):
+        self._entity = entRef
+    def getEntity(self):
+        return self._entity
+    def destroy(self):
+        # notify entity that this component must be removed
+        if self._entity == None:
+            raise ValueError("[ERR] component destroy request : no entity linked !")
+        self._entity.removeComponent(self)
 
 
     #---------------------------------------------
-    # GETTERS
+    # COMPONENT INFORMATION
     #---------------------------------------------
+    # Name
     def getName(self):
         return self._name
-
+    def getDebugName(self):
+        return self._debugName
+    # Unique ID
     def getID(self):
         return self._ID
-
-    # method to get the type of component
-    # this way it is easier to dispatch it to the correct system
+    # Type (getType must be overridden by sub classes)
     def getType(self):
         raise ValueError("[ERR] Component getType() method has not been implemented yet !")
     def getTypeName(self):
@@ -128,12 +136,24 @@ class Component():
         c = Component.TYPE_INFO[t]["color"]
         return c
 
+
+    #---------------------------------------------
+    # PAUSE BEHAVIOR
+    #---------------------------------------------
     # On Pause behavior
+    def enableOnPause(self):
+        self.execOnPause = True
+    def disableOnPause(self):
+        self.execOnPause = False
     def isEnabledOnPause(self):
         return self.execOnPause
     def isDisabledOnPause(self):
         return not self.execOnPause
 
+
+    #---------------------------------------------
+    # EXECUTION BEHAVIOR
+    #---------------------------------------------
     def enable(self):
         self.isActive = True
     def disable(self):
@@ -142,3 +162,5 @@ class Component():
         return self.isActive
     def isDisabled(self):
         return not self.isActive
+
+

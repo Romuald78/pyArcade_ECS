@@ -8,15 +8,15 @@
 ## IMPORTS
 ## ============================================================
 import arcade
-
 from ecs.core.main.world import World
 
 
 
 ## ============================================================
-## SCENE class (extended by the idle userScenes)
+## SCENE class (extended by the user scenes)
 ## ============================================================
 class Scene():
+
     # ---------------------------------------------
     # COMPONENT ID
     # ---------------------------------------------
@@ -29,7 +29,7 @@ class Scene():
 
 
     ## -------------------------------------
-    ## Constructor
+    ## CONSTRUCTOR
     ## -------------------------------------
     def __init__(self, scnMgr, W, H, sceneName):
         self._sceneMgr     = scnMgr
@@ -37,26 +37,122 @@ class Scene():
         self._consoleDebug = False
         self._drawDebug    = False
         self._dimensions   = (W,H)
-        self._ID = Scene.getNewID()
-        self._rawName      = sceneName
-        self._sceneName    = f"s_{sceneName}_{self._ID}"
+        self._ID           = Scene.getNewID()
+        self._name         = sceneName
+        self._debugName    = f"s_{sceneName}_{self._ID}"
+        # prepare entity dict
+        self._entByName = {}
+        self._entByRef  = {}
 
 
     ## -------------------------------------
-    ## Entity management
+    ## SCENE INFORMATION
     ## -------------------------------------
-    def addEntity(self,ref):
-        self._world.addEntity(ref)
-    def getEntitiesByName(self, entNam):
-        return self._world.getEntitiesByName(entNam)
+    def getName(self):
+        return self._name
+    def getDebugName(self):
+        return self._debugName
+    def getID(self):
+        return self._ID
+
+
+    ## -------------------------------------
+    ## SCENE MANAGEMENT
+    ## -------------------------------------
+    def selectNewScene(self, name, params=None):
+        self._sceneMgr.selectNewScene(name, params)
+    def pause(self):
+        self._sceneMgr.pause()
+    def resume(self):
+        self._sceneMgr.resume()
+    def isPaused(self):
+        return self._sceneMgr.isPaused()
+
+
+    ## -------------------------------------
+    ## ENTITY MANAGEMENT
+    ## -------------------------------------
+    def addEntity(self,entRef):
+        # link the entity to this scene
+        entRef.linkToScene(self)
+        # retrieve entity name
+        entName = entRef.getName()
+        # Store entity by Name
+        if not entName in self._entByName:
+            self._entByName[entName] = []
+        if entRef in self._entByName[entName]:
+            raise ValueError("[ERR] addEntity : reference is already in the name dict !")
+        self._entByName[entName].append(entRef)
+        # Store entity by ref
+        if entRef in self._entByRef:
+            raise ValueError("[ERR] addEntity : reference is already in the ref dict !")
+        self._entByRef[entRef] = entName
+        # Get all components from entity (dict by ref)
+        comps = entRef.getComponentList()
+        for compRef in comps:
+            # Register this component to the world
+            self._world.notifyAddComponent(compRef)
+
+    def removeEntity(self, entRef):
+        # Remove all components
+        for compRef in entRef.getComponentList():
+            compRef.destroy()
+        # prepare empty names to remove
+        emptyNames = []
+        # remove from name dict
+        for entName in self._entByName:
+            if entRef in self._entByName[entName]:
+                self._entByName[entName].remove(entRef)
+                if len(self._entByName[entName]) == 0:
+                    emptyNames.append(entName)
+        # Clean empty names
+        for nam in emptyNames:
+            del self._entByName[nam]
+        # remove from ref dict
+        if entRef in self._entByRef:
+            del self._entByRef[entRef]
+        # Actually at this stage,  the entity is not in the world list
+        # and all its components have bee removed from the different
+        # systems too.
+        # The whole package entity+components is not in the memory anymore
+
     def getNbEntities(self):
-        return self._world.getNbEntities()
-    def getEntityList(self):
-        return self._world.getAllEntities()
+        return len(self._entByRef)
+
+    def getEntitiesByName(self,entName):
+        res = []
+        if entName in self._entByName:
+            res = self._entByName[entName]
+        return res
+
+    def hasEntity(self, entRef):
+        return entRef in self._entByRef
+
+    def getAllEntities(self):
+        return list(self._entByRef.keys())
 
 
     ## -------------------------------------
-    ## Gfx Component management
+    ## MAIN METHODS
+    ## -------------------------------------
+    def update(self, deltaTime):
+        self._world.update(deltaTime, self._sceneMgr.isPaused())
+    def draw(self):
+        self._world.draw()
+
+
+    ## -------------------------------------
+    ## COMPONENT NOTIFICATIONS
+    ## -------------------------------------
+    def notifyAddComponent(self, newCmpRef):
+        # TODO check the entity of this component is already registered here in this world
+        self._world.notifyAddComponent(newCmpRef)
+    def notifyRemoveComponent(self, cmpRef):
+        self._world.notifyRemoveComponent(cmpRef)
+
+
+    ## -------------------------------------
+    ## GFX DISPLAY NOTIFICATIONS
     ## -------------------------------------
     def notifyUpdateVisible(self, gfxComp):
         self._world._gfxMgr.notifyUpdateVisible(gfxComp)
@@ -65,53 +161,16 @@ class Scene():
 
 
     ## -------------------------------------
-    ## Main methods
-    ## -------------------------------------
-    def update(self, deltaTime):
-        self._world.update(deltaTime, self._sceneMgr.isPaused())
-
-    def draw(self):
-        self._world.draw()
-
-
-    ## -------------------------------------
-    ## Scene management
-    ## -------------------------------------
-    def getRawName(self):
-        return self._rawName
-    def getName(self):
-        return self._sceneName
-    def getID(self):
-        return self._ID
-
-    def selectNewScene(self, rawName, params=None):
-        self._sceneMgr.selectNewScene(rawName, params)
-
-    def pause(self):
-        self._sceneMgr.pause()
-
-    def resume(self):
-        self._sceneMgr.resume()
-
-    def isPaused(self):
-        return self._sceneMgr.isPaused()
-
-
-    ## -------------------------------------
-    ## Notify inputs
+    ## INPUT NOTIFICATIONS
     ## -------------------------------------
     def onKeyEvent(self,key, isPressed):
         self._world.onKeyEvent(key, isPressed, self._sceneMgr.isPaused())
-
     def onMouseButtonEvent(self, buttonName, x, y, isPressed):
         self._world.onMouseButtonEvent(buttonName, x, y, isPressed, self._sceneMgr.isPaused())
-
     def onMouseMotionEvent(self, x, y, dx, dy):
         self._world.onMouseMotionEvent(x, y, dx, dy, self._sceneMgr.isPaused())
-
     def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
         self._world.onGamepadButtonEvent(gamepadId, buttonName, isPressed, self._sceneMgr.isPaused())
-
     def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
         self._world.onGamepadAxisEvent(gamepadId, axisName, analogValue, self._sceneMgr.isPaused())
 
@@ -135,25 +194,26 @@ class Scene():
             refY = self._dimensions[1] - 20
             # Scene information
             a = ["[_]", "[o]"][not self.isPaused()]
-            msg = f"{a} {self.getName()}"
+            msg = f"{a} {self.getDebugName()}"
             arcade.draw_text(msg, refX, refY, (255,255,255), 14)
             # Scene entities
-            entities = self.getEntityList()
+            entities = self.getAllEntities()
             for ent in entities:
                 refY -= 18
-                arcade.draw_text(ent.getName(), refX+15, refY, (64, 255, 64), 14)
+                arcade.draw_text(ent.getDebugName(), refX+15, refY, (64, 255, 64), 14)
                 components = ent.getComponentList()
                 for comp in components:
                     refY -= 18
-                    n = comp.getName()
+                    n = comp.getDebugName()
                     s = comp.getTypeName()
                     c = comp.getTypeColor()
                     a = ["[_]", "[o]"][comp.isEnabled() and (not self.isPaused() or comp.isEnabledOnPause())]
                     msg = f"{a} {n} ({s})"
                     arcade.draw_text(msg, refX + 30, refY, c, 12)
 
+
     ## -------------------------------------
-    ## Get transition times and colors
+    ## TRANSITION MANAGEMENT
     ## -------------------------------------
     def getTransitionTimeIN(self):
         return 1

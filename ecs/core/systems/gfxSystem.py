@@ -134,10 +134,10 @@ class GfxSystem():
                     # Remove burst emitters if finished
                     if type == Gfx.TYPE_BURST:
                         if ref.can_reap():
-                            ref2Remove.append(ref)
-        # remove useless gfx elements
-        for ref in ref2Remove:
-            self.removeGfx(ref)
+                            ref2Remove.append(cmpRef)
+        # Send notification to remove useless gfx components
+        for comp in ref2Remove:
+            comp.getEntity().removeComponent(comp)
 
     def drawAllGfx(self):
         # FEATURE : handle drawList in a clever way instead of drawing each component 1-by-1

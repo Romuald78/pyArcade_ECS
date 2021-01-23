@@ -68,3 +68,18 @@ class Follow(Script):
         self._follower.setPosition(self._target.getPosition())
 
 
+class Move2DAnalog(Script):
+
+    # constructor
+    def __init__(self, gfx, xAxis, yAxis, speed, compName=None):
+        super().__init__(compName)
+        self._gfx   = gfx
+        self._xAxis = xAxis
+        self._yAxis = yAxis
+        self._speed = speed
+
+    # update
+    def updateScript(self, actionName, deltaTime):
+        dx =  self._xAxis.getValue()*60*deltaTime*self._speed
+        dy = -self._yAxis.getValue()*60*deltaTime*self._speed
+        self._gfx.move(dx, dy)

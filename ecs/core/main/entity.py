@@ -1,12 +1,5 @@
-# FEATURE : add remove method and link to the different systems ?
-# May be an easier way is to go via Entity : destroy request sent to the scene
-# So the access to the systems can be done
-
-# BUG : component not added into the world
-# adding a component in an entity
-# AFTER an entity has been added to
-# the world, makes this component
-# not included !!
+# FEATURE enable or disable (or enable during pause) Entities : that would be useful
+# to handle these states by entity instead of by component (keep by component anyway)
 
 class Entity():
 
@@ -22,28 +15,55 @@ class Entity():
 
 
     ## -------------------------------------
-    ## Constructor
+    ## CONSTRUCTOR
     ## -------------------------------------
     def __init__(self, entName=None):
         self._ID = Entity.getNewID()
         if entName == None:
             entName = "ENTITY"
-        self._name = f"e_{entName}_{self._ID}"
+        self._name      = entName
+        self._debugName = f"e_{entName}_{self._ID}"
         # init component list
         self._compByName = {}
         self._compByRef  = {}
+        self._scene      = None
+
+
+    ## -------------------------------------
+    ## SCENE LINK
+    ## -------------------------------------
+    def linkToScene(self, scn):
+        self._scene = scn
+    def getScene(self):
+        return self._scene
+    def destroy(self):
+        # notify Scene that this entity must be removed
+        if self._scene == None:
+            raise ValueError("[ERR] component destroy request : no scene linked !")
+        # Destroy all components FIRST
+        for ref in self._compByRef:
+            self.removeComponent(ref)
+        # Clean dict
+        self._compByName = {}
+        self._compByRef  = {}
+        # Then ask scene to destroy entity
+        self._scene.removeEntity(self)
+
 
     # ---------------------------------------------
-    # GETTERS
+    # ENTITY INFORMATION
     # ---------------------------------------------
     def getName(self):
         return self._name
-
+    def getDebugName(self):
+        return self._debugName
+    # Unique ID
     def getID(self):
         return self._ID
 
+
     ## -------------------------------------
-    ## Component management
+    ## COMPONENT MANAGEMENT
     ## -------------------------------------
     def addComponent(self, cmpRef):
         # Get name of this component
@@ -58,6 +78,34 @@ class Entity():
         if cmpRef in self._compByRef:
             raise ValueError("[ERR] addComponent : ref is already in the ref dict !")
         self._compByRef[cmpRef] = cmpName
+        # Link this comp to current entity
+        cmpRef.linkToEntity(self)
+        # If there is already a scene, register this new component
+        # to the scene NOW, because all others components have been
+        # registered when the Entity-Scene link has been established
+        if self._scene != None:
+            self._scene.notifyAddComponent(cmpRef)
+
+    def removeComponent(self, cmpRef):
+        # empty names to clean
+        emptyNames = []
+        # remove from name dict
+        for compName in self._compByName:
+            if cmpRef in self._compByName[compName]:
+                self._compByName[compName].remove(cmpRef)
+            if len(self._compByName[compName]) == 0:
+                emptyNames.append(compName)
+        # clean empty names
+        for nam in emptyNames:
+            if nam in self._compByName:
+                del self._compByName[nam]
+        # remove from ref dict
+        if cmpRef in self._compByRef:
+            del self._compByRef[cmpRef]
+        # notify the scene this component is no more
+        if self._scene == None:
+            raise ValueError("[ERR] Entity remove component : no scene is linked !")
+        self.getScene().notifyRemoveComponent(cmpRef)
 
     def getNbComponents(self):
         return len(self._compByRef)

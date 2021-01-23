@@ -1,9 +1,3 @@
-# FEATURE Add method to remove entity
-# add all the links with the different systems
-# in order to remove the components inside the
-# requested entity
-
-
 
 from ecs.core.components.component import Component
 from ecs.core.systems.gfxSystem import GfxSystem
@@ -15,7 +9,7 @@ from ecs.core.systems.scriptSystem import ScriptSystem
 class World():
 
     ## -------------------------------------
-    ## Constructor
+    ## CONSTRUCTOR
     ## -------------------------------------
     def __init__(self, scn):
         # attach scene to this world
@@ -25,13 +19,10 @@ class World():
         self._gfxMgr    = GfxSystem()
         self._scriptMgr = ScriptSystem()
         self._idleMgr   = IdleSystem()
-        # prepare entity dict
-        self._entByName = {}
-        self._entByRef  = {}
 
 
     ## -------------------------------------
-    ## Register component to systems
+    ## COMPONENT REGISTRATION
     ## -------------------------------------
     def _registerComponent(self, compRef):
         # Retrieve component type and check before registering to systems
@@ -74,48 +65,27 @@ class World():
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")
 
-
-    ## -------------------------------------
-    ## Entity management
-    ## -------------------------------------
-    def addEntity(self,entRef):
-        # retrieve entity name
-        entName = entRef.getName()
-        # Store entity by Name
-        if not entName in self._entByName:
-            self._entByName[entName] = []
-        if entRef in self._entByName[entName]:
-            raise ValueError("[ERR] addEntity : reference is already in the name dict !")
-        self._entByName[entName].append(entRef)
-        # Store entity by ref
-        if entRef in self._entByRef:
-            raise ValueError("[ERR] addEntity : reference is already in the ref dict !")
-        self._entByRef[entRef] = entName
-
-        # Get all entity components from entity (dict by ref)
-        comps = entRef.getComponentList()
-        for compRef in comps:
-            # Register this component to the corresponding system
-            self._registerComponent(compRef)
-
-    def getNbEntities(self):
-        return len(self._entByRef)
-
-    def getEntitiesByName(self,entName):
-        res = []
-        if entName in self._entByName:
-            res = self._entByName[entName]
-        return res
-
-    def hasEntity(self, entRef):
-        return entRef in self._entByRef
-
-    def getAllEntities(self):
-        return list(self._entByRef.keys())
+    def _unregisterComponent(self,cmpRef):
+        # TODO finish this service with all comp refs (access to correct system)
+        # Remove GFX component from the system
+        if (cmpRef.getType() & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
+            self._gfxMgr.removeGfx(cmpRef)
 
 
     ## -------------------------------------
-    ## Main methods
+    ## COMPONENT NOTIFICATIONS
+    ## -------------------------------------
+    def notifyAddComponent(self, cmpRef):
+        # Register Gfx component into the system
+        self._registerComponent(cmpRef)
+
+    def notifyRemoveComponent(self, cmpRef):
+        # Unregister Gfx component kinto the system
+        self._unregisterComponent(cmpRef)
+
+
+    ## -------------------------------------
+    ## MAIN METHODS
     ## -------------------------------------
     def update(self, deltaTime, isOnPause):
         self._scriptMgr.updateAllScripts(deltaTime, isOnPause)
@@ -126,20 +96,16 @@ class World():
 
 
     ## -------------------------------------
-    ## Input event methods
+    ## INPUT NOTIFICATIONS
     ## -------------------------------------
     def onKeyEvent(self,key, isPressed, isOnPause):
         self._inputMgr.notifyKeyEvent(key, isPressed, isOnPause)
-
     def onMouseButtonEvent(self, buttonName, x, y, isPressed,isOnPause):
         self._inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed,isOnPause)
-
     def onMouseMotionEvent(self, x, y, dx, dy,isOnPause):
         self._inputMgr.notifyMouseMotionEvent(x, y, dx, dy,isOnPause)
-
     def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed,isOnPause):
         self._inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed,isOnPause)
-
     def onGamepadAxisEvent(self, gamepadId, axisName, analogValue,isOnPause):
         self._inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue,isOnPause)
 

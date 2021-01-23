@@ -32,7 +32,7 @@ class SceneSystem():
     ## Scene list management
     ## -------------------------------------
     def addScene(self, sceneRef):
-        sceneName = sceneRef.getRawName()
+        sceneName = sceneRef.getName()
         if sceneName not in self.scenes:
             self.scenes[sceneName] = sceneRef
             # select this scene if this is the first to be added

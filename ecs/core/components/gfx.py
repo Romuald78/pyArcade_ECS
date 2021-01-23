@@ -42,6 +42,8 @@ class Gfx(Component):
         self._visible   = True
 
     # arcade gfx object
+    def getScene(self):
+        return self._scene
     def getGfx(self):
         if self._arcadeGfx == None:
             raise ValueError("[ERR] gfx : arcade gfx reference has not been set yet !")
