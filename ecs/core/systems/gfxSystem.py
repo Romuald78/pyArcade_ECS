@@ -3,6 +3,8 @@
 # to be more generic ? We would only have GfxSpriteList as gfx components
 # that would be easier to handle here. let's see
 
+# FEATURE : when adding a component, check first and last Z Index entries
+# before calling the dichotomy process
 
 ## ============================================================
 ## IMPORTS

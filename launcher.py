@@ -21,6 +21,7 @@ TITLE = "pyArcade-ECS"
 ### ====================================================================================================
 class Launcher(arcade.Window):
 
+    #FEATURE : how to create and add a scene outside the Main class ???
 
     # FEATURE : try to remove all arcade dependencies in the Main class (keep arcade in launcher)
 

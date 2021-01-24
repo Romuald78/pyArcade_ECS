@@ -48,5 +48,5 @@ class IdleSystem():
         self._refList[idleRef] = idleName
 
     # FEATURE : add methods to improve IdleSystem
-    # e.g. : remove / getCompByName / getCompByRef / getNbComps / getAllComps / doesCompExist / ...
+    # e.g. : remove / getCompByName / hasComp / getNbComps / getAllComps / ...
 

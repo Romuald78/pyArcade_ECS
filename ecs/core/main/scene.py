@@ -136,7 +136,7 @@ class Scene():
     ## MAIN METHODS
     ## -------------------------------------
     def update(self, deltaTime):
-        self._world.update(deltaTime, self._sceneMgr.isPaused())
+        self._world.update(deltaTime)
     def draw(self):
         self._world.draw()
 
@@ -164,15 +164,15 @@ class Scene():
     ## INPUT NOTIFICATIONS
     ## -------------------------------------
     def onKeyEvent(self,key, isPressed):
-        self._world.onKeyEvent(key, isPressed, self._sceneMgr.isPaused())
+        self._world.onKeyEvent(key, isPressed)
     def onMouseButtonEvent(self, buttonName, x, y, isPressed):
-        self._world.onMouseButtonEvent(buttonName, x, y, isPressed, self._sceneMgr.isPaused())
+        self._world.onMouseButtonEvent(buttonName, x, y, isPressed)
     def onMouseMotionEvent(self, x, y, dx, dy):
-        self._world.onMouseMotionEvent(x, y, dx, dy, self._sceneMgr.isPaused())
+        self._world.onMouseMotionEvent(x, y, dx, dy)
     def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
-        self._world.onGamepadButtonEvent(gamepadId, buttonName, isPressed, self._sceneMgr.isPaused())
+        self._world.onGamepadButtonEvent(gamepadId, buttonName, isPressed)
     def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
-        self._world.onGamepadAxisEvent(gamepadId, axisName, analogValue, self._sceneMgr.isPaused())
+        self._world.onGamepadAxisEvent(gamepadId, axisName, analogValue)
 
 
     ## -------------------------------------

@@ -5,6 +5,18 @@
 # that should solve the fact that actioName parameter
 # in callbacks is not used (so does the gamepadID)
 
+# FEATURE improve mouse management
+# add fields for simple, double and triple clicks
+# In order to do that, the component needs to have a list
+# of events with : positions, timestamp, status
+# we also need fields for duration ranges (for the pressed and released states)
+
+# FEATURE improve mouse management
+# Add a field for long press without release
+# to do that, an update method must be added and must be called
+# from the world. FOr this feature, the list detailed above
+# would be useful to : check how long the current click
+# is being pressed
 
 
 ## ============================================================
@@ -49,26 +61,26 @@ class Keyboard(Input):
         # parent constructor
         super().__init__(actionName, compName)
         # store fields
-        self.keyValue    = key
-        self.risingEdge  = False    # from 'released' to 'pressed'
-        self.fallingEdge = False    # from 'pressed' to 'released'
-        self.value       = False    # current state
+        self._keyValue    = key
+        self._risingEdge  = False    # from 'released' to 'pressed'
+        self._fallingEdge = False    # from 'pressed' to 'released'
+        self._value       = False    # current state
 
     # Event information
     def isPressed(self):
-        return self.value
+        return self._value
     def hasBeenPressed(self):
-        res = self.risingEdge
-        self.risingEdge = False
+        res = self._risingEdge
+        self._risingEdge = False
         return res
     def hasBeenReleased(self):
-        res = self.fallingEdge
-        self.fallingEdge = False
+        res = self._fallingEdge
+        self._fallingEdge = False
         return res
 
     # Field getters
     def getKey(self):
-        return self.keyValue
+        return self._keyValue
 
     # Override parent method
     def getType(self):
@@ -77,12 +89,12 @@ class Keyboard(Input):
     # Callback
     def keyboardEvent(self, action, isPressed):
         # Store current state
-        self.value = isPressed
+        self._value = isPressed
         # Store either rising or falling edge
         if isPressed:
-            self.risingEdge  = True
+            self._risingEdge  = True
         else:
-            self.fallingEdge = True
+            self._fallingEdge = True
 
 
 # ----------------------------------------------------------
@@ -97,32 +109,32 @@ class GamepadButton(Input):
         # parent constructor
         super().__init__(actionName, compName)
         # store fields
-        self.ctrlID      = gamepadID
-        self.button      = buttonName
-        self.risingEdge  = False    # from 'released' to 'pressed'
-        self.fallingEdge = False    # from 'pressed' to 'released'
-        self.value       = False    # current state
-        self.lastCtrlID  = gamepadID
+        self._ctrlID      = gamepadID
+        self._button      = buttonName
+        self._risingEdge  = False    # from 'released' to 'pressed'
+        self._fallingEdge = False    # from 'pressed' to 'released'
+        self._value       = False    # current state
+        self._lastCtrlID  = gamepadID
 
     # Event information
     def isPressed(self):
-        return self.value
+        return self._value
     def hasBeenPressed(self):
-        res = self.risingEdge
-        self.risingEdge = False
+        res = self._risingEdge
+        self._risingEdge = False
         return res
     def hasBeenReleased(self):
-        res = self.fallingEdge
-        self.fallingEdge = False
+        res = self._fallingEdge
+        self._fallingEdge = False
         return res
 
     # Field getters
     def getGamepadID(self):
-        return self.ctrlID
+        return self._ctrlID
     def getLastGamepadID(self):
-        return self.lastCtrlID
+        return self._lastCtrlID
     def getButton(self):
-        return self.button
+        return self._button
 
     # Override parent method
     def getType(self):
@@ -131,13 +143,13 @@ class GamepadButton(Input):
     # Callback
     def gamepadButtonEvent(self, action, gamepadId, isPressed):
         # Store current state and last gamepadID
-        self.value = isPressed
-        self.lastCtrlID = gamepadId
+        self._value = isPressed
+        self._lastCtrlID = gamepadId
         # Store either rising or falling edge
         if isPressed:
-            self.risingEdge  = True
+            self._risingEdge  = True
         else:
-            self.fallingEdge = True
+            self._fallingEdge = True
 
 
 # ----------------------------------------------------------
@@ -146,40 +158,42 @@ class GamepadButton(Input):
 class MouseButton(Input):
 
     # Constructor
-    def __init__(self, actionName, buttonName):
+    def __init__(self, actionName, buttonName, compName=None):
+        if compName == None:
+            compName = "M_BUTTON"
         # parent constructor
-        super().__init__(actionName)
+        super().__init__(actionName, compName)
         # store fields
-        self.button         = buttonName
-        self.risingEdge     = False  # from 'released' to 'pressed'
-        self.fallingEdge    = False  # from 'pressed' to 'released'
-        self.value          = False  # current state
-        self.lastPosition   = (-1,-1)
-        self.lastRisingPos  = (-1,-1)
-        self.lastFallingPos = (-1,-1)
+        self._button         = buttonName
+        self._risingEdge     = False  # from 'released' to 'pressed'
+        self._fallingEdge    = False  # from 'pressed' to 'released'
+        self._value          = False  # current state
+        self._lastPosition   = (-1, -1)
+        self._lastRisingPos  = (-1, -1)
+        self._lastFallingPos = (-1, -1)
 
     # Event information
     def isPressed(self):
-        return self.value
+        return self._value
     def hasBeenPressed(self):
-        res = self.risingEdge
-        self.risingEdge = False
+        res = self._risingEdge
+        self._risingEdge = False
         return res
     def hasBeenReleased(self):
-        res = self.fallingEdge
-        self.fallingEdge = False
+        res = self._fallingEdge
+        self._fallingEdge = False
         return res
 
     def getLastPosition(self):
-        return self.lastPosition
+        return self._lastPosition
     def getPressedPosition(self):
-        return self.lastRisingPos
+        return self._lastRisingPos
     def getReleasedPosition(self):
-        return self.lastFallingPos
+        return self._lastFallingPos
 
     # Field getters
     def getButton(self):
-        return self.button
+        return self._button
 
     # Override parent method
     def getType(self):
@@ -188,15 +202,15 @@ class MouseButton(Input):
     # Callback
     def mouseButtonEvent(self, action, x, y, isPressed):
         # Store current state
-        self.value        = isPressed
-        self.lastPosition = (x,y)
+        self._value        = isPressed
+        self._lastPosition = (x, y)
         # Store either rising or falling edge
         if isPressed:
-            self.risingEdge    = True
-            self.lastRisingPos = (x,y)
+            self._risingEdge    = True
+            self._lastRisingPos = (x, y)
         else:
-            self.fallingEdge    = True
-            self.lastFallingPos = (x,y)
+            self._fallingEdge    = True
+            self._lastFallingPos = (x, y)
 
 
 # ----------------------------------------------------------
@@ -205,20 +219,22 @@ class MouseButton(Input):
 class MouseMotion(Input):
 
     # Constructor
-    def __init__(self, actionName):
+    def __init__(self, actionName, compName=None):
+        if compName == None:
+            compName = "M_MOTION"
         # parent constructor
-        super().__init__(actionName)
+        super().__init__(actionName, compName)
         # store fields
-        self.lastPosition = (-1,-1)
-        self.lastVector   = (0,0)
+        self._lastPosition = (-1, -1)
+        self._lastVector   = (0, 0)
 
     # Event information
     def getLastPosition(self):
-        return self.lastPosition
+        return self._lastPosition
     def getLastVector(self):
         # Reset vector after reading
-        res = self.lastVector
-        self.lastVector = (0,0)
+        res = self._lastVector
+        self._lastVector = (0, 0)
         return res
 
     # Override parent method
@@ -227,8 +243,8 @@ class MouseMotion(Input):
 
     # Callback
     def mouseMotionEvent(self, action, x, y, dx, dy):
-        self.lastPosition = (x,y)
-        self.lastVector   = (dx,dy)
+        self._lastPosition = (x, y)
+        self._lastVector   = (dx, dy)
 
 
 # ----------------------------------------------------------
@@ -243,25 +259,25 @@ class GamepadAxis(Input):
         # parent constructor
         super().__init__(actionName, compName)
         # store fields
-        self.ctrlID    = gamepadID
-        self.axis      = axisName
-        self.dead      = deadZone
-        self.value     = 0
-        self.minValue  = -0.5        # used to normalize the output
-        self.maxValue  =  0.5        # used to normalize the output
-        self.lastValue = 1.0
+        self._ctrlID    = gamepadID
+        self._axis      = axisName
+        self._dead      = deadZone
+        self._value     = 0
+        self._minValue  = -0.5        # used to normalize the output
+        self._maxValue  =  0.5        # used to normalize the output
+        self._lastValue = 1.0
 
     # Event information
     def getValue(self):
-        return self.value
+        return self._value
 
     # Field getters
     def getGamepadID(self):
-        return self.ctrlID
+        return self._ctrlID
     def getAxis(self):
-        return self.axis
+        return self._axis
     def getLastValue(self):
-        return self.lastValue
+        return self._lastValue
 
     # Override parent method
     def getType(self):
@@ -272,20 +288,20 @@ class GamepadAxis(Input):
         # Normalize value in order to take care of gamepads
         # that do not provide a full [-1.0,+1.0] output range
         # First, update min and max values
-        if analogValue < self.minValue:
-            self.minValue = analogValue
-        if analogValue > self.maxValue:
-            self.maxValue = analogValue
+        if analogValue < self._minValue:
+            self._minValue = analogValue
+        if analogValue > self._maxValue:
+            self._maxValue = analogValue
         # Then, check dead zone
-        if abs(analogValue) < self.dead:
+        if abs(analogValue) < self._dead:
             analogValue = 0
         # Then, normalize
         if analogValue >= 0:
-            analogValue /=  self.maxValue
+            analogValue /=  self._maxValue
         else:
-            analogValue /= -self.minValue
+            analogValue /= -self._minValue
         # Finally, store value
         if analogValue != 0:
-            self.lastValue = analogValue
-        self.value = analogValue
+            self._lastValue = analogValue
+        self._value = analogValue
 

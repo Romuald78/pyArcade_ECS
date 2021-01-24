@@ -11,6 +11,8 @@ class Component():
     # Use of numeric values instead of calling isinstance()
     # TASK : use some patterns like visitor instead of multiple "if" ??
 
+    # FEATURE : create a Type class and put everything about type in it 
+
     # Scripts
     TYPE_SCRIPT_MASK    = 0x1000
     TYPE_SCRIPT         = TYPE_SCRIPT_MASK | 0x01

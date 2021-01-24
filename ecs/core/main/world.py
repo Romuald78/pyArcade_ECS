@@ -87,7 +87,8 @@ class World():
     ## -------------------------------------
     ## MAIN METHODS
     ## -------------------------------------
-    def update(self, deltaTime, isOnPause):
+    def update(self, deltaTime):
+        isOnPause = self._scene.isPaused()
         self._scriptMgr.updateAllScripts(deltaTime, isOnPause)
         self._gfxMgr.updateAllGfx(deltaTime, isOnPause)
 
@@ -98,14 +99,19 @@ class World():
     ## -------------------------------------
     ## INPUT NOTIFICATIONS
     ## -------------------------------------
-    def onKeyEvent(self,key, isPressed, isOnPause):
+    def onKeyEvent(self,key, isPressed):
+        isOnPause = self._scene.isPaused()
         self._inputMgr.notifyKeyEvent(key, isPressed, isOnPause)
-    def onMouseButtonEvent(self, buttonName, x, y, isPressed,isOnPause):
+    def onMouseButtonEvent(self, buttonName, x, y, isPressed):
+        isOnPause = self._scene.isPaused()
         self._inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed,isOnPause)
-    def onMouseMotionEvent(self, x, y, dx, dy,isOnPause):
+    def onMouseMotionEvent(self, x, y, dx, dy):
+        isOnPause = self._scene.isPaused()
         self._inputMgr.notifyMouseMotionEvent(x, y, dx, dy,isOnPause)
-    def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed,isOnPause):
+    def onGamepadButtonEvent(self, gamepadId, buttonName, isPressed):
+        isOnPause = self._scene.isPaused()
         self._inputMgr.notifyGamepadButtonEvent(gamepadId, buttonName, isPressed,isOnPause)
-    def onGamepadAxisEvent(self, gamepadId, axisName, analogValue,isOnPause):
+    def onGamepadAxisEvent(self, gamepadId, axisName, analogValue):
+        isOnPause = self._scene.isPaused()
         self._inputMgr.notifyGamepadAxisEvent(gamepadId, axisName, analogValue,isOnPause)
 

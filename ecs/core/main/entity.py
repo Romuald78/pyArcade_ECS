@@ -102,10 +102,9 @@ class Entity():
         # remove from ref dict
         if cmpRef in self._compByRef:
             del self._compByRef[cmpRef]
-        # notify the scene this component is no more
-        if self._scene == None:
-            raise ValueError("[ERR] Entity remove component : no scene is linked !")
-        self.getScene().notifyRemoveComponent(cmpRef)
+        # notify the scene this component is no more (if this entity is linked to a scene)
+        if self._scene != None:
+            self.getScene().notifyRemoveComponent(cmpRef)
 
     def getNbComponents(self):
         return len(self._compByRef)
