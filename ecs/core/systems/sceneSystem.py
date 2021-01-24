@@ -15,17 +15,17 @@ class SceneSystem():
     ## -------------------------------------
     def __init__(self):
         # Scene names used in the main process
-        self.currentSceneName = None
-        self.nextSceneName    = None
-        self.nextSceneParams  = None
+        self._currentSceneName = None
+        self._nextSceneName    = None
+        self._nextSceneParams  = None
         # Pause mode
-        self.onPause          = False
+        self._onPause          = False
         # Dict of shmup
-        self.scenes           = {}
+        self._scenes           = {}
         # Time and color used in the transition process
-        self.currentTime      = 1
-        self.maxTime          = 1
-        self.color            = (0,0,0)
+        self._currentTime      = 1
+        self._maxTime          = 1
+        self._color            = (0, 0, 0)
 
 
     ## -------------------------------------
@@ -33,22 +33,22 @@ class SceneSystem():
     ## -------------------------------------
     def addScene(self, sceneRef):
         sceneName = sceneRef.getName()
-        if sceneName not in self.scenes:
-            self.scenes[sceneName] = sceneRef
+        if sceneName not in self._scenes:
+            self._scenes[sceneName] = sceneRef
             # select this scene if this is the first to be added
-            if len(self.scenes) == 1:
-                self.currentSceneName = sceneName
-                self.currentTime      = 0
-                self.maxTime          = sceneRef.getTransitionTimeIN()
-                self.color            = sceneRef.getTransitionColorIN()
+            if len(self._scenes) == 1:
+                self._currentSceneName = sceneName
+                self._currentTime      = 0
+                self._maxTime          = sceneRef.getTransitionTimeIN()
+                self._color            = sceneRef.getTransitionColorIN()
         else:
             raise ValueError(f"[ERR] cannot add scene '{sceneName}' : already in the list !")
 
-    def remove(self, sceneName):
-        if sceneName in self.scenes:
+    def removeScene(self, sceneName):
+        if sceneName in self._scenes:
             # delete scene if not selected
-            if self.currentSceneName != sceneName:
-                del self.scenes[sceneName]
+            if self._currentSceneName != sceneName:
+                del self._scenes[sceneName]
             else:
                 raise ValueError(f"[ERR] cannot remove scene '{sceneName}' : currently selected !")
         else:
@@ -58,31 +58,28 @@ class SceneSystem():
     ## -------------------------------------
     ## Scene control
     ## -------------------------------------
-    def initCurrentScene(self, params):
-        self.scenes[self.currentSceneName].init(params)
-
     def selectNewScene(self,sceneName, params=None):
         # Set the next scene if not currently in transition
-        if self.nextSceneName == None:
-            self.nextSceneName   = sceneName
-            self.nextSceneParams = params
-            self.maxTime         = self.scenes[self.currentSceneName].getTransitionTimeOUT()
-            self.currentTime     = 0
-            self.color           = self.scenes[self.currentSceneName].getTransitionColorOUT()
+        if self._nextSceneName == None:
+            self._nextSceneName   = sceneName
+            self._nextSceneParams = params
+            self._maxTime         = self._scenes[self._currentSceneName].getTransitionTimeOUT()
+            self._currentTime     = 0
+            self._color           = self._scenes[self._currentSceneName].getTransitionColorOUT()
         else:
             raise ValueError(f"[ERR] cannot select scene {sceneName} : transition in progress !")
 
     def getCurrentSceneName(self):
-        return self.currentSceneName
+        return self._currentSceneName
 
     def pause(self):
-        self.onPause = True
+        self._onPause = True
 
     def resume(self):
-        self.onPause = False
+        self._onPause = False
 
     def isPaused(self):
-        return self.onPause
+        return self._onPause
 
 
     ## -------------------------------------
@@ -90,39 +87,39 @@ class SceneSystem():
     ## -------------------------------------
     def __updateTransition(self, deltaTime):
         # increase timer
-        self.currentTime = self.currentTime + deltaTime
+        self._currentTime = self._currentTime + deltaTime
         # OUT phase
-        if self.nextSceneName != None:
-            if self.currentTime >= self.maxTime:
+        if self._nextSceneName != None:
+            if self._currentTime >= self._maxTime:
                 # First time we arrive here, we check for params
-                if self.nextSceneParams != None:
-                    self.scenes[self.nextSceneName].init(self.nextSceneParams)
-                    self.nextSceneParams = None
+                if self._nextSceneParams != None:
+                    self._scenes[self._nextSceneName].init(self._nextSceneParams)
+                    self._nextSceneParams = None
                 # switch to IN phase
-                self.currentSceneName = self.nextSceneName
-                self.currentTime     -= self.maxTime
-                self.maxTime          = self.scenes[self.nextSceneName].getTransitionTimeIN()
-                self.color            = self.scenes[self.nextSceneName].getTransitionColorIN()
-                self.nextSceneName    = None
+                self._currentSceneName = self._nextSceneName
+                self._currentTime     -= self._maxTime
+                self._maxTime          = self._scenes[self._nextSceneName].getTransitionTimeIN()
+                self._color            = self._scenes[self._nextSceneName].getTransitionColorIN()
+                self._nextSceneName    = None
         # IN Phase
         else:
             # saturate the current time
-            self.currentTime = min(self.maxTime, self.currentTime)
+            self._currentTime = min(self._maxTime, self._currentTime)
 
     def __getTransitionColor(self):
         # OUT phase
-        if self.nextSceneName != None:
-            alpha = self.currentTime/self.maxTime
+        if self._nextSceneName != None:
+            alpha = self._currentTime / self._maxTime
         # IN phase
         else:
-            alpha = 1.0 - (self.currentTime/self.maxTime)
+            alpha = 1.0 - (self._currentTime / self._maxTime)
             if alpha <= 0:
                 # no use to display a full transparent screen
                 # when the transition is over
                 return None
         # concatenate RGB and ALPHA
         alpha = int(255*alpha)
-        return self.color + (alpha,)
+        return self._color + (alpha,)
 
 
     ## -------------------------------------
@@ -130,11 +127,11 @@ class SceneSystem():
     ## -------------------------------------
     def updateCurrentScene(self, deltaTime):
         # we need at least one scene
-        if self.currentSceneName != None:
+        if self._currentSceneName != None:
             # update transition information
             self.__updateTransition(deltaTime)
             # Get scene ref
-            scn = self.scenes[self.currentSceneName]
+            scn = self._scenes[self._currentSceneName]
             # Display debug info on console output
             scn.displayDebugInfo()
             # update
@@ -143,8 +140,8 @@ class SceneSystem():
 
     def drawCurrentScene(self):
         # we need at least one scene
-        if self.currentSceneName != None:
-            scn = self.scenes[self.currentSceneName]
+        if self._currentSceneName != None:
+            scn = self._scenes[self._currentSceneName]
             # draw current scene
             scn.draw()
             # draw color mask in case of transitions
@@ -160,22 +157,22 @@ class SceneSystem():
     ## Input management
     ## -------------------------------------
     def dispatchKeyEvent(self, key, isPressed):
-        if self.currentSceneName != None:
-            self.scenes[self.currentSceneName].onKeyEvent(key, isPressed)
+        if self._currentSceneName != None:
+            self._scenes[self._currentSceneName].onKeyEvent(key, isPressed)
 
     def dispatchMouseButtonEvent(self, buttonName, x, y, isPressed):
-        if self.currentSceneName != None:
-            self.scenes[self.currentSceneName].onMouseButtonEvent(buttonName, x, y, isPressed)
+        if self._currentSceneName != None:
+            self._scenes[self._currentSceneName].onMouseButtonEvent(buttonName, x, y, isPressed)
 
     def dispatchMouseMotionEvent(self, x, y, dx, dy):
-        if self.currentSceneName != None:
-            self.scenes[self.currentSceneName].onMouseMotionEvent(x, y, dx, dy)
+        if self._currentSceneName != None:
+            self._scenes[self._currentSceneName].onMouseMotionEvent(x, y, dx, dy)
 
     def dispatchGamepadButtonEvent(self, gamepadNum, buttonName, isPressed):
-        if self.currentSceneName != None:
-            self.scenes[self.currentSceneName].onGamepadButtonEvent(gamepadNum, buttonName, isPressed)
+        if self._currentSceneName != None:
+            self._scenes[self._currentSceneName].onGamepadButtonEvent(gamepadNum, buttonName, isPressed)
 
     def dispatchGamepadAxisEvent(self, gamepadNum, axisName, analogValue):
-        if self.currentSceneName != None:
-            self.scenes[self.currentSceneName].onGamepadAxisEvent(gamepadNum, axisName, analogValue)
+        if self._currentSceneName != None:
+            self._scenes[self._currentSceneName].onGamepadAxisEvent(gamepadNum, axisName, analogValue)
 

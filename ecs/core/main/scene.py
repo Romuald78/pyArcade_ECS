@@ -23,7 +23,7 @@ class Scene():
     # Static field
     _maxSceneID = 0
     @staticmethod
-    def getNewID():
+    def _getNewID():
         Scene._maxSceneID += 1
         return Scene._maxSceneID
 
@@ -37,7 +37,7 @@ class Scene():
         self._consoleDebug = False
         self._drawDebug    = False
         self._dimensions   = (W,H)
-        self._ID           = Scene.getNewID()
+        self._ID           = Scene._getNewID()
         self._name         = sceneName
         self._debugName    = f"s_{sceneName}_{self._ID}"
         # prepare entity dict
@@ -102,7 +102,7 @@ class Scene():
         # remove from name dict
         for entName in self._entByName:
             if entRef in self._entByName[entName]:
-                self._entByName[entName].remove(entRef)
+                self._entByName[entName].removeScene(entRef)
                 if len(self._entByName[entName]) == 0:
                     emptyNames.append(entName)
         # Clean empty names

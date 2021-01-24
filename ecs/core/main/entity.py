@@ -92,7 +92,7 @@ class Entity():
         # remove from name dict
         for compName in self._compByName:
             if cmpRef in self._compByName[compName]:
-                self._compByName[compName].remove(cmpRef)
+                self._compByName[compName].removeScene(cmpRef)
             if len(self._compByName[compName]) == 0:
                 emptyNames.append(compName)
         # clean empty names

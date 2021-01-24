@@ -9,15 +9,16 @@ from shmup.scenes.splash import SplashScreen
 
 class Main:
 
+    # FEATURE : use modifiers for key and mouse buttons (modifers would be given by Launcher)
 
     ### ====================================================================================================
     ### CONSTRUCTOR
     ### ====================================================================================================
     def __init__(self):
-        self.sceneMgr = SceneSystem()
-        self.sceneMgr.addScene( SplashScreen(self.sceneMgr, "SPLASH"   ) )
-        self.sceneMgr.addScene( Selection   (self.sceneMgr, "SELECTION") )
-        self.sceneMgr.addScene( InGame      (self.sceneMgr, "INGAME"   ) )
+        self._sceneMgr = SceneSystem()
+        self._sceneMgr.addScene(SplashScreen(self._sceneMgr, "SPLASH"))
+        self._sceneMgr.addScene(Selection   (self._sceneMgr, "SELECTION"))
+        self._sceneMgr.addScene(InGame      (self._sceneMgr, "INGAME"))
 
 
     ### ====================================================================================================
@@ -31,14 +32,14 @@ class Main:
     ### UPDATE
     ### ====================================================================================================
     def update(self,deltaTime):
-        self.sceneMgr.updateCurrentScene(deltaTime)
+        self._sceneMgr.updateCurrentScene(deltaTime)
         
 
     ### ====================================================================================================
     ### RENDERING
     ### ====================================================================================================
     def draw(self):
-        self.sceneMgr.drawCurrentScene()
+        self._sceneMgr.drawCurrentScene()
 
 
     ### ====================================================================================================
@@ -47,7 +48,7 @@ class Main:
     ### ====================================================================================================
     def mainKeyEvent(self, key, isPressed):
         #print(f"key={key} - isPressed={isPressed}")
-        self.sceneMgr.dispatchKeyEvent(key, isPressed)
+        self._sceneMgr.dispatchKeyEvent(key, isPressed)
 
 
     ### ====================================================================================================
@@ -56,7 +57,7 @@ class Main:
     ### ====================================================================================================
     def mainButtonEvent(self, gamepadNum,buttonName,isPressed):
         #print(f"GamePad={gamepadNum} - ButtonNum={buttonName} - isPressed={isPressed}")
-        self.sceneMgr.dispatchGamepadButtonEvent(gamepadNum, buttonName, isPressed)
+        self._sceneMgr.dispatchGamepadButtonEvent(gamepadNum, buttonName, isPressed)
 
 
     ### ====================================================================================================
@@ -65,7 +66,7 @@ class Main:
     ### ====================================================================================================
     def mainAxisEvent(self, gamepadNum,axisName,analogValue):
         #print(f"GamePad={gamepadNum} - AxisName={axisName} - Value={analogValue}")
-        self.sceneMgr.dispatchGamepadAxisEvent(gamepadNum, axisName, analogValue)
+        self._sceneMgr.dispatchGamepadAxisEvent(gamepadNum, axisName, analogValue)
 
 
     ### ====================================================================================================
@@ -73,7 +74,7 @@ class Main:
     ### ====================================================================================================
     def mainMouseMotionEvent(self,x,y,dx,dy):
         #print(f"MOUSE MOTION : x={x}/y={y} dx={dx}/dy={dy}")
-        self.sceneMgr.dispatchMouseMotionEvent(x, y, dx, dy)
+        self._sceneMgr.dispatchMouseMotionEvent(x, y, dx, dy)
 
 
     ### ====================================================================================================
@@ -82,5 +83,5 @@ class Main:
     ### ====================================================================================================
     def mainMouseButtonEvent(self,buttonName,x,y,isPressed):
         #print(f"MOUSE BUTTON : x={x}/y={y} buttonNum={buttonName} isPressed={isPressed}")
-        self.sceneMgr.dispatchMouseButtonEvent(buttonName, x, y, isPressed)
+        self._sceneMgr.dispatchMouseButtonEvent(buttonName, x, y, isPressed)
 

@@ -19,8 +19,13 @@ TITLE = "pyArcade-ECS"
 ### ====================================================================================================
 ### GAME CLASS
 ### ====================================================================================================
-class MyGame(arcade.Window):
+class Launcher(arcade.Window):
 
+
+    # FEATURE : try to remove all arcade dependencies in the Main class (keep arcade in launcher)
+
+    # FEATURE : REVIEW the design in order to remove as much as possible user scene calls to
+    # ECS system May be the Main file could be a upper class for the real user main ... to be continued
 
     BUTTON_NAMES = ["A",
                     "B",
@@ -53,10 +58,10 @@ class MyGame(arcade.Window):
     # ----------------------------------
     def __onButtonPressed(self, _gamepad, button):
         idx = self.gamepads[_gamepad]
-        self.onButtonPressed(idx, MyGame.BUTTON_NAMES[button])
+        self.onButtonPressed(idx, Launcher.BUTTON_NAMES[button])
     def __onButtonReleased(self, _gamepad, button):
         idx = self.gamepads[_gamepad]
-        self.onButtonReleased(idx, MyGame.BUTTON_NAMES[button])
+        self.onButtonReleased(idx, Launcher.BUTTON_NAMES[button])
     def __onCrossMove(self, _gamepad, x, y):
         idx = self.gamepads[_gamepad]
         self.onCrossMove(idx, x, -y)
@@ -80,12 +85,14 @@ class MyGame(arcade.Window):
         # self.set_fullscreen(True)
         # self.set_viewport(0, 1920*2, 0, 1080*2)
 
+        # FEATURE : use key and mouse modifiers (Ctrl, Alt, Shift, ...)
+
         # Init process object
         self.process = Main()
         # Set application window background color
         arcade.set_background_color(arcade.color.BLACK)
         # Store gamepad list
-        self.gamepads = arcade.get_joysticks()
+        self.gamepads = arcade.get_game_controllers()
         # Check every connected gamepad
         if self.gamepads:
             for g in self.gamepads:
@@ -124,13 +131,12 @@ class MyGame(arcade.Window):
         arcade.start_render()
         self.process.draw()
         measure = time.time() - measure
+
         self.drawTime.append(measure)
         self.drawTime = self.drawTime[-60:]
         arcade.draw_text("FPS   : "+str(int(60 / sum(self.frameTime))), 12, 12, (255, 255, 255))
         arcade.draw_text("Draw  : "+str(round(sum(self.updateTime)*50/3,3))+"ms"      , 12, 24, (255, 255, 255))
         arcade.draw_text("Update: "+str(round(sum(self.drawTime  )*50/3,3))+"ms"      , 12, 36, (255, 255, 255))
-
-        arcade.draw_text("[X]", 2000, 1200, (255,0,0))
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
@@ -176,18 +182,18 @@ class MyGame(arcade.Window):
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # GAMEPAD BUTTON PRESSED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    def onButtonPressed(self, gamepadNum, buttonNum):
+    def onButtonPressed(self, gamepadNum, buttonName):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
-        self.process.mainButtonEvent(gamepadNum,buttonNum,True)
+        self.process.mainButtonEvent(gamepadNum,buttonName,True)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # GAMEPAD BUTTON RELEASED events
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    def onButtonReleased(self, gamepadNum, buttonNum):
+    def onButtonReleased(self, gamepadNum, buttonName):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
-        self.process.mainButtonEvent(gamepadNum,buttonNum,False)
+        self.process.mainButtonEvent(gamepadNum,buttonName,False)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
@@ -258,7 +264,7 @@ def main():
     title      = TITLE
     fullScreen = False
 
-    game = MyGame(width, height, title, fullScreen)
+    game = Launcher(width, height, title, fullScreen)
     game.set_vsync(True)
     game.setup()
     arcade.run()
