@@ -4,28 +4,58 @@ from shmup.common.constants import Z_INDEX_STARS
 
 
 class PlayerCollision(Script):
-
-    def __init__(self, gfx1, gfx2, W, H, entBurst, compName=None):
+    def __init__(self, phyWorld, fox, gfx1, gfx2, colTyp1, colTyp2,  entBurst, compName=None):
+        # Call to parent
         super().__init__(compName)
+        # Store fields
         self._lastHitDuration = 0
-        self._gfx1 = gfx1
-        self._gfx2 = gfx2
-        self._w    = W
-        self._h    = H
-        self._entBurst = entBurst
+        self._entBurst  = entBurst
+        self._phyWorld  = phyWorld
+        self._gfx1      = gfx1
+        self._gfx2      = gfx2
+        self._foxRef    = fox
+        self._inContact = False
+        # Create collision handler
+        handler = phyWorld.add_collision_handler(colTyp1, colTyp2)
+        handler.data["scriptRef"] = self
+        handler.data["gfx1"]      = gfx1
+        handler.data["gfx2"]      = gfx2
+        print(handler.data)
+        handler.begin    = PlayerCollision.beginCollision
+        handler.separate = PlayerCollision.endCollision
+
+    @staticmethod
+    def beginCollision(arbiter, space, data):
+        # Get current script ref
+        scriptRef = data["scriptRef"]
+        # Get gfx refs
+        gfx1 = data["gfx1"]
+        gfx2 = data["gfx2"]
+        # Check players
+        if gfx1 == scriptRef._gfx1 and gfx2 == scriptRef._gfx2:
+            scriptRef._inContact = True
+        return False
+
+    @staticmethod
+    def endCollision(arbiter, space, data):
+        # Get current script ref
+        scriptRef = data["scriptRef"]
+        # Get gfx refs
+        gfx1 = data["gfx1"]
+        gfx2 = data["gfx2"]
+        # Check players
+        if gfx1 == scriptRef._gfx1 and gfx2 == scriptRef._gfx2:
+            scriptRef._inContact = False
+        return False
 
     def updateScript(self, scriptName, deltaTime):
         # update last hit
         if self._lastHitDuration < 1:
-            self._lastHitDuration += deltaTime
-        else:
-            # get player positions
-            x1,y1 = self._gfx1.getPosition()
-            x2,y2 = self._gfx2.getPosition()
-            # get inter player dist
-            dx  = abs(x1-x2)
-            dy  = abs(y1-y2)
-            if dx < self._w/2 and dy<self._h/2:
+            if not self._inContact:
+                self._lastHitDuration += deltaTime
+        elif self._inContact:
+                x1, y1 = self._gfx1.getPosition()
+                x2, y2 = self._gfx2.getPosition()
                 # There is a collision create a burst emitter
                 params  = {"x0"           : (x1+x2)/2,
                            "y0"           : (y1+y2)/2,
@@ -39,7 +69,7 @@ class PlayerCollision(Script):
                            "partInterval" : 0.070,
                            "totalDuration": 0.30
                            }
-                starBurst = GfxBurstEmitter(self._gfx1.getScene(),params,Z_INDEX_STARS,"starBurst")
+                starBurst = GfxBurstEmitter(params,Z_INDEX_STARS,"starBurst")
                 self._entBurst.addComponent(starBurst)
-                # reinit timer
+                # reinit timer and collision
                 self._lastHitDuration = 0

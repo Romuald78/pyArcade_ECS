@@ -7,6 +7,7 @@ from ecs.user.script.scene import PauseToggle, Pause2Buttons
 from shmup.common.constants import *
 from shmup.factories.player import InGamePlayerFactory
 from shmup.scripts.collisions import PlayerCollision
+from shmup.scripts.fox import Fox
 
 
 class InGame(Scene):
@@ -36,15 +37,15 @@ class InGame(Scene):
         print(f"Init IN-GAME scene with {params}")
 
         # create Entity for global scene management
-        eManagement = Entity("Management")
-        eCollisions = Entity("Collisions")
+        eManagement    = Entity("Management")
+        eCollideBursts = Entity("CollideBursts")
 
         # Create entities for all players
         ePlayers = []
         for playerName in params:
             # retrieve parameters
-            playerInfo = params[playerName]
-            playerCtrlID   = playerInfo["ctrlID"]
+            playerInfo   = params[playerName]
+            playerCtrlID = playerInfo["ctrlID"]
 
             # Add pause components
             self._addPauseComponents(eManagement, playerCtrlID)
@@ -58,15 +59,27 @@ class InGame(Scene):
 
         # If there are at least two players
         # create collisions
-        if len(ePlayers) > 1:
-            gfx1    = ePlayers[0].getComponentsByName("ShipGfx")[0]
-            gfx2    = ePlayers[1].getComponentsByName("ShipGfx")[0]
-            collide = PlayerCollision(gfx1, gfx2, 128, 64, eCollisions, "Collide")
-            eManagement.addComponent(collide)
-            pass
+        for i in range(len(ePlayers)):
+            for j in range(i+1,len(ePlayers)):
+                gfx1   = ePlayers[i].getComponentsByName("shipGfx")[0]
+                gfx2   = ePlayers[j].getComponentsByName("shipGfx")[0]
+                phy1   = ePlayers[i].getComponentsByName("shipPhy")[0]
+                phy2   = ePlayers[j].getComponentsByName("shipPhy")[0]
+                print(f"Add {gfx1} {gfx2}")
+                colTyp1 = phy1.getCollisionType()
+                colTyp2 = phy2.getCollisionType()
+                fox    = None
+                # Create Fox component
+                if i==0 and j==0:
+                    fox = Fox(gfx1,"FoxRules")
+                    eManagement.addComponent(fox)
+                # Create all collisions
+                collide = PlayerCollision(self.getPhysicWorld(), fox, gfx1, gfx2, colTyp1, colTyp2, eCollideBursts, f"Collide{i}{j}")
+                eManagement.addComponent(collide)
+
 
         # Add collisions entity
-        self.addEntity(eCollisions)
+        self.addEntity(eCollideBursts)
 
         # Add Management entity in the scene
         self.addEntity(eManagement)

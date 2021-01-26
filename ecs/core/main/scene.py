@@ -155,9 +155,16 @@ class Scene():
     ## GFX DISPLAY NOTIFICATIONS
     ## -------------------------------------
     def notifyUpdateVisible(self, gfxComp):
-        self._world._gfxMgr.notifyUpdateVisible(gfxComp)
+        self._world.notifyUpdateVisible(gfxComp)
     def notifyUpdateZIndex(self, gfxComp):
-        self._world._gfxMgr.notifyUpdateZIndex(gfxComp)
+        self._world.notifyUpdateZIndex(gfxComp)
+
+
+    ## -------------------------------------
+    ## PHYSIC WORLD
+    ## -------------------------------------
+    def getPhysicWorld(self):
+        return self._world.getPhysicWorld()
 
 
     ## -------------------------------------

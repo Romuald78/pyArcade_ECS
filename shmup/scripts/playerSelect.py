@@ -28,6 +28,7 @@ class PlayerSelection(Script):
                 for p in self._players:
                     i += 1
                     tmpName = f"Player {i}"
+                    self._players[p]["playerNum"] = i
                     self._players[p]["name"] = tmpName
                     params[tmpName]          = self._players[p]
                 # Switch to in-game scene

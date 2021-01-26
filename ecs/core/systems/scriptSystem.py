@@ -59,10 +59,13 @@ class ScriptSystem():
         self._scrByRef[scriptRef] = scriptName
 
     def remove(self, scriptRef):
-        # browse dict and remove when found
+        # Remove from ref dict
         if scriptRef in self._scrByRef:
             self._scrByRef.pop(scriptRef)
-
+        # Remove from name dict
+        for nam in self._scrByName:
+            if scriptRef in self._scrByName[nam]:
+                self._scrByName[nam].remove(scriptRef)
 
     ## -------------------------------------
     ## Main method

@@ -135,7 +135,7 @@ class GfxSystem():
                     ref.update()
                     # Remove burst emitters if finished
                     if type == Gfx.TYPE_BURST:
-                        if ref.can_reap():
+                        if cmpRef.isFinished():
                             ref2Remove.append(cmpRef)
         # Send notification to remove useless gfx components
         for comp in ref2Remove:
@@ -149,7 +149,7 @@ class GfxSystem():
 
 
     ## -------------------------------------
-    ## Setters / Getters
+    ## COMPONENT NOTIFICATIONS
     ## -------------------------------------
     def notifyUpdateZIndex(self, compRef):
         # check visibility to select the list

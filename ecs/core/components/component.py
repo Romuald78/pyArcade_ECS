@@ -41,6 +41,11 @@ class Component():
     # User defined
     TYPE_IDLE_MASK     = 0x8000
     TYPE_IDLE          = TYPE_IDLE_MASK | 0x01
+    # Physic
+    TYPE_PHYSIC_MASK   = 0x10000
+    TYPE_PHYSIC_BOX    = TYPE_PHYSIC_MASK | 0x01
+    TYPE_PHYSIC_DISC   = TYPE_PHYSIC_MASK | 0x02
+
     # User Strings
     TYPE_INFO = {
         TYPE_SCRIPT         : {"name" : "Script",
@@ -69,6 +74,11 @@ class Component():
                                "color": (255,255,64)},
         TYPE_IDLE           : {"name": "User",
                                "color": (192,192,192)},
+        TYPE_PHYSIC_BOX     : {"name": "PhysicBox",
+                               "color": (192, 64, 192)},
+        TYPE_PHYSIC_DISC    : {"name": "PhysicDisc",
+                               "color": (192, 64, 192)},
+
     }
 
 

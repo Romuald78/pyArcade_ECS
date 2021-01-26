@@ -3,6 +3,7 @@ from ecs.core.components.component import Component
 from ecs.core.systems.gfxSystem import GfxSystem
 from ecs.core.systems.idleSystem import IdleSystem
 from ecs.core.systems.inputSystem import InputSystem
+from ecs.core.systems.physicSystem import PhysicSystem
 from ecs.core.systems.scriptSystem import ScriptSystem
 
 
@@ -19,6 +20,7 @@ class World():
         self._gfxMgr    = GfxSystem()
         self._scriptMgr = ScriptSystem()
         self._idleMgr   = IdleSystem()
+        self._phyMgr    = PhysicSystem()
 
 
     ## -------------------------------------
@@ -62,6 +64,10 @@ class World():
         # USER components
         elif compType == Component.TYPE_IDLE:
             self._idleMgr.add(compRef)
+        # PHYSIC
+        elif (compType & Component.TYPE_PHYSIC_MASK) == Component.TYPE_PHYSIC_MASK:
+            self._phyMgr.add(compRef)
+        # /!\ UNKNOWN COMPONENT TYPES /!\
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")
 
@@ -76,12 +82,24 @@ class World():
     ## COMPONENT NOTIFICATIONS
     ## -------------------------------------
     def notifyAddComponent(self, cmpRef):
-        # Register Gfx component into the system
         self._registerComponent(cmpRef)
 
     def notifyRemoveComponent(self, cmpRef):
-        # Unregister Gfx component kinto the system
         self._unregisterComponent(cmpRef)
+
+    def notifyUpdateVisible(self, gfxComp):
+        self._gfxMgr.notifyUpdateVisible(gfxComp)
+
+    def notifyUpdateZIndex(self, gfxComp):
+        self._gfxMgr.notifyUpdateZIndex(gfxComp)
+
+
+    ## -------------------------------------
+    ## PHYSIC WORLD
+    ## -------------------------------------
+    def getPhysicWorld(self):
+        return self._phyMgr.getPhysicWorld()
+
 
 
     ## -------------------------------------
@@ -89,11 +107,13 @@ class World():
     ## -------------------------------------
     def update(self, deltaTime):
         isOnPause = self._scene.isPaused()
+        self._phyMgr.updatePhysicEngine(deltaTime, isOnPause)
         self._scriptMgr.updateAllScripts(deltaTime, isOnPause)
         self._gfxMgr.updateAllGfx(deltaTime, isOnPause)
 
     def draw(self):
         self._gfxMgr.drawAllGfx()
+        self._phyMgr.drawDebug()
 
 
     ## -------------------------------------

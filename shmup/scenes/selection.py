@@ -22,7 +22,7 @@ class Selection(Scene):
             "filePath": f"resources/images/backgrounds/playerSelection.png",
             "size": (SCREEN_WIDTH, SCREEN_HEIGHT)
         }
-        wallpaper = GfxSimpleSprite(self, params, 1000, "wallpaper")
+        wallpaper = GfxSimpleSprite(params, 1000, "wallpaper")
         wallpaper.setPosition((SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
 
         # Add gamepad button input
