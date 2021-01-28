@@ -63,7 +63,7 @@ class Physic(Component):
 
 
     # movement
-    def applyForce(self, dx, dy):
+    def applyImpulse(self, dx, dy):
         vect = (dx,dy)
         return self._bodiesAndShapes[0][0].apply_impulse_at_local_point(vect)
 
@@ -142,3 +142,71 @@ class PhysicDisc(Physic):
     def drawDebug(self):
         xc,yc = self.getPosition()
         arcade.draw_circle_outline(xc,yc,64,(255,255,255))
+
+
+
+
+class PhysicCollision(Component):
+
+    def __init__(self, compName=None):
+        # Call to parent
+        super().__init__(compName)
+
+    def getType(self):
+        return Component.TYPE_PHY_COLLIDE
+
+    def registerCollisionHandler(self):
+        raise ValueError("[ERR] PhysicCollision registerCollisionHandler method has not been implemented yet !")
+
+
+class PhysicSensor(PhysicCollision):
+
+    def __init__(self, colTyp1, colTyp2, compName=None):
+        # Call to parent
+        super().__init__(compName)
+        # Store handler fields
+        self._typ1 = colTyp1
+        self._typ2 = colTyp2
+        # Fields
+        self._value       = False
+        self._risingEdge  = False
+        self._fallingEdge = False
+
+
+    def registerCollisionHandler(self):
+        entity = self.getEntity()
+        scene = entity.getScene()
+        data = {}
+        callbacks = {
+            "begin"   : self.beginCollision,
+            "separate": self.endCollision
+        }
+        scene.addCollisionHandler(self._typ1, self._typ2, callbacks, data)
+
+
+    def beginCollision(self, arbiter, space, data):
+        self._value      = True
+        self._risingEdge = True
+        return False
+    def endCollision(self, arbiter, space, data):
+        self._value       = False
+        self._fallingEdge = True
+        return False
+
+
+    def getCollisionType1(self):
+        return self._typ1
+    def getCollisionType2(self):
+        return self._typ2
+
+
+    def isActive(self):
+        return self._value
+    def hasBeenActivated(self):
+        res = self._risingEdge
+        self._risingEdge = False
+        return res
+    def hasBeenDeactivated(self):
+        res = self._fallingEdge
+        self._fallingEdge = False
+        return res

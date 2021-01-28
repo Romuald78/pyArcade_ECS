@@ -42,6 +42,11 @@ class Gfx(Component):
         self._gfxType   = None
         self._visible   = True
 
+    # Remove the reference to the arcade gfx element
+    def kill(self):
+        self._arcadeGfx.kill()
+        self._arcadeGfx = None
+
     def getGfx(self):
         if self._arcadeGfx == None:
             raise ValueError("[ERR] gfx : arcade gfx reference has not been set yet !")
@@ -111,12 +116,6 @@ class GfxOneSPrite(Gfx):
     def getPosition(self):
         return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
 
-    # angle
-    def setAngle(self, newAng):
-        self._arcadeGfx.angle = newAng
-    def getAngle(self):
-        return self._arcadeGfx.angle
-
     # Orientation
     # QUESTION : is there a problem not to be in a specific range like [0-360] or [-180-180] ?
     # FEATURE  : improve methods to handle pivot points
@@ -127,6 +126,12 @@ class GfxOneSPrite(Gfx):
         self._arcadeGfx.angle = newAngle
     def getAngle(self):
         return self._arcadeGfx.angle
+
+    # Dimensions
+    def getWidth(self):
+        return self._arcadeGfx.width
+    def getHeight(self):
+        return self._arcadeGfx.height
 
     # Scale
     def setScale(self, newScale):
@@ -167,21 +172,50 @@ class GfxAnimatedSprite(GfxOneSPrite):
 
 
 #-----------------------------------
-class GfxSpriteList(Gfx):
+class GfxAnimSpriteList(Gfx):
 
     # Constructor
-    def __init__(self, compName=None):
+    def __init__(self, zIdx=0, compName=None):
         if compName == None:
             compName = "SPRITELIST"
         # call to parent constructor
         super().__init__(compName)
+        # set type
+        self._gfxType = Component.TYPE_ANIM_LIST
+        # Gfx Comps
+        self._arcadeGfx = arcade.SpriteList()
+        self._gfxs = []
+        # Store zIndex
+        self._zIndex = zIdx
 
     # Filling
-    def addSprite(self, params):
-        raise ValueError("[ERR] GfxSPriteList - add : this method has not been implemented yet !")
+    # TODO when adding components, for the moment, add them according to the Z Index
+    # Improvement would be to have a local list here with zIndex in order
+    # to add components one by one without knowing their order
+    # in fact if we change the zIndex of a comp in the list,
+    # it won't change the z for the drawing part : take care !
+    def addSprite(self, spriteComp):
+        # the added component is so not visible as part of the sprite list
+        # it is not visible from the Gfx System point of view
+        # but the whole sprite list will be
+        spriteComp.hide()
+        # Add it to the list
+        if spriteComp in self._gfxs:
+            raise ValueError("[ERR] sprite Component already in the Sprite list !")
+        self._gfxs.append(spriteComp)
+        # Add the arcade sprite into the arcade sprite list
+        arcSpr = spriteComp.getGfx()
+        self._arcadeGfx.append(arcSpr)
 
     # Removing
-    # FEATURE : remove Sprite from list (@index ?, using ref ?)
+    def removeSprite(self, spriteComp):
+        # Remove from comp list
+        if spriteComp not in  self._gfxs:
+            raise ValueError("[ERR] sprite comp not the in sprite list !")
+        self._gfxs.remove(spriteComp)
+        # Remove from arcade sprite list
+        arcSpr = spriteComp.getGfx()
+        self._arcadeGfx.remove(arcSpr)
 
     # Position
     def move(self, dx, dy):
@@ -201,46 +235,6 @@ class GfxSpriteList(Gfx):
     def getSprite(self,index):
         return self._arcadeGfx[index]
 
-
-
-#-----------------------------------
-class GfxSimpleSpriteList(GfxSpriteList):
-
-    # Constructor
-    def __init__(self, zIdx=0, compName=None):
-        if compName == None:
-            compName = "FixedList"
-        # call to parent constructor
-        super().__init__(compName)
-        # set type
-        self._gfxType   = Component.TYPE_SIMPLE_SPRITE
-        # create Gfx element
-        self._arcadeGfx = arcade.SpriteList()
-        self._zIndex = zIdx
-
-    # Override parent method
-    def addSprite(self, params):
-        newSprite = createSimpleSprite(params)
-        self._arcadeGfx.append(newSprite)
-
-#-----------------------------------
-class GfxAnimatedSpriteList(GfxSpriteList):
-
-    def __init__(self, zIdx=0, compName=None):
-        if compName == None:
-            compName = "AnimList"
-        # call to parent constructor
-        super().__init__(compName)
-        # set type
-        self._gfxType   = Component.TYPE_SIMPLE_SPRITE
-        # create Gfx element
-        self._arcadeGfx = arcade.SpriteList()
-        self._zIndex    = zIdx
-
-    # Override parent method
-    def addSprite(self, params):
-        newSprite = createAnimatedSprite(params)
-        self._arcadeGfx.append(newSprite)
 
 
 

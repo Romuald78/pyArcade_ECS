@@ -10,6 +10,8 @@
 ## IMPORTS
 ## ============================================================
 from ecs.core.components.gfx import Gfx
+import sys
+
 
 
 ## ============================================================
@@ -92,6 +94,17 @@ class GfxSystem():
 
 
     ## -------------------------------------
+    ## DEBUG
+    ## -------------------------------------
+    def getMemoryInfo(self):
+        res = {
+            "gfxVis": f"{sys.getsizeof(self._visibleComps)}/{len(self._visibleComps)}",
+            "gfxHid" :f"{sys.getsizeof(self._hiddenComps)}/{len(self._hiddenComps)}"
+        }
+        return res
+
+
+    ## -------------------------------------
     ## Register methods
     ## -------------------------------------
     def registerGfx(self, cmpRef):
@@ -111,6 +124,9 @@ class GfxSystem():
             self._hiddenComps.remove(cmpRef)
         else:
             raise ValueError("[ERR] removeGfx : component is not found in any list !")
+        # Unregister sprite from arcade environment
+        cmpRef.kill()
+
 
 
     ## -------------------------------------

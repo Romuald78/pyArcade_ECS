@@ -8,6 +8,8 @@
 ## IMPORTS
 ## ============================================================
 import arcade
+
+from ecs.core.main.loader import ResourceLoader
 from ecs.core.main.world import World
 
 
@@ -36,6 +38,7 @@ class Scene():
         self._world        = World(self)
         self._consoleDebug = False
         self._drawDebug    = False
+        self._drawMemory   = False
         self._dimensions   = (W,H)
         self._ID           = Scene._getNewID()
         self._name         = sceneName
@@ -102,7 +105,7 @@ class Scene():
         # remove from name dict
         for entName in self._entByName:
             if entRef in self._entByName[entName]:
-                self._entByName[entName].removeScene(entRef)
+                self._entByName[entName].remove(entRef)
                 if len(self._entByName[entName]) == 0:
                     emptyNames.append(entName)
         # Clean empty names
@@ -163,8 +166,9 @@ class Scene():
     ## -------------------------------------
     ## PHYSIC WORLD
     ## -------------------------------------
-    def getPhysicWorld(self):
-        return self._world.getPhysicWorld()
+    def addCollisionHandler(self, colType1, colType2, callbacks, data):
+        self._world.addCollisionHandler(colType1, colType2, callbacks, data)
+
 
 
     ## -------------------------------------
@@ -187,9 +191,10 @@ class Scene():
     ## -------------------------------------
     def getDimensions(self):
         return self._dimensions
-    def setDebugMode(self, consoleDebug, drawDebug):
+    def setDebugMode(self, consoleDebug, drawDebug, drawMem):
         self._consoleDebug = consoleDebug
         self._drawDebug    = drawDebug
+        self._drawMemory   = drawMem
     def displayDebugInfo(self):
         if self._consoleDebug:
             msg = "[INFO] Your scene has no implementation of 'displayDebugInfo' method !"
@@ -217,6 +222,22 @@ class Scene():
                     a = ["[_]", "[o]"][comp.isEnabled() and (not self.isPaused() or comp.isEnabledOnPause())]
                     msg = f"{a} {n} ({s})"
                     arcade.draw_text(msg, refX + 30, refY, c, 12)
+
+        if self._drawMemory:
+            # Memory consumption
+            gfxMem = self._world._gfxMgr.getMemoryInfo()
+            scrMem = self._world._scriptMgr.getMemoryInfo()
+            ldrMem = ResourceLoader.getMemoryInfo()
+            mems = [gfxMem, scrMem, ldrMem]
+            refX = 20
+            refY = 300
+            for mem in mems:
+                refY += 15*(len(mem)+1)
+                dY = 15
+                for entry in mem:
+                    value = mem[entry]
+                    arcade.draw_text(f"{entry}:{value}", refX, refY+dY, (255, 255, 255), 12)
+                    dY -= 15
 
 
     ## -------------------------------------

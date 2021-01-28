@@ -76,6 +76,9 @@ class World():
         # Remove GFX component from the system
         if (cmpRef.getType() & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
             self._gfxMgr.removeGfx(cmpRef)
+        # Remove Scripts
+        if (cmpRef.getType() & Component.TYPE_SCRIPT_MASK) == Component.TYPE_SCRIPT_MASK:
+            self._scriptMgr.removeScript(cmpRef)
 
 
     ## -------------------------------------
@@ -97,9 +100,8 @@ class World():
     ## -------------------------------------
     ## PHYSIC WORLD
     ## -------------------------------------
-    def getPhysicWorld(self):
-        return self._phyMgr.getPhysicWorld()
-
+    def addCollisionHandler(self, colTyp1, colTyp2, callbacks, data):
+        return self._phyMgr.addCollisionHandler(colTyp1, colTyp2, callbacks, data)
 
 
     ## -------------------------------------
@@ -113,7 +115,7 @@ class World():
 
     def draw(self):
         self._gfxMgr.drawAllGfx()
-        self._phyMgr.drawDebug()
+        self._phyMgr.drawDebug()    # TODO TMP !!
 
 
     ## -------------------------------------

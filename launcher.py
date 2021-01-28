@@ -59,10 +59,12 @@ class Launcher(arcade.Window):
     # ----------------------------------
     def __onButtonPressed(self, _gamepad, button):
         idx = self.gamepads[_gamepad]
-        self.onButtonPressed(idx, Launcher.BUTTON_NAMES[button])
+        if Launcher.BUTTON_NAMES[button] != None:
+            self.onButtonPressed(idx, Launcher.BUTTON_NAMES[button])
     def __onButtonReleased(self, _gamepad, button):
         idx = self.gamepads[_gamepad]
-        self.onButtonReleased(idx, Launcher.BUTTON_NAMES[button])
+        if Launcher.BUTTON_NAMES[button] != None:
+            self.onButtonReleased(idx, Launcher.BUTTON_NAMES[button])
     def __onCrossMove(self, _gamepad, x, y):
         idx = self.gamepads[_gamepad]
         self.onCrossMove(idx, x, -y)
@@ -135,9 +137,9 @@ class Launcher(arcade.Window):
 
         self.drawTime.append(measure)
         self.drawTime = self.drawTime[-60:]
-        arcade.draw_text("FPS   : "+str(int(60 / sum(self.frameTime))), 12, 12, (255, 255, 255))
-        arcade.draw_text("Draw  : "+str(round(sum(self.updateTime)*50/3,3))+"ms"      , 12, 24, (255, 255, 255))
-        arcade.draw_text("Update: "+str(round(sum(self.drawTime  )*50/3,3))+"ms"      , 12, 36, (255, 255, 255))
+        #arcade.draw_text("FPS   : "+str(int(60 / sum(self.frameTime))), 12, 12, (255, 255, 255))
+        #arcade.draw_text("Draw  : "+str(round(sum(self.updateTime)*50/3,3))+"ms"      , 12, 24, (255, 255, 255))
+        #arcade.draw_text("Update: "+str(round(sum(self.drawTime  )*50/3,3))+"ms"      , 12, 36, (255, 255, 255))
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 

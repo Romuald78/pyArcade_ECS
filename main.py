@@ -2,10 +2,9 @@
 ### IMPORTS
 ### ====================================================================================================
 from ecs.core.systems.sceneSystem import SceneSystem
-from shmup.scenes.ingame import InGame
 from shmup.scenes.selection import Selection
 from shmup.scenes.splash import SplashScreen
-from shmup.scenes.testpymunk import TestPyMunk
+from shmup.scenes.underwater import UnderWater
 
 
 class Main:
@@ -18,13 +17,11 @@ class Main:
     def __init__(self):
         self._sceneMgr = SceneSystem()
 
-        # Test physic component
-        #self._sceneMgr.addScene(TestPyMunk(self._sceneMgr, "PYMUNK"))
-
         # Shmup scenes
         self._sceneMgr.addScene(SplashScreen(self._sceneMgr, "SPLASH"))
         self._sceneMgr.addScene(Selection   (self._sceneMgr, "SELECTION"))
-        self._sceneMgr.addScene(InGame      (self._sceneMgr, "INGAME"))
+        self._sceneMgr.addScene(UnderWater      (self._sceneMgr, "UNDERWATER"))
+
 
 
     ### ====================================================================================================

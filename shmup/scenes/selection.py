@@ -1,4 +1,4 @@
-from ecs.core.components.gfx import GfxSimpleSprite
+from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite
 from ecs.core.components.input import GamepadButton, Input
 from ecs.core.main.entity import Entity
 from ecs.core.main.scene import Scene
@@ -13,24 +13,29 @@ class Selection(Scene):
         # Init parent class
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
-        self.setDebugMode(False, True)
+        self.setDebugMode(False, True, True)
         # init player list
         self.players = {}
 
         # Create background image
         params = {
             "filePath": f"resources/images/backgrounds/playerSelection.png",
-            "size": (SCREEN_WIDTH, SCREEN_HEIGHT)
+            "size": (SCREEN_WIDTH, SCREEN_HEIGHT),
+            "position": (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+            "textureName": f"wallPaper{self.getID()}",
+            "spriteBox": (1, 1, SCREEN_WIDTH, SCREEN_HEIGHT),
+            "startIndex": 0,
+            "endIndex": 0,
+            "frameDuration": 1 / 1
         }
-        wallpaper = GfxSimpleSprite(params, 1000, "wallpaper")
-        wallpaper.setPosition((SCREEN_WIDTH/2,SCREEN_HEIGHT/2))
+        wallpaper = GfxAnimatedSprite(params, 1000, "wallpaper")
 
         # Add gamepad button input
         backButton  = GamepadButton("back",  Input.ALL_GAMEPADS_ID, "VIEW")
         startButton = GamepadButton("start", Input.ALL_GAMEPADS_ID, "MENU")
 
         # Add script to (un)register players
-        register = PlayerSelection(self.players, startButton, backButton, self, "SPLASH", "INGAME")
+        register = PlayerSelection(self.players, startButton, backButton, self, "SPLASH", "UNDERWATER")
 
         # Create Entity + Add all components
         entity = Entity("main")

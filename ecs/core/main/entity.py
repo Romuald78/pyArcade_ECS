@@ -41,9 +41,12 @@ class Entity():
         if self._scene == None:
             raise ValueError("[ERR] component destroy request : no scene linked !")
         # Destroy all components FIRST
-        for ref in self._compByRef:
+        keys = list(self._compByRef.keys())
+        for i in range(len(keys)):
+            ref = keys[i]
+        #for ref in self._compByRef:
             self.removeComponent(ref)
-        # Clean dict
+        # Clean entity dicts
         self._compByName = {}
         self._compByRef  = {}
         # Then ask scene to destroy entity

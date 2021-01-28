@@ -1,7 +1,13 @@
 from ecs.core.components.script import Script
-
+from random import randint
 
 class PlayerSelection(Script):
+
+    COLORS = [ (  0,  0,255) ,
+               (255,  0,  0) ,
+               (  0,255,  0) ,
+               (255,255,  0)
+             ]
 
     def __init__(self, playerDict, startButton, backButton, sceneRef, prevSceneName, nextSceneName):
         super().__init__("playerSelect")
@@ -18,8 +24,6 @@ class PlayerSelection(Script):
             lastID = self._start.getLastGamepadID()
             if not lastID in self._players:
                 self._players[lastID] = {"ctrlID"   : lastID,
-                                         "color"    : (255,255,255),
-                                         "shipType" : "fighter"
                                          }
             else:
                 # prepare params
@@ -29,8 +33,10 @@ class PlayerSelection(Script):
                     i += 1
                     tmpName = f"Player {i}"
                     self._players[p]["playerNum"] = i
-                    self._players[p]["name"] = tmpName
-                    params[tmpName]          = self._players[p]
+                    self._players[p]["name"]      = tmpName
+                    self._players[p]["color"]     = PlayerSelection.COLORS[i-1],
+                    params[tmpName]               = self._players[p]
+                    params[tmpName]["color"] = params[tmpName]["color"][0] # BUG ???????
                 # Switch to in-game scene
                 self._scene.selectNewScene(self._nextScene, params)
         if self._back.hasBeenPressed():

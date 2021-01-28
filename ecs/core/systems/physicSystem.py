@@ -5,8 +5,7 @@
 ## ============================================================
 import pymunk
 
-from ecs.core.components.physic import Physic
-
+from ecs.core.components.physic import Physic, PhysicCollision
 
 
 ## ============================================================
@@ -19,8 +18,8 @@ class PhysicSystem():
     ## PRIVATE METHODS
     ## -------------------------------------
     def __checkType(self, ref):
-        if not isinstance(ref, Physic):
-            raise ValueError(f"[ERR] add physic : bad object type. It should be Physic !\n{ref}")
+        if not isinstance(ref, Physic) and not isinstance(ref, PhysicCollision):
+            raise ValueError(f"[ERR] add physic : bad object type. It should be Physic or PhysicCollision!\n{ref}")
 
 
     ## -------------------------------------
@@ -29,7 +28,7 @@ class PhysicSystem():
     def __init__(self, gravity=(0,0), damping=0.01):
         # Create component dicts
         self._scrByName = {}
-        self._scrByRef = {}
+        self._scrByRef  = {}
         # Create physic environment
         self._space         = pymunk.Space()
         self._space.gravity = gravity
@@ -46,19 +45,26 @@ class PhysicSystem():
         self.__checkType(phyRef)
         # Get script name
         scriptName = phyRef.getName()
-        # Add script into name dict
-        if scriptName not in self._scrByName:
-            self._scrByName[scriptName] = []
-        if phyRef in self._scrByName[scriptName]:
-            raise ValueError("[ERR] physicSystem add : component is already in the name dict !")
-        self._scrByName[scriptName].append(phyRef)
-        # Add script into ref dict
-        if phyRef in self._scrByRef:
-            raise ValueError("[ERR] physicSystem add : component is already in the ref dict !")
-        self._scrByRef[phyRef] = scriptName
-        # Add the body into the physic space
-        bdyList = phyRef.getBodyList()
-        self._space.add(bdyList[0][0],bdyList[0][1])
+        # Check if we have to add a physic body OR a physic collision handler
+        if isinstance(phyRef, Physic):
+            # Add script into name dict
+            if scriptName not in self._scrByName:
+                self._scrByName[scriptName] = []
+            if phyRef in self._scrByName[scriptName]:
+                raise ValueError("[ERR] physicSystem add : component is already in the name dict !")
+            self._scrByName[scriptName].append(phyRef)
+            # Add script into ref dict
+            if phyRef in self._scrByRef:
+                raise ValueError("[ERR] physicSystem add : component is already in the ref dict !")
+            self._scrByRef[phyRef] = scriptName
+            # Add the body into the physic space
+            bdyList = phyRef.getBodyList()
+            self._space.add(bdyList[0][0],bdyList[0][1])
+        else:
+            # COLLISION HANDLERS
+            # TODO : improve system to store collision handler components and be able to remove them also
+            phyRef.registerCollisionHandler()
+
 
     def remove(self, phyRef):
         # Remove from ref dict
@@ -68,8 +74,8 @@ class PhysicSystem():
         for nam in self._scrByName:
             if phyRef in self._scrByName[nam]:
                 self._scrByName[nam].remove(phyRef)
-        # Remove bodies from physic space
-        # TODO !!!!
+        # TODO : Remove bodies from physic space
+        # TODO : check if we are tryinh to remove collision handlers
 
 
     ## -------------------------------------
@@ -102,7 +108,17 @@ class PhysicSystem():
     ## -------------------------------------
     ## PHYSIC WORLD
     ## -------------------------------------
-    def getPhysicWorld(self):
-        return self._space
+    def addCollisionHandler(self, colType1, colType2, callbacks, data):
+        # Create collision handler in physic world
+        handler = self._space.add_collision_handler(colType1, colType2)
+        # add all needed data for the current handler
+        for entry in data:
+            handler.data[entry] = data[entry]
+        # Connect callbacks
+        if "begin" in callbacks:
+            handler.begin    = callbacks["begin"]
+        if "separate" in callbacks:
+            handler.separate = callbacks["separate"]
+
 
 

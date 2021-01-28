@@ -16,7 +16,7 @@
 ## IMPORTS
 ## ============================================================
 from ecs.core.components.script import Script
-
+import sys
 
 
 ## ============================================================
@@ -39,6 +39,18 @@ class ScriptSystem():
         self._scrByName = {}
         self._scrByRef  = {}
 
+
+    ## -------------------------------------
+    ## DEBUG
+    ## -------------------------------------
+    def getMemoryInfo(self):
+        res = {
+            "scrRef":f"{sys.getsizeof(self._scrByRef)}/{len(self._scrByRef)}",
+            "scrNam":f"{sys.getsizeof(self._scrByName)}/{len(self._scrByName)}"
+        }
+        return res
+
+
     ## -------------------------------------
     ## Registering methods
     ## -------------------------------------
@@ -58,21 +70,33 @@ class ScriptSystem():
             raise ValueError("[ERR] scriptSystem add : component is already in the ref dict !")
         self._scrByRef[scriptRef] = scriptName
 
-    def remove(self, scriptRef):
-        # Remove from ref dict
+    def removeScript(self, scriptRef):
+        # empty names to clean
+        emptyNames = []
+        # remove from name dict
+        for compName in self._scrByName:
+            if scriptRef in self._scrByName[compName]:
+                self._scrByName[compName].remove(scriptRef)
+            if len(self._scrByName[compName]) == 0:
+                emptyNames.append(compName)
+        # clean empty names
+        for nam in emptyNames:
+            if nam in self._scrByName:
+                del self._scrByName[nam]
+        # remove from ref dict
         if scriptRef in self._scrByRef:
-            self._scrByRef.pop(scriptRef)
-        # Remove from name dict
-        for nam in self._scrByName:
-            if scriptRef in self._scrByName[nam]:
-                self._scrByName[nam].remove(scriptRef)
+            del self._scrByRef[scriptRef]
+
 
     ## -------------------------------------
     ## Main method
     ## -------------------------------------
     def updateAllScripts(self, deltaTime, isOnPause):
         # Browse all scripts
-        for ref in self._scrByRef:
+        keys = list(self._scrByRef.keys())
+        for i in range(len(keys)):
+            ref = keys[i]
+        #for ref in self._scrByRef:
             # check if this component is enabled
             if ref.isEnabled():
                 #check if this component is enabled during pause or it is not the pause
