@@ -60,10 +60,6 @@ class PhysicSystem():
             # Add the body into the physic space
             bdyList = phyRef.getBodyList()
             self._space.add(bdyList[0][0],bdyList[0][1])
-        else:
-            # COLLISION HANDLERS
-            # TODO : improve system to store collision handler components and be able to remove them also
-            phyRef.registerCollisionHandler()
 
 
     def remove(self, phyRef):
@@ -74,9 +70,9 @@ class PhysicSystem():
         for nam in self._scrByName:
             if phyRef in self._scrByName[nam]:
                 self._scrByName[nam].remove(phyRef)
-        # TODO : Remove bodies from physic space
-        # TODO : check if we are tryinh to remove collision handlers
-
+        # Remove bodies from physic space
+        bdyList = phyRef.getBodyList()
+        self._space.remove(bdyList[0][0], bdyList[0][1])
 
     ## -------------------------------------
     ## UPDATE METHOD

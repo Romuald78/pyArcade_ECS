@@ -31,6 +31,7 @@ class Component():
     SINGLE    = 0x10
     LIST      = 0x20
     PARTICLES = 0x40
+    TEXT      = 0x80
     TYPE_GFX_MASK      = 0x4000
     TYPE_SIMPLE_SPRITE = TYPE_GFX_MASK | SIMPLE    | SINGLE
     TYPE_ANIM_SPRITE   = TYPE_GFX_MASK | ANIMATED  | SINGLE
@@ -38,6 +39,7 @@ class Component():
     TYPE_ANIM_LIST     = TYPE_GFX_MASK | ANIMATED  | LIST
     TYPE_EMITTER       = TYPE_GFX_MASK | UNLIMITED | PARTICLES
     TYPE_BURST         = TYPE_GFX_MASK | LIMITED   | PARTICLES
+    TYPE_TEXT          = TYPE_GFX_MASK | TEXT
     # User defined
     TYPE_IDLE_MASK     = 0x8000
     TYPE_IDLE          = TYPE_IDLE_MASK | 0x01

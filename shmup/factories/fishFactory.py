@@ -1,13 +1,10 @@
 import pymunk
 
-from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite
-from ecs.core.components.input import GamepadAxis
-from ecs.core.components.physic import PhysicBox, PhysicDisc
+from ecs.core.components.gfx import GfxAnimatedSprite
+from ecs.core.components.physic import PhysicDisc
 from ecs.core.main.entity import Entity
-from ecs.user.script.gfxpos import Follow
-from ecs.user.script.phyuserscripts import GfxPhyLink, Move2DAnalogPhy, LimitBoxPhy
-from shmup.common.constants import Z_INDEX_SHIPS, SCREEN_HEIGHT, SCREEN_WIDTH, COLLISION_PLAYER_MASK, ZIDX_CHARS, \
-    COLLISION_FISH_MASK
+from ecs.user.script.phyuserscripts import PhyGfxLink
+from shmup.common.constants import *
 from random import randint
 
 from shmup.scripts.destroyFish import DestroyFish
@@ -119,14 +116,28 @@ class FishFactory():
             "size": fSize,
             "position":(SCREEN_WIDTH+(W//2),randint(H//2,SCREEN_HEIGHT-(H//2)))
         }
-        fishGfx     = GfxAnimatedSprite(params, ZIDX_CHARS, "fishGfx")
+        fishGfx     = GfxAnimatedSprite(params, ZIDX_FISHES, "fishGfx")
         fishMove    = FishMove(fishGfx, speed, ampl, period)
         fishDestroy = DestroyFish(eFish, fishGfx, gfxFishList)
+
+        params = {
+            "mass"         : 0.01,
+            "radius"       : 64,
+            "mode"         : pymunk.Body.KINEMATIC,
+            "pos"          : (10000,10000),
+            "sensor"       : False,
+            "collisionType": COLL_TYPE_FISH,
+        }
+        fishPhy = PhysicDisc(params,"fishPhy")
+        phyGfxLink = PhyGfxLink(fishPhy, fishGfx, "phygfxlink")
+
 
         # add all components to entity
         eFish.addComponent(fishGfx)
         eFish.addComponent(fishMove)
         eFish.addComponent(fishDestroy)
+        eFish.addComponent(fishPhy)
+        eFish.addComponent(phyGfxLink)
 
         # return result
         return eFish

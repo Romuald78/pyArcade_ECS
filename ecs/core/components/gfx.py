@@ -96,6 +96,8 @@ class Gfx(Component):
 ## GFX COMPONENTS
 ## ============================================================
 
+
+
 #-----------------------------------
 class GfxOneSPrite(Gfx):
 
@@ -138,6 +140,30 @@ class GfxOneSPrite(Gfx):
         self._arcadeGfx.scale = newScale
     def getScale(self):
         return self._arcadeGfx.scale
+
+
+#-----------------------------------
+class GfxText(GfxOneSPrite):
+
+    # Constructor
+    def __init__(self, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "textGfx"
+        # call to parent constructor
+        super().__init__(compName)
+        # set type
+        self._gfxType   = Component.TYPE_TEXT
+        # create Gfx element
+        self._params = params
+        self._zIndex    = zIdx
+        self._arcadeGfx = drawText(params)
+
+
+    def setMessage(self, newStr):
+        self._params["message"] = newStr
+        self._arcadeGfx = drawText(self._params)
+
+
 
 #-----------------------------------
 class GfxSimpleSprite(GfxOneSPrite):

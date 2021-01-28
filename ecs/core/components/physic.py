@@ -14,6 +14,8 @@ from ecs.core.components.component import Component
 ## ============================================================
 
 # TODO Handle Kinematic, Static, ...
+from ecs.core.components.script import Script
+
 
 class Physic(Component):
 
@@ -146,67 +148,33 @@ class PhysicDisc(Physic):
 
 
 
-class PhysicCollision(Component):
+class PhysicCollision(Script):
 
-    def __init__(self, compName=None):
-        # Call to parent
-        super().__init__(compName)
-
-    def getType(self):
-        return Component.TYPE_PHY_COLLIDE
-
-    def registerCollisionHandler(self):
-        raise ValueError("[ERR] PhysicCollision registerCollisionHandler method has not been implemented yet !")
-
-
-class PhysicSensor(PhysicCollision):
-
-    def __init__(self, colTyp1, colTyp2, compName=None):
+    def __init__(self, colTyp1, colTyp2, callbacks, data, compName=None):
         # Call to parent
         super().__init__(compName)
         # Store handler fields
-        self._typ1 = colTyp1
-        self._typ2 = colTyp2
-        # Fields
-        self._value       = False
-        self._risingEdge  = False
-        self._fallingEdge = False
+        self._typ1      = colTyp1
+        self._typ2      = colTyp2
+        self._callbacks = callbacks
+        self._data      = data
+        self._isStarted = False
+
+    def updateScript(self, scriptName, deltaTime):
+        # Start collision handler as soon as possible
+        if not self._isStarted:
+            entity = self.getEntity()
+            if entity != None:
+                scene = entity.getScene()
+                if scene != None:
+                    scene.addCollisionHandler(self._typ1, self._typ2, self._callbacks, self._data)
+                    self._isStarted = True
+
+    # Callback names are "begin", "separate"
+    # Their signature contains (arbiter, space, data)
+
+    def stop(self):
+        if self._isStarted:
+            raise ValueError("[ERR] PhysicCollision 'stop' method has not been implemented yet !")
 
 
-    def registerCollisionHandler(self):
-        entity = self.getEntity()
-        scene = entity.getScene()
-        data = {}
-        callbacks = {
-            "begin"   : self.beginCollision,
-            "separate": self.endCollision
-        }
-        scene.addCollisionHandler(self._typ1, self._typ2, callbacks, data)
-
-
-    def beginCollision(self, arbiter, space, data):
-        self._value      = True
-        self._risingEdge = True
-        return False
-    def endCollision(self, arbiter, space, data):
-        self._value       = False
-        self._fallingEdge = True
-        return False
-
-
-    def getCollisionType1(self):
-        return self._typ1
-    def getCollisionType2(self):
-        return self._typ2
-
-
-    def isActive(self):
-        return self._value
-    def hasBeenActivated(self):
-        res = self._risingEdge
-        self._risingEdge = False
-        return res
-    def hasBeenDeactivated(self):
-        res = self._fallingEdge
-        self._fallingEdge = False
-        return res

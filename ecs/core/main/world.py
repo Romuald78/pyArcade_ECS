@@ -79,6 +79,9 @@ class World():
         # Remove Scripts
         if (cmpRef.getType() & Component.TYPE_SCRIPT_MASK) == Component.TYPE_SCRIPT_MASK:
             self._scriptMgr.removeScript(cmpRef)
+        # Remove Physic
+        if (cmpRef.getType() & Component.TYPE_PHYSIC_MASK) == Component.TYPE_PHYSIC_MASK:
+            self._phyMgr.remove(cmpRef)
 
 
     ## -------------------------------------

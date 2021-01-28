@@ -20,6 +20,24 @@ class GfxPhyLink(Script):
         phyAng = self._phy.getAngle()
         self._gfx.setAngle(phyAng*180/math.pi)
 
+class PhyGfxLink(Script):
+
+    # CONSTRUCTOR
+    def __init__(self, phy, gfx, compName=None):
+        super().__init__(compName)
+        self._gfx = gfx
+        self._phy = phy
+
+    # update
+    def updateScript(self, actionName, deltaTime):
+        # copy position
+        gfxPos = self._gfx.getPosition()
+        self._phy.setPosition(gfxPos)
+        # copy angle
+        gfxAng = self._gfx.getAngle()
+        self._phy.setAngle(gfxAng*math.pi/180)
+
+
 
 class Move2DAnalogPhy(Script):
 

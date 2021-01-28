@@ -13,6 +13,7 @@ def createSound(fileName):
     snd = arcade.load_sound(fileName)
     return snd
 
+
 def drawText(params):
     # retrieve parameters
     x       = params["x"]
@@ -26,7 +27,7 @@ def drawText(params):
     bold    = False             if "bold"   not in params else params["bold"  ]
     italic  = False             if "italic" not in params else params["italic"]
     # draw text according to configuration
-    arcade.draw_text(text=message,start_x=x,start_y=y,color=color,font_size=size,anchor_x=alignH,anchor_y=alignV,rotation=angle,bold=bold,italic=italic)
+    return arcade.draw_text(text=message,start_x=x,start_y=y,color=color,font_size=size,anchor_x=alignH,anchor_y=alignV,rotation=angle,bold=bold,italic=italic)
 
 def createSimpleSprite(params):
     # retrieve parameters

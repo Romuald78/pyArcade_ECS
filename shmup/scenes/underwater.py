@@ -1,4 +1,3 @@
-from datetime import datetime
 from ecs.core.components.gfx import GfxAnimSpriteList
 from ecs.core.components.input import GamepadButton
 from ecs.core.main.entity import Entity
@@ -7,6 +6,7 @@ from ecs.user.script.scene import Pause2Buttons
 from shmup.common.constants import *
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.factories.playerFactory import InGamePlayerFactory
+from shmup.scripts.collisions import FishCollisions
 from shmup.scripts.fishGen import FishGen
 
 
@@ -24,6 +24,8 @@ class UnderWater(Scene):
         entity.addComponent(butResume)
         entity.addComponent(scrPause)
 
+
+
     def __init__(self, sceneMgr, sceneName):
         # Init parent class
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
@@ -38,11 +40,8 @@ class UnderWater(Scene):
         # create Entity for global scene management
         eManagement = Entity("Management")
 
-        # Create parallax Entity
-        eParallax = ParallaxFactory().create()
-
         # Create fish sprite list component
-        gfxFishList = GfxAnimSpriteList(ZIDX_CHARS,"FishList")
+        gfxFishList = GfxAnimSpriteList(ZIDX_FISHES,"FishList")
         eManagement.addComponent(gfxFishList)
 
         # Create fish generator
@@ -57,6 +56,8 @@ class UnderWater(Scene):
             # Add pause components
             self._addPauseComponents(eManagement, playerCtrlID)
 
+
+
         # Create entities for all players
         ePlayers = []
         for playerName in params:
@@ -69,13 +70,23 @@ class UnderWater(Scene):
             ePlayers.append(ePlayer)
 
         # Create spritelist for players
-        gfxPlayerSpriteList = GfxAnimSpriteList(ZIDX_CHARS,"sprListPlayers")
+        gfxPlayerSpriteList = GfxAnimSpriteList(ZIDX_DIVERS,"sprListPlayers")
         for eP in ePlayers:
             diver  = eP.getComponentsByName("diverGfx")[0]
             shadow = eP.getComponentsByName("shadowGfx")[0]
             gfxPlayerSpriteList.addSprite(shadow)
             gfxPlayerSpriteList.addSprite(diver)
         eManagement.addComponent(gfxPlayerSpriteList)
+
+        # Create collision management
+        collide = FishCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_FISH, ePlayers)
+        eManagement.addComponent(collide)
+
+        # Create parallax Entity
+        eParallax = ParallaxFactory().create()
+
+
+
 
         # Add ENTITIES to the world
         self.addEntity(eManagement)
