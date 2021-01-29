@@ -114,14 +114,14 @@ class BubbleCollisions(Script):
                                           "y0": burstPos[1],
                                           "partSize": 128,
                                           "partScale": 0.75,
-                                          "partSpeed": 10.0,
-                                          "lifeTime": 0.125,
+                                          "partSpeed": 7.0,
+                                          "lifeTime": 0.4,
                                           "color": (0, 0, 255),
                                           "startAlpha": 100,
-                                          "endAlpha": 0,
+                                          "endAlpha": 50,
                                           "imagePath": "resources/images/items/bubble.png",
-                                          "partInterval": 0.020,
-                                          "totalDuration":0.25,
+                                          "partInterval": 0.010,
+                                          "totalDuration":0.100,
                                           }
                                 burstComp = GfxBurstEmitter(params, ZIDX_BUBBLES, "BurstEmitter")
                                 # Add burst component to entity

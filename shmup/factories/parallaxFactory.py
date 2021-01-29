@@ -11,7 +11,7 @@ class ParallaxFactory():
     def create(self):
 
         eParallax = Entity()
-        speed = 2
+        speed = 1.5
 
         # Backgrounds
         for i in range(1,5):

@@ -11,7 +11,7 @@ class DestroyFish(Script):
         self._entList = entList
 
     def updateScript(self, scriptName, deltaTime):
-        if self._gfx.getPosition()[0] < self._gfx.getWidth()/2:
+        if self._gfx.getPosition()[0] < -self._gfx.getWidth()/2:
             # Remove gfxComp from gfx sprite list
             self._spriteList.removeSprite(self._gfx)
             # Remove from list
