@@ -265,7 +265,7 @@ def main():
     width      = constants.SCREEN_WIDTH
     height     = constants.SCREEN_HEIGHT
     title      = TITLE
-    fullScreen = True
+    fullScreen = False
 
     game = Launcher(width, height, title, fullScreen)
     game.set_vsync(True)
