@@ -3,7 +3,7 @@ from ecs.core.components.script import Script
 from random import randint
 
 from ecs.core.main.entity import Entity
-from shmup.common.constants import ZIDX_DIVERS
+from shmup.common.constants import ZIDX_DIVERS, SCREEN_HEIGHT
 
 
 class PlayerSelection(Script):
@@ -38,8 +38,14 @@ class PlayerSelection(Script):
         refX = 1550
         refY = 880
         for p in self._players:
-            self._players[p]["diverGfx"].setPosition((refX, refY))
-            self._players[p]["shadowGfx"].setPosition((refX, refY))
+            divPos = self._players[p]["diverGfx"].getPosition()
+            shdPos = self._players[p]["shadowGfx"].getPosition()
+            k1 = 0.6
+            k2 = 0.4
+            divPos = ((divPos[0]*k1+refX*k2),(divPos[1]*k1+refY*k2))
+            shdPos = ((shdPos[0]*k1+refX*k2),(shdPos[1]*k1+refY*k2))
+            self._players[p]["diverGfx"].setPosition(divPos)
+            self._players[p]["shadowGfx"].setPosition(shdPos)
             refY -= 340
         # if a gamepad has started, add a new player
         if self._start.hasBeenPressed() :
@@ -55,7 +61,7 @@ class PlayerSelection(Script):
                         "frameDuration": 1 / 24,
                         "size": (400, 267),
                         "textureName": f"diver{lastID}",
-                        "position": (10000,10000)
+                        "position": (refX,SCREEN_HEIGHT + 300)
                     }
                     diverGfx = GfxAnimatedSprite(params, ZIDX_DIVERS, "diverGfx")
                     diverGfx.setAngle(-28)
@@ -68,7 +74,7 @@ class PlayerSelection(Script):
                         "size": (400, 267),
                         "filterColor": playerColor,
                         "textureName": f"shadow{lastID}",
-                        "position": (10000,10000)
+                        "position": (refX,SCREEN_HEIGHT+300)
                     }
                     shadowGfx = GfxAnimatedSprite(params, ZIDX_DIVERS+1, "shadowGfx")
                     shadowGfx.setAngle(-28)
