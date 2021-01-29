@@ -12,7 +12,7 @@ class SplashScreen(Scene):
         # Init parent class
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
-        self.setDebugMode(False, True, True)
+        self.setDebugMode(False, False, False)
 
         # Store list of registered players. keys are gamepad IDs
         self._players = {}

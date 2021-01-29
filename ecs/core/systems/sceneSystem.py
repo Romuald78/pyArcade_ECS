@@ -67,7 +67,8 @@ class SceneSystem():
             self._currentTime     = 0
             self._color           = self._scenes[self._currentSceneName].getTransitionColorOUT()
         else:
-            print(f"[WRN] cannot select scene {sceneName} : transition in progress !")
+            pass
+            #print(f"[WRN] cannot select scene {sceneName} : transition in progress !")
 
     def getCurrentSceneName(self):
         return self._currentSceneName

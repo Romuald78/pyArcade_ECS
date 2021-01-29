@@ -48,7 +48,7 @@ class FishCollisions(Script):
                                           "lifeTime": 0.20,
                                           "color": (255, 255, 255),
                                           "startAlpha": 100,
-                                          "endAlpha": 50,
+                                          "endAlpha": 75 ,
                                           "imagePath": f"resources/images/items/ouch{i}.png",
                                           "partInterval": 0.020,
                                           "totalDuration":0.080,

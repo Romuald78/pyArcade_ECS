@@ -13,7 +13,7 @@ class Selection(Scene):
         # Init parent class
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
-        self.setDebugMode(False, True, True)
+        self.setDebugMode(False, False, False)
         # init player list
         self.players = {}
 
@@ -28,7 +28,7 @@ class Selection(Scene):
             "endIndex": 0,
             "frameDuration": 1 / 1
         }
-        wallpaper = GfxAnimatedSprite(params, 1000, "wallpaper")
+        wallpaper = GfxAnimatedSprite(params, ZIDX_BG, "wallpaper")
 
         # Add gamepad button input
         backButton  = GamepadButton("back",  Input.ALL_GAMEPADS_ID, "VIEW")

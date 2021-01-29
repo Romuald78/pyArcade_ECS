@@ -16,7 +16,7 @@ class Loading(Scene):
         # Add gamepad button input
         startButton = GamepadButton("start", Input.ALL_GAMEPADS_ID, "MENU")
         # Add script to go to next scene
-        startScript = SwitchToScene(self, startButton, "SPLASH", "GGJ", 10)
+        startScript = SwitchToScene(self, startButton, "SPLASH", "GGJ", 0.1)
         # Create Entity + Add all components
         entity = Entity("main")
         entity.addComponent(startButton)
