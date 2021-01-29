@@ -191,6 +191,10 @@ class Scene():
     ## -------------------------------------
     def getDimensions(self):
         return self._dimensions
+    def isConsoleDebug(self):
+        return self._consoleDebug
+    def isDrawDebug(self):
+        return self._drawDebug
     def setDebugMode(self, consoleDebug, drawDebug, drawMem):
         self._consoleDebug = consoleDebug
         self._drawDebug    = drawDebug

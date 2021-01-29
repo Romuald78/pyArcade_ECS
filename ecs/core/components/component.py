@@ -84,7 +84,8 @@ class Component():
                                "color": (192, 64, 192)},
         TYPE_PHYSIC_DISC    : {"name": "PhysicDisc",
                                "color": (192, 64, 192)},
-
+        TYPE_TEXT           : {"name": "GfxText",
+                               "color": (255, 255, 255)},
     }
 
 

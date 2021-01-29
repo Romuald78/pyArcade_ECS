@@ -44,8 +44,7 @@ class Gfx(Component):
 
     # Remove the reference to the arcade gfx element
     def kill(self):
-        self._arcadeGfx.kill()
-        self._arcadeGfx = None
+        raise ValueError("[ERR] gfx : kill method has not been implemented yet !")
 
     def getGfx(self):
         if self._arcadeGfx == None:
@@ -141,6 +140,11 @@ class GfxOneSPrite(Gfx):
     def getScale(self):
         return self._arcadeGfx.scale
 
+    # Kill method
+    def kill(self):
+        self._arcadeGfx.kill()
+        self._arcadeGfx = None
+
 
 #-----------------------------------
 class GfxText(GfxOneSPrite):
@@ -163,6 +167,10 @@ class GfxText(GfxOneSPrite):
         self._params["message"] = newStr
         self._arcadeGfx = drawText(self._params)
 
+    # Kill method
+    def kill(self):
+        self._arcadeGfx.kill()
+        self._arcadeGfx = None
 
 
 #-----------------------------------
@@ -261,7 +269,10 @@ class GfxAnimSpriteList(Gfx):
     def getSprite(self,index):
         return self._arcadeGfx[index]
 
-
+    # Kill method
+    def kill(self):
+        self._arcadeGfx.kill()
+        self._arcadeGfx = None
 
 
 #-----------------------------------
@@ -287,6 +298,11 @@ class GfxSimpleEmitter(Gfx):
         self._arcadeGfx.center_y = newPos[1]
     def getPosition(self):
         return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
+
+    # Kill method
+    def kill(self):
+        self._arcadeGfx = None
+
 
 #-----------------------------------
 class GfxBurstEmitter(Gfx):
@@ -317,3 +333,7 @@ class GfxBurstEmitter(Gfx):
         return self._arcadeGfx.can_reap()
     def isRunning(self):
         return not self.isFinished()
+
+    # Kill method
+    def kill(self):
+        self._arcadeGfx = None

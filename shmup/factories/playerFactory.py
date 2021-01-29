@@ -1,7 +1,7 @@
 import pymunk
 
 from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxText
-from ecs.core.components.input import GamepadAxis
+from ecs.core.components.input import GamepadAxis, GamepadButton
 from ecs.core.components.physic import PhysicBox, PhysicDisc
 from ecs.core.main.entity import Entity
 from ecs.user.idle.counters import UserCounter
@@ -9,6 +9,8 @@ from ecs.user.script.gfxpos import Follow
 from ecs.user.script.phyuserscripts import GfxPhyLink, Move2DAnalogPhy, LimitBoxPhy
 from shmup.common.constants import Z_INDEX_SHIPS, SCREEN_HEIGHT, SCREEN_WIDTH, COLLISION_PLAYER_MASK, ZIDX_DIVERS, \
     COLL_TYPE_DIVER
+from shmup.factories.bubbleFactory import BubbleFactory
+from shmup.scripts.genBubble import GenBubble
 
 
 class InGamePlayerFactory():
@@ -28,13 +30,13 @@ class InGamePlayerFactory():
         # -----------------------------
         xAxis  = GamepadAxis("moveX", playerCtrlID, "X", 0.1, "xAxis")
         yAxis  = GamepadAxis("moveY", playerCtrlID, "Y", 0.1, "yAxis")
-
+        buttA  = GamepadButton("FIRE", playerCtrlID, "A", "buttA")
 
         # -----------------------------
         # IDLE Components
         # -----------------------------
         # Player life
-        life = UserCounter(0,100,100,True,"diverLife")
+        life = UserCounter(0,10,10,True,"diverLife")
 
 
         # -----------------------------
@@ -84,6 +86,7 @@ class InGamePlayerFactory():
         diverPhy   = PhysicDisc(params,"diverPhy")
 
 
+
         # -----------------------------
         # Scripts components
         # -----------------------------
@@ -91,16 +94,20 @@ class InGamePlayerFactory():
         follow     = Follow(diverGfx, shadowGfx, "followDiver")
         follow2    = Follow(diverGfx, textGfx, "followDiver")
         # diver is linked to physic
-        gfxPhyLink = GfxPhyLink(diverGfx, diverPhy, "gfxPhyLink")
+        offset = (-64,0)
+        gfxPhyLink = GfxPhyLink(diverGfx, diverPhy, offset, "gfxPhyLink")
         # physic comp is moved by gamepad
         moveDiver  = Move2DAnalogPhy(diverPhy, xAxis, yAxis, 1, "moveDiver")
         # physic stays on Screen
         limitDiver = LimitBoxPhy(diverPhy,(0,SCREEN_HEIGHT),(SCREEN_WIDTH,0),"limitDiver")
 
+
+
         # Create antity and add all components to it
         ePlayer = Entity(playerName)
         ePlayer.addComponent(xAxis)
         ePlayer.addComponent(yAxis)
+        ePlayer.addComponent(buttA)
         ePlayer.addComponent(diverGfx)
         ePlayer.addComponent(shadowGfx)
         ePlayer.addComponent(textGfx)

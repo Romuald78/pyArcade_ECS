@@ -2,6 +2,8 @@
 ### IMPORTS
 ### ====================================================================================================
 from ecs.core.systems.sceneSystem import SceneSystem
+from shmup.scenes.intro import DisplayGGJ, DisplayRPH, DisplayArcade
+from shmup.scenes.loading import Loading
 from shmup.scenes.selection import Selection
 from shmup.scenes.splash import SplashScreen
 from shmup.scenes.underwater import UnderWater
@@ -9,7 +11,7 @@ from shmup.scenes.underwater import UnderWater
 
 class Main:
 
-    # FEATURE : use modifiers for key and mouse buttons (modifers would be given by Launcher)
+
 
     ### ====================================================================================================
     ### CONSTRUCTOR
@@ -17,9 +19,13 @@ class Main:
     def __init__(self):
         self._sceneMgr = SceneSystem()
 
-        # Shmup scenes
-        self._sceneMgr.addScene(SplashScreen(self._sceneMgr, "SPLASH"))
-        self._sceneMgr.addScene(Selection   (self._sceneMgr, "SELECTION"))
+        # GAME scenes
+        self._sceneMgr.addScene(Loading      (self._sceneMgr, "LOAD")     )
+        self._sceneMgr.addScene(DisplayGGJ   (self._sceneMgr, "GGJ")      )
+        self._sceneMgr.addScene(DisplayArcade(self._sceneMgr, "ARCADE")   )
+        self._sceneMgr.addScene(DisplayRPH   (self._sceneMgr, "RPH")      )
+        self._sceneMgr.addScene(SplashScreen (self._sceneMgr, "SPLASH")   )
+        self._sceneMgr.addScene(Selection    (self._sceneMgr, "SELECTION"))
         self._sceneMgr.addScene(UnderWater      (self._sceneMgr, "UNDERWATER"))
 
 

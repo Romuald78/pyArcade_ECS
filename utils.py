@@ -199,6 +199,7 @@ def createParticleBurst(params):
 
     partInterval  = params["partInterval" ]
     totalDuration = params["totalDuration"]
+    lifeTime      = params["lifeTime"]
 
     # create particle emitter
     e = arcade.Emitter(
@@ -208,7 +209,7 @@ def createParticleBurst(params):
             filename_or_texture=imagePath if imagePath is not None else arcade.make_circle_texture(partSize, color),
             change_xy=arcade.rand_in_circle((0.0, 0.0), partSpeed),
             scale=partScale,
-            lifetime=uniform(totalDuration*0.5, totalDuration),
+            lifetime=uniform(lifeTime*0.75, lifeTime*1.25),
             start_alpha=startAlpha,
             end_alpha=endAlpha,
         ),

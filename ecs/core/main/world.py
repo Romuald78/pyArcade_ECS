@@ -118,7 +118,8 @@ class World():
 
     def draw(self):
         self._gfxMgr.drawAllGfx()
-        self._phyMgr.drawDebug()    # TODO TMP !!
+        if self._scene.isDrawDebug():
+            self._phyMgr.drawDebug()
 
 
     ## -------------------------------------

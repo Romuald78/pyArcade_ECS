@@ -1,7 +1,8 @@
 from ecs.core.components.script import Script
+from shmup.common.constants import SCREEN_HEIGHT
 
 
-class DestroyFish(Script):
+class DestroyBubble(Script):
 
     def __init__(self, entity, gfx, sprListGfx, entList, compName=None):
         super().__init__(compName)
@@ -10,8 +11,9 @@ class DestroyFish(Script):
         self._spriteList = sprListGfx
         self._entList = entList
 
+
     def updateScript(self, scriptName, deltaTime):
-        if self._gfx.getPosition()[0] < self._gfx.getWidth()/2:
+        if self._gfx.getPosition()[1] > SCREEN_HEIGHT + self._gfx.getHeight()/2:
             # Remove gfxComp from gfx sprite list
             self._spriteList.removeSprite(self._gfx)
             # Remove from list

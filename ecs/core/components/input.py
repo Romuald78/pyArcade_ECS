@@ -18,6 +18,11 @@
 # would be useful to : check how long the current click
 # is being pressed
 
+# FEATURE handle "any button" feature for mouse or gamepad, or "any key" for keayboard
+
+# FEATURE : use modifiers for key and mouse buttons (modifers would be given by Launcher)
+
+
 
 ## ============================================================
 ## IMPORTS

@@ -6,16 +6,18 @@ from ecs.core.components.script import Script
 class GfxPhyLink(Script):
 
     # CONSTRUCTOR
-    def __init__(self, gfx, phy, compName=None):
+    def __init__(self, gfx, phy, offset, compName=None):
         super().__init__(compName)
         self._gfx = gfx
         self._phy = phy
+        self._offset = offset
 
     # update
     def updateScript(self, actionName, deltaTime):
         # copy position
         phyPos = self._phy.getPosition()
-        self._gfx.setPosition(phyPos)
+        newPos = (phyPos[0]+self._offset[0], phyPos[1]+self._offset[1])
+        self._gfx.setPosition(newPos)
         # copy angle
         phyAng = self._phy.getAngle()
         self._gfx.setAngle(phyAng*180/math.pi)
@@ -23,16 +25,18 @@ class GfxPhyLink(Script):
 class PhyGfxLink(Script):
 
     # CONSTRUCTOR
-    def __init__(self, phy, gfx, compName=None):
+    def __init__(self, phy, gfx, offset, compName=None):
         super().__init__(compName)
         self._gfx = gfx
         self._phy = phy
+        self._offset = offset
 
     # update
     def updateScript(self, actionName, deltaTime):
         # copy position
         gfxPos = self._gfx.getPosition()
-        self._phy.setPosition(gfxPos)
+        newPos = (gfxPos[0]+self._offset[0],gfxPos[1]+self._offset[1])
+        self._phy.setPosition(newPos)
         # copy angle
         gfxAng = self._gfx.getAngle()
         self._phy.setAngle(gfxAng*math.pi/180)
@@ -51,8 +55,8 @@ class Move2DAnalogPhy(Script):
 
     # update
     def updateScript(self, actionName, deltaTime):
-        dx =  self._xAxis.getValue()*60*deltaTime*self._speed
-        dy = -self._yAxis.getValue()*60*deltaTime*self._speed
+        dx =  self._xAxis.getValue()*self._speed
+        dy = -self._yAxis.getValue()*self._speed
         self._phy.applyImpulse(dx, dy)
         # Force angle to 0
         self._phy.setAngle(0)

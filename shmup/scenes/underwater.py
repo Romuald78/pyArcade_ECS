@@ -4,10 +4,12 @@ from ecs.core.main.entity import Entity
 from ecs.core.main.scene import Scene
 from ecs.user.script.scene import Pause2Buttons
 from shmup.common.constants import *
+from shmup.factories.bubbleFactory import BubbleFactory
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.factories.playerFactory import InGamePlayerFactory
-from shmup.scripts.collisions import FishCollisions
+from shmup.scripts.collisions import FishCollisions, BubbleCollisions
 from shmup.scripts.fishGen import FishGen
+from shmup.scripts.genBubble import GenBubble
 
 
 class UnderWater(Scene):
@@ -40,12 +42,17 @@ class UnderWater(Scene):
         # create Entity for global scene management
         eManagement = Entity("Management")
 
+        # Lists of entities
+        ePlayers = []
+        eFishes  = []
+        eBubbles = []
+
         # Create fish sprite list component
         gfxFishList = GfxAnimSpriteList(ZIDX_FISHES,"FishList")
         eManagement.addComponent(gfxFishList)
 
         # Create fish generator
-        fishGen = FishGen(self,gfxFishList)
+        fishGen = FishGen(self,gfxFishList, eFishes)
         eManagement.addComponent(fishGen)
 
         # Create pause components for each gamepad
@@ -56,10 +63,7 @@ class UnderWater(Scene):
             # Add pause components
             self._addPauseComponents(eManagement, playerCtrlID)
 
-
-
         # Create entities for all players
-        ePlayers = []
         for playerName in params:
             # retrieve parameters
             playerInfo = params[playerName]
@@ -79,13 +83,22 @@ class UnderWater(Scene):
         eManagement.addComponent(gfxPlayerSpriteList)
 
         # Create collision management
-        collide = FishCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_FISH, ePlayers)
-        eManagement.addComponent(collide)
+        collide1 = FishCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_FISH, ePlayers)
+        eManagement.addComponent(collide1)
+        collide2 = BubbleCollisions(eManagement, COLL_TYPE_FISH, COLL_TYPE_BUBBLE, eFishes, eBubbles)
+        eManagement.addComponent(collide2)
 
         # Create parallax Entity
         eParallax = ParallaxFactory().create()
 
-
+        # Create bubble generation
+        gfxBubbleSpriteList = GfxAnimSpriteList(ZIDX_BUBBLES,"sprListBubbles")
+        for eP in ePlayers:
+            diver  = eP.getComponentsByName("diverGfx")[0]
+            buttA  = eP.getComponentsByName("buttA")[0]
+            genBub = GenBubble(self, diver, buttA, gfxBubbleSpriteList, eBubbles , "genBub")
+            eManagement.addComponent(genBub)
+        eManagement.addComponent(gfxBubbleSpriteList)
 
 
         # Add ENTITIES to the world

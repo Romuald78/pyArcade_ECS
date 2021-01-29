@@ -137,15 +137,17 @@ class PhysicDisc(Physic):
         shape.sensor         = sensor
         # Store info into list (tuple : body, shape)
         self._bodiesAndShapes.append((body,shape))
+        self._radius = radius
 
     def getType(self):
         return Component.TYPE_PHYSIC_DISC
 
     def drawDebug(self):
         xc,yc = self.getPosition()
-        arcade.draw_circle_outline(xc,yc,64,(255,255,255))
+        arcade.draw_circle_outline(xc,yc,self.getRadius(),(255,255,255))
 
-
+    def getRadius(self):
+        return self._radius
 
 
 class PhysicCollision(Script):
