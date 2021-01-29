@@ -44,43 +44,44 @@ class PlayerSelection(Script):
         # if a gamepad has started, add a new player
         if self._start.hasBeenPressed() :
             lastID = self._start.getLastGamepadID()
-            if not lastID in self._players and len(self._players)<3:
-                playerColor = self._getFirstAvailableColor()
-                params = {
-                    "filePath": f"resources/images/divers/diver01.png",
-                    "spriteBox": (4, 4, 150, 100),
-                    "startIndex": 0,
-                    "endIndex": 7,
-                    "frameDuration": 1 / 24,
-                    "size": (400, 267),
-                    "textureName": f"diver{lastID}",
-                    "position": (10000,10000)
-                }
-                diverGfx = GfxAnimatedSprite(params, ZIDX_DIVERS, "diverGfx")
-                diverGfx.setAngle(-28)
-                params = {
-                    "filePath": f"resources/images/divers/diver02.png",
-                    "spriteBox": (4, 4, 150, 100),
-                    "startIndex": 0,
-                    "endIndex": 7,
-                    "frameDuration": 1 / 24,
-                    "size": (400, 267),
-                    "filterColor": playerColor,
-                    "textureName": f"shadow{lastID}",
-                    "position": (10000,10000)
-                }
-                shadowGfx = GfxAnimatedSprite(params, ZIDX_DIVERS+1, "shadowGfx")
-                shadowGfx.setAngle(-28)
-                diverEntity = Entity()
-                diverEntity.addComponent(diverGfx)
-                diverEntity.addComponent(shadowGfx)
-                self._scene.addEntity(diverEntity)
-                self._players[lastID] = {"ctrlID"    : lastID,
-                                         "diverEnt"  : diverEntity,
-                                         "diverGfx"  : diverGfx,
-                                         "shadowGfx" : shadowGfx,
-                                         "color"     : playerColor
-                                         }
+            if not lastID in self._players:
+                if len(self._players)<3:
+                    playerColor = self._getFirstAvailableColor()
+                    params = {
+                        "filePath": f"resources/images/divers/diver01.png",
+                        "spriteBox": (4, 4, 150, 100),
+                        "startIndex": 0,
+                        "endIndex": 7,
+                        "frameDuration": 1 / 24,
+                        "size": (400, 267),
+                        "textureName": f"diver{lastID}",
+                        "position": (10000,10000)
+                    }
+                    diverGfx = GfxAnimatedSprite(params, ZIDX_DIVERS, "diverGfx")
+                    diverGfx.setAngle(-28)
+                    params = {
+                        "filePath": f"resources/images/divers/diver02.png",
+                        "spriteBox": (4, 4, 150, 100),
+                        "startIndex": 0,
+                        "endIndex": 7,
+                        "frameDuration": 1 / 24,
+                        "size": (400, 267),
+                        "filterColor": playerColor,
+                        "textureName": f"shadow{lastID}",
+                        "position": (10000,10000)
+                    }
+                    shadowGfx = GfxAnimatedSprite(params, ZIDX_DIVERS+1, "shadowGfx")
+                    shadowGfx.setAngle(-28)
+                    diverEntity = Entity()
+                    diverEntity.addComponent(diverGfx)
+                    diverEntity.addComponent(shadowGfx)
+                    self._scene.addEntity(diverEntity)
+                    self._players[lastID] = {"ctrlID"    : lastID,
+                                             "diverEnt"  : diverEntity,
+                                             "diverGfx"  : diverGfx,
+                                             "shadowGfx" : shadowGfx,
+                                             "color"     : playerColor
+                                             }
             else:
                 # prepare params
                 i = 0
