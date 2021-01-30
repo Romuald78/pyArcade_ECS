@@ -3,6 +3,7 @@ from ecs.core.components.input import GamepadButton, Input
 from ecs.core.main.entity import Entity
 from ecs.core.main.scene import Scene
 from shmup.common.constants import *
+from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.scripts.fishGen import FishGen
 from shmup.scripts.transitions import SwitchToScene
 
@@ -14,10 +15,19 @@ class EndGameScene(Scene):
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
         self.setDebugMode(False, False, False)
+
+    def init(self, params):
+        # Remove all entities from this scene
+        for ent in self.getAllEntities():
+            ent.destroy()
+
         # Add gamepad button input
         startButton = GamepadButton("start", Input.ALL_GAMEPADS_ID, "MENU")
         # Add script to go to next scene
-        startScript = SwitchToScene(self, startButton, "SPLASH", "SPLASH", 20)
+        startScript = SwitchToScene(self, startButton, "SPLASH", "SPLASH", 60)
+
+        # Create parallax Entity
+        eParallax = ParallaxFactory().create(-5,True)
 
         # Add backgrounds
         params = {
@@ -30,7 +40,18 @@ class EndGameScene(Scene):
             "endIndex": 0,
             "frameDuration": 1 / 1
         }
-        wallpaper1 = GfxAnimatedSprite(params, ZIDX_BG, "wallpaper")
+        wallpaper1 = GfxAnimatedSprite(params, ZIDX_BG-50, "wallpaper")
+        params = {
+            "filePath": f"resources/images/backgrounds/endgame_front.png",
+            "size": (SCREEN_WIDTH, SCREEN_HEIGHT),
+            "position": (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+            "textureName": f"endgameFrnt",
+            "spriteBox": (1, 1, SCREEN_WIDTH, SCREEN_HEIGHT),
+            "startIndex": 0,
+            "endIndex": 0,
+            "frameDuration": 1 / 1
+        }
+        wallpaper2 = GfxAnimatedSprite(params, ZIDX_FG, "wallpaper")
         params = {
             "filePath": f"resources/images/backgrounds/gameover.png",
             "size": (SCREEN_WIDTH, SCREEN_HEIGHT),
@@ -41,7 +62,7 @@ class EndGameScene(Scene):
             "endIndex": 0,
             "frameDuration": 1 / 1
         }
-        wallpaper2 = GfxAnimatedSprite(params, ZIDX_HUD, "gmovr")
+        wallpaper3 = GfxAnimatedSprite(params, ZIDX_HUD, "gmovr")
 
         # Create fish generator
         eFishes = []
@@ -54,12 +75,14 @@ class EndGameScene(Scene):
         entity.addComponent(startScript)
         entity.addComponent(wallpaper1)
         entity.addComponent(wallpaper2)
+        entity.addComponent(wallpaper3)
         entity.addComponent(gfxFishList)
         entity.addComponent(fishGen)
 
 
         # Add entity to the scene
         self.addEntity(entity)
+        self.addEntity(eParallax)
 
     def getTransitionColorOUT(self):
         return (0,0,0)

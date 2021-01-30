@@ -76,6 +76,19 @@ class HudFactory():
         ratio *= 0.5
         params = {
             "filePath": "resources/images/hud/numbers.png",
+            "textureName": f"hudNum{playerNum}thousand",
+            "spriteBox": (10, 1, w, h),
+            "startIndex": 0,
+            "endIndex": 9,
+            "frameDuration": 1 / 10,
+            "size": (int(w*ratio),int(h*ratio)),
+            "position": (refX,refY)
+        }
+        thousandGfx = GfxMultiSprite(params, ZIDX_HUD-1, "thousandGfx")
+        refX += (w)*ratio
+        refY += 0
+        params = {
+            "filePath": "resources/images/hud/numbers.png",
             "textureName": f"hudNum{playerNum}hundred",
             "spriteBox": (10, 1, w, h),
             "startIndex": 0,
@@ -117,13 +130,15 @@ class HudFactory():
         hudEntity.addComponent(unitGfx)
         hudEntity.addComponent(decadeGfx)
         hudEntity.addComponent(hundredGfx)
+        hudEntity.addComponent(thousandGfx)
 
         unitGfx.setTexture(1)
         decadeGfx.setTexture(4)
         hundredGfx.setTexture(8)
+        thousandGfx.setTexture(7)
 
         # Create score update script
-        scrUpdate = UpdateScores(scoreComp,unitGfx, decadeGfx, hundredGfx)
+        scrUpdate = UpdateScores(scoreComp,unitGfx, decadeGfx, hundredGfx, thousandGfx)
         hudEntity.addComponent(scrUpdate)
 
         # Create hudlife script

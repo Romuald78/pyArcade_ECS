@@ -13,6 +13,8 @@ class DisplayGGJ(Scene):
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
         self.setDebugMode(False, False, False)
+
+    def init(self, params):
         # Create background image
         params = {
             "filePath": f"resources/images/backgrounds/ggj2021.png",
@@ -54,6 +56,8 @@ class DisplayRPH(Scene):
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
         self.setDebugMode(False, False, False)
+
+    def init(self, params):
         # Create background image
         params = {
             "filePath": f"resources/images/backgrounds/rphstudio.png",
@@ -94,6 +98,8 @@ class DisplayArcade(Scene):
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
         self.setDebugMode(False, False, False)
+
+    def init(self, params):
         # Create background image
         params = {
             "filePath": f"resources/images/backgrounds/arcade.png",

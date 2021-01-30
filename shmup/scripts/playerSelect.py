@@ -3,7 +3,7 @@ from ecs.core.components.script import Script
 from random import randint
 
 from ecs.core.main.entity import Entity
-from shmup.common.constants import ZIDX_DIVERS, SCREEN_HEIGHT, MAX_PLAYERS
+from shmup.common.constants import ZIDX_DIVERS, SCREEN_HEIGHT, MAX_PLAYERS, ZIDX_FG
 
 
 class PlayerSelection(Script):
@@ -33,16 +33,20 @@ class PlayerSelection(Script):
         self._scene     = sceneRef
         self._prevScene = prevSceneName
         self._nextScene = nextSceneName
+        self._hasStarted = False
 
     def updateScript(self, scriptName, deltaTime):
         # display divers according to dict
-        refX = 1550
+        if not self._hasStarted:
+            refX = 1550
+        else:
+            refX = 2120
         refY = 880
         for p in self._players:
             divPos = self._players[p]["diverGfx"].getPosition()
             shdPos = self._players[p]["shadowGfx"].getPosition()
-            k1 = 0.6
-            k2 = 0.4
+            k1 = 0.85
+            k2 = 0.15
             divPos = ((divPos[0]*k1+refX*k2),(divPos[1]*k1+refY*k2))
             shdPos = ((shdPos[0]*k1+refX*k2),(shdPos[1]*k1+refY*k2))
             self._players[p]["diverGfx"].setPosition(divPos)
@@ -64,7 +68,7 @@ class PlayerSelection(Script):
                         "textureName": f"diver{lastID}",
                         "position": (refX,SCREEN_HEIGHT + 300)
                     }
-                    diverGfx = GfxAnimatedSprite(params, ZIDX_DIVERS, "diverGfx")
+                    diverGfx = GfxAnimatedSprite(params, ZIDX_FG-50, "diverGfx")
                     diverGfx.setAngle(-28)
                     params = {
                         "filePath": f"resources/images/divers/diver02.png",
@@ -77,7 +81,7 @@ class PlayerSelection(Script):
                         "textureName": f"shadow{lastID}",
                         "position": (refX,SCREEN_HEIGHT+300)
                     }
-                    shadowGfx = GfxAnimatedSprite(params, ZIDX_DIVERS+1, "shadowGfx")
+                    shadowGfx = GfxAnimatedSprite(params, ZIDX_FG-50+1, "shadowGfx")
                     shadowGfx.setAngle(-28)
                     diverEntity = Entity()
                     diverEntity.addComponent(diverGfx)
@@ -100,6 +104,7 @@ class PlayerSelection(Script):
                     self._players[p]["name"]      = tmpName
                     params[tmpName]               = self._players[p]
                 # Switch to in-game scene
+                self._hasStarted = True
                 self._scene.selectNewScene(self._nextScene, params)
 
         if self._back.hasBeenPressed():

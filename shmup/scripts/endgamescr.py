@@ -19,4 +19,4 @@ class EndGameScr(Script):
             # Here we have reached the end of the game
             self._ended = True
             scene = self.getEntity().getScene()
-            scene.selectNewScene("ENDGAME")
+            scene.selectNewScene("ENDGAME",{})
