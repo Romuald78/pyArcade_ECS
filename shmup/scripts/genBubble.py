@@ -4,12 +4,12 @@ from shmup.factories.bubbleFactory import BubbleFactory
 
 class GenBubble(Script):
 
-    def __init__(self, scene, playerGfx, playerButton, sprListComp, eBubbleList, compName=None):
+    def __init__(self, scene, playerGfx, playerButton, sprListComp, eBubbleList, userData, compName=None):
         super().__init__(compName)
         self._gfx         = playerGfx
         self._button      = playerButton
         self._scene       = scene
-        self._bubFact     = BubbleFactory(sprListComp, eBubbleList)
+        self._bubFact     = BubbleFactory(sprListComp, eBubbleList, userData)
         self._spriteList  = sprListComp
         self._eBubbleList = eBubbleList
 

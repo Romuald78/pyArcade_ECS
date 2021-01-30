@@ -5,9 +5,12 @@ from ecs.core.main.scene import Scene
 from ecs.user.script.scene import Pause2Buttons
 from shmup.common.constants import *
 from shmup.factories.bubbleFactory import BubbleFactory
+from shmup.factories.hudFactory import HudFactory
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.factories.playerFactory import InGamePlayerFactory
 from shmup.scripts.collisions import FishCollisions, BubbleCollisions
+from shmup.scripts.destroyPlayer import DestroyPlayer
+from shmup.scripts.endgamescr import EndGameScr
 from shmup.scripts.fishGen import FishGen
 from shmup.scripts.genBubble import GenBubble
 
@@ -39,6 +42,10 @@ class UnderWater(Scene):
     def init(self,params):
         print(f"Init UNDERWATER scene with {params}")
 
+        # Remove all entities from this scene
+        for ent in self.getAllEntities():
+            ent.destroy()
+
         # create Entity for global scene management
         eManagement = Entity("Management")
 
@@ -46,6 +53,7 @@ class UnderWater(Scene):
         ePlayers = []
         eFishes  = []
         eBubbles = []
+        eHUDs    = []
 
         # Create fish sprite list component
         gfxFishList = GfxAnimSpriteList(ZIDX_FISHES,"FishList")
@@ -63,7 +71,7 @@ class UnderWater(Scene):
             # Add pause components
             self._addPauseComponents(eManagement, playerCtrlID)
 
-        # Create entities for all players
+        # Create entities for all players and HUD
         for playerName in params:
             # retrieve parameters
             playerInfo = params[playerName]
@@ -72,6 +80,11 @@ class UnderWater(Scene):
             ePlayer = InGamePlayerFactory().create(playerInfo)
             # Fill player list
             ePlayers.append(ePlayer)
+            # Create hud
+            life = ePlayer.getComponentsByName("diverLife")[0]
+            scr  = ePlayer.getComponentsByName("diverScore")[0]
+            eHud = HudFactory().create(playerInfo["playerNum"], playerInfo["color"], life, scr)
+            eHUDs.append(eHud)
 
         # Create spritelist for players
         gfxPlayerSpriteList = GfxAnimSpriteList(ZIDX_DIVERS,"sprListPlayers")
@@ -96,9 +109,20 @@ class UnderWater(Scene):
         for eP in ePlayers:
             diver  = eP.getComponentsByName("diverGfx")[0]
             buttA  = eP.getComponentsByName("buttA")[0]
-            genBub = GenBubble(self, diver, buttA, gfxBubbleSpriteList, eBubbles , "genBub")
+            score  = eP.getComponentsByName("diverScore")[0]
+            genBub = GenBubble(self, diver, buttA, gfxBubbleSpriteList, eBubbles , {"score":score}, "genBub")
             eManagement.addComponent(genBub)
         eManagement.addComponent(gfxBubbleSpriteList)
+
+        # Create player destroy
+        for eP in ePlayers:
+            lf = eP.getComponentsByName("diverLife")[0]
+            dstry = DestroyPlayer(lf, eP)
+            eManagement.addComponent(dstry)
+
+        # Create END game condition
+        endScr = EndGameScr(ePlayers)
+        eManagement.addComponent(endScr)
 
 
         # Add ENTITIES to the world
@@ -106,13 +130,15 @@ class UnderWater(Scene):
         self.addEntity(eParallax)
         for entP in ePlayers:
             self.addEntity(entP)
+        for entH in eHUDs:
+            self.addEntity(entH)
 
 
 
     def getTransitionColorOUT(self):
-        return (0,0,0)
+        return (255,0,0)
     def getTransitionTimeOUT(self):
-        return 1
+        return 1.5
     def getTransitionColorIN(self):
         return (0,0,0)
     def getTransitionTimeIN(self):

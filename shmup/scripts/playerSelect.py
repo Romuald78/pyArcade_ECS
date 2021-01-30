@@ -3,14 +3,15 @@ from ecs.core.components.script import Script
 from random import randint
 
 from ecs.core.main.entity import Entity
-from shmup.common.constants import ZIDX_DIVERS, SCREEN_HEIGHT
+from shmup.common.constants import ZIDX_DIVERS, SCREEN_HEIGHT, MAX_PLAYERS
 
 
 class PlayerSelection(Script):
 
     COLORS = [ (  0,  0,200) ,
                (200,  0,  0) ,
-               (  0,200,  0)
+               (  0,200,  0) ,
+               (200,  0,200)
              ]
 
     # Choose first available color
@@ -51,7 +52,7 @@ class PlayerSelection(Script):
         if self._start.hasBeenPressed() :
             lastID = self._start.getLastGamepadID()
             if not lastID in self._players:
-                if len(self._players)<3:
+                if len(self._players)<MAX_PLAYERS:
                     playerColor = self._getFirstAvailableColor()
                     params = {
                         "filePath": f"resources/images/divers/diver01.png",

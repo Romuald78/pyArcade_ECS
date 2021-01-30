@@ -97,7 +97,7 @@ def createAnimatedSprite(params):
     spr = arcade.AnimatedTimeSprite()
     spr.color = filterColor
     # Read Horizontal first, then vertical (Careful VERTICAL is inverted in arcade : 0,0 is LOWER-LEFT)
-    for y in range(nbY-1,-1,-1):
+    for y in range(0,nbY):
         for x in range(nbX):
             index = x + y*nbX
             # add index only if in range

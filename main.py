@@ -2,6 +2,7 @@
 ### IMPORTS
 ### ====================================================================================================
 from ecs.core.systems.sceneSystem import SceneSystem
+from shmup.scenes.endgamescene import EndGameScene
 from shmup.scenes.intro import DisplayGGJ, DisplayRPH, DisplayArcade
 from shmup.scenes.loading import Loading
 from shmup.scenes.selection import Selection
@@ -26,7 +27,8 @@ class Main:
         self._sceneMgr.addScene(DisplayRPH   (self._sceneMgr, "RPH")      )
         self._sceneMgr.addScene(SplashScreen (self._sceneMgr, "SPLASH")   )
         self._sceneMgr.addScene(Selection    (self._sceneMgr, "SELECTION"))
-        self._sceneMgr.addScene(UnderWater      (self._sceneMgr, "UNDERWATER"))
+        self._sceneMgr.addScene(UnderWater   (self._sceneMgr, "UNDERWATER"))
+        self._sceneMgr.addScene(EndGameScene (self._sceneMgr, "ENDGAME"))
 
 
 

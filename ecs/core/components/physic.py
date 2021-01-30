@@ -27,6 +27,7 @@ class Physic(Component):
         # Init fields
         self._sensor          = False            # Sensor means, just collision detection, no physic
         self._bodiesAndShapes = []      # tuple with (1-body,1-shape)
+        self._userData = {}
 
     # method to get current type
     def getType(self):
@@ -85,6 +86,16 @@ class Physic(Component):
     def getCollisionType(self):
         shape = self._bodiesAndShapes[0][1]
         return shape.collision_type
+
+    def addUserData(self,key, value):
+        if not key in self._userData:
+            self._userData[key] = value
+
+    def getUserData(self,key):
+        res = None
+        if key in self._userData:
+            res = self._userData[key]
+        return res
 
 
 class PhysicBox(Physic):

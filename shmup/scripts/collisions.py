@@ -1,3 +1,5 @@
+import math
+
 from ecs.core.components.gfx import GfxBurstEmitter
 from ecs.core.components.physic import PhysicCollision
 from ecs.core.components.script import Script
@@ -25,37 +27,37 @@ class FishCollisions(Script):
 
         def _beginCollision(self, arbiter, space, data):
             for play in self._ePlayers:
-                phyComp = play.getComponentsByName("diverPhy")[0]
-                for bdyShp in phyComp.getBodyList():
-                    body = bdyShp[0]
-                    shape= bdyShp[1]
-                    for contactShape in arbiter.shapes:
-                        if contactShape == shape:
-                            # player has been found in this contact
-                            # make this player lose life
-                            lifeComp = play.getComponentsByName("diverLife")[0]
-                            lifeComp.modify(-1)
-                            lifeText = play.getComponentsByName("lifeText")[0]
-                            lifeText.setMessage(str(lifeComp.getValue()))
-                            # Create burst
-                            burstPos = phyComp.getPosition()
-                            for i in range(3):
-                                params = {"x0": burstPos[0],
-                                          "y0": burstPos[1],
-                                          "partSize": 256,
-                                          "partScale": 1,
-                                          "partSpeed": 3.0,
-                                          "lifeTime": 0.20,
-                                          "color": (255, 255, 255),
-                                          "startAlpha": 100,
-                                          "endAlpha": 75 ,
-                                          "imagePath": f"resources/images/items/ouch{i}.png",
-                                          "partInterval": 0.020,
-                                          "totalDuration":0.080,
-                                          }
-                                burstComp = GfxBurstEmitter(params, ZIDX_OUCH+i, "OuchEmitter")
-                                # Add burst component to entity
-                                self._eCollide.addComponent(burstComp)
+                phyComp = play.getComponentsByName("diverPhy")
+                if len(phyComp)>0:
+                    phyComp = phyComp[0]
+                    for bdyShp in phyComp.getBodyList():
+                        body = bdyShp[0]
+                        shape= bdyShp[1]
+                        for contactShape in arbiter.shapes:
+                            if contactShape == shape:
+                                # player has been found in this contact
+                                # make this player lose life
+                                lifeComp = play.getComponentsByName("diverLife")[0]
+                                lifeComp.modify(-1)
+                                # Create burst
+                                burstPos = phyComp.getPosition()
+                                for i in range(3):
+                                    params = {"x0": burstPos[0],
+                                              "y0": burstPos[1],
+                                              "partSize": 256,
+                                              "partScale": 1,
+                                              "partSpeed": 3.0,
+                                              "lifeTime": 0.20,
+                                              "color": (255, 255, 255),
+                                              "startAlpha": 100,
+                                              "endAlpha": 75 ,
+                                              "imagePath": f"resources/images/items/ouch{i}.png",
+                                              "partInterval": 0.020,
+                                              "totalDuration":0.080,
+                                              }
+                                    burstComp = GfxBurstEmitter(params, ZIDX_OUCH+i, "OuchEmitter")
+                                    # Add burst component to entity
+                                    self._eCollide.addComponent(burstComp)
 
             return True
 
@@ -95,11 +97,29 @@ class BubbleCollisions(Script):
             if len(phyComp) >= 1:
                 phyComp = phyComp[0]
                 for bdyShp in phyComp.getBodyList():
-                    body = bdyShp[0]
+                    body  = bdyShp[0]
                     shape = bdyShp[1]
-                    for contactShape in arbiter.shapes:
-                        if contactShape == shape:
-                            # fish has been found in this contact
+
+                    # find fish shape
+                    idxFish       = -1
+                    idxBubble     = -1
+                    if arbiter.shapes[0] == shape:
+                        idxFish   = 0
+                        idxBubble = 1
+                    if arbiter.shapes[1] == shape:
+                        idxFish   = 1
+                        idxBubble = 0
+                    # A contact has been found
+                    if idxFish != -1 and idxBubble != -1:
+                        # Get bubble body from shape
+                        bdyBubble = arbiter.shapes[idxBubble].body
+                        bubVel = bdyBubble.velocity
+                        # compte angle
+                        bubAng = 180*math.atan2(bubVel[1], bubVel[0])/math.pi
+                        if abs(bubAng) < 30:
+                            # Here we have found a collision between fish and bubble
+                            # and the bubble orientation is correct to "hit" the fish
+
                             # decrease fish life and destroy if it reaches zero
                             lifeCmp = fish.getComponentsByName("fishLife")
                             if len(lifeCmp)>=1:
@@ -135,10 +155,35 @@ class BubbleCollisions(Script):
                 for bdyShp in phyComp.getBodyList():
                     body = bdyShp[0]
                     shape = bdyShp[1]
-                    for contactShape in arbiter.shapes:
-                        if contactShape == shape:
+
+                    # find fish shape
+                    idxFish       = -1
+                    idxBubble     = -1
+                    if arbiter.shapes[0] == shape:
+                        idxFish   = 1
+                        idxBubble = 0
+                    if arbiter.shapes[1] == shape:
+                        idxFish   = 0
+                        idxBubble = 1
+                    # A contact has been found
+                    if idxFish != -1 and idxBubble != -1:
+                        # Get bubble body from shape
+                        bdyBubble = arbiter.shapes[idxBubble].body
+                        bubVel = bdyBubble.velocity
+                        # compte angle
+                        bubAng = 180*math.atan2(bubVel[1], bubVel[0])/math.pi
+                        if abs(bubAng) < 30:
+                            # Here we have found a collision between fish and bubble
+                            # and the bubble orientation is correct to "hit" the fish
+
                             # make this bubble entity disappear
                             toDestroy.append(bubble)
+                            # Get player score component
+                            score = phyComp.getUserData("score")
+                            if score != None:
+                                # increase score
+                                score.modify(1)
+
 
         # Now destroy all of them
         for entity in toDestroy:

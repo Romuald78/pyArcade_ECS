@@ -17,9 +17,10 @@ class BubbleFactory():
 
     FINAL_SIZE = 48
 
-    def __init__(self, gfxBubbleList, entBubbleList):
+    def __init__(self, gfxBubbleList, entBubbleList, userData):
         self._gfxBubbleList = gfxBubbleList
         self._entBubbleList = entBubbleList
+        self._userData      = userData
 
         fs = BubbleFactory.FINAL_SIZE
         BUBBLE01  = {
@@ -90,6 +91,8 @@ class BubbleFactory():
             "collisionType": COLL_TYPE_BUBBLE,
         }
         bubblePhy = PhysicDisc(params,"bubblePhy")
+        for k in self._userData:
+            bubblePhy.addUserData(k, self._userData[k])
         gfxPhyLink = GfxPhyLink(bubbleGfx, bubblePhy, (0,0), "gfxphylink")
 
         bubbleMove    = BubbleMove(bubblePhy, "bubbleMove")

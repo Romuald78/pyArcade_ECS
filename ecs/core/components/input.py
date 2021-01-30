@@ -290,6 +290,11 @@ class GamepadAxis(Input):
 
     # Callback
     def gamepadAxisEvent(self, action, gamepadId, analogValue):
+        # Trap code in order to debug some issues in the Input System
+        if self._ctrlID != Input.ALL_GAMEPADS_ID:
+            if self._ctrlID != gamepadId:
+                raise ValueError(f"[ERR] Input gamepad axis avent issue ctrlID={self._ctrlID}/event ID={gamepadId}")
+
         # Normalize value in order to take care of gamepads
         # that do not provide a full [-1.0,+1.0] output range
         # First, update min and max values

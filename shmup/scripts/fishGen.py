@@ -13,15 +13,20 @@ class FishGen(Script):
         self._duration    = 0
         self._spriteList = sprListComp
         self._entList = entList
+        self._interval = 3
 
 
     def updateScript(self, scriptName, deltaTime):
         # increase timer
         self._duration += deltaTime
 
+        # decrease interval
+        self._interval -= 0.0001
+        self._interval = max(0.25, self._interval)
+
         # check if duration is ok
-        if self._duration > 1:
-            self._duration -= 1
+        if self._duration > self._interval:
+            self._duration -= self._interval
             newFish = self._fishFactory.create()
             gfxFish = newFish.getComponentsByName("fishGfx")[0]
             # Add gfxComp to the gfx sprite list

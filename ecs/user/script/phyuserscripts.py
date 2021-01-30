@@ -57,7 +57,9 @@ class Move2DAnalogPhy(Script):
     def updateScript(self, actionName, deltaTime):
         dx =  self._xAxis.getValue()*self._speed
         dy = -self._yAxis.getValue()*self._speed
-        self._phy.applyImpulse(dx, dy)
+        phyPos = self._phy.getPosition()
+        newPos = (phyPos[0]+dx,phyPos[1]+dy)
+        self._phy.setPosition(newPos)
         # Force angle to 0
         self._phy.setAngle(0)
 

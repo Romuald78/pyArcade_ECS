@@ -5,6 +5,8 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
+from random import randint
+
 from ecs.core.components.input import Input
 
 
@@ -129,9 +131,14 @@ class InputSystem():
         indexes = [self.__getGamepadAxisIndex(gamepadId, axisName),
                    self.__getGamepadAxisIndex(Input.ALL_GAMEPADS_ID, axisName)
                   ]
+
+        # print(f"{action} {gamepadId} {analogValue}")
+        #print(f"-----{gamepadId}-{axisName}-{analogValue}-----")
         for idx in indexes:
             if idx in self.inputs:
                 for action in self.inputs[idx]:
                     for inRef in self.inputs[idx][action]:
                         if self.__isExecutionAllowed(inRef, isOnPause):
+                            #print(f"{action} {inRef}")
                             inRef.gamepadAxisEvent(action, gamepadId, analogValue)
+

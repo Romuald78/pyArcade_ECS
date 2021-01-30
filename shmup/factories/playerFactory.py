@@ -36,7 +36,9 @@ class InGamePlayerFactory():
         # IDLE Components
         # -----------------------------
         # Player life
-        life = UserCounter(0,10,10,True,"diverLife")
+        life = UserCounter(0,21,21,True,"diverLife")
+        # Player score
+        score = UserCounter(0, 100000, 0, True, "diverScore")
 
 
         # -----------------------------
@@ -63,13 +65,13 @@ class InGamePlayerFactory():
             "textureName": f"shadow{playerNum}"
         }
         shadowGfx = GfxAnimatedSprite(params, ZIDX_DIVERS, "shadowGfx")
-        params = {
-            "x": 500,
-            "y": 500,
-            "message": str(life.getValue()),
-            "size":50
-        }
-        textGfx = GfxText(params,0,"lifeText")
+#        params = {
+#            "x": 500,
+#            "y": 500,
+#            "message": str(life.getValue()),
+#            "size":50
+#        }
+#        textGfx = GfxText(params,0,"lifeText")
 
 
         # -----------------------------
@@ -78,9 +80,9 @@ class InGamePlayerFactory():
         params = {
             "mass"         : 0.01,
             "radius"       : 64,
-            "mode"         : pymunk.Body.DYNAMIC,
+            "mode"         : pymunk.Body.KINEMATIC,
             "pos"          : (500,350+100*playerNum),
-            "sensor"       : False,
+            "sensor"       : True,
             "collisionType": COLL_TYPE_DIVER,
         }
         diverPhy   = PhysicDisc(params,"diverPhy")
@@ -92,14 +94,16 @@ class InGamePlayerFactory():
         # -----------------------------
         # shadow follows diver
         follow     = Follow(diverGfx, shadowGfx, "followDiver")
-        follow2    = Follow(diverGfx, textGfx, "followDiver")
+#        follow2    = Follow(diverGfx, textGfx, "followDiver")
         # diver is linked to physic
         offset = (-64,0)
         gfxPhyLink = GfxPhyLink(diverGfx, diverPhy, offset, "gfxPhyLink")
         # physic comp is moved by gamepad
-        moveDiver  = Move2DAnalogPhy(diverPhy, xAxis, yAxis, 1, "moveDiver")
+        moveDiver  = Move2DAnalogPhy(diverPhy, xAxis, yAxis, 20, "moveDiver")
         # physic stays on Screen
-        limitDiver = LimitBoxPhy(diverPhy,(0,SCREEN_HEIGHT),(SCREEN_WIDTH,0),"limitDiver")
+        dx = 150+offset[0]
+        dy = 120+offset[1]
+        limitDiver = LimitBoxPhy(diverPhy,(dx,SCREEN_HEIGHT-dy+40),(SCREEN_WIDTH-dx,dy),"limitDiver")
 
 
 
@@ -110,14 +114,13 @@ class InGamePlayerFactory():
         ePlayer.addComponent(buttA)
         ePlayer.addComponent(diverGfx)
         ePlayer.addComponent(shadowGfx)
-        ePlayer.addComponent(textGfx)
         ePlayer.addComponent(diverPhy)
         ePlayer.addComponent(moveDiver)
         ePlayer.addComponent(gfxPhyLink)
         ePlayer.addComponent(limitDiver)
         ePlayer.addComponent(follow)
-        ePlayer.addComponent(follow2)
         ePlayer.addComponent(life)
+        ePlayer.addComponent(score)
 
         # return result
         return ePlayer

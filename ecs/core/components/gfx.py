@@ -188,6 +188,29 @@ class GfxSimpleSprite(GfxOneSPrite):
         self._arcadeGfx = createSimpleSprite(params)
         self._zIndex    = zIdx
 
+
+#-----------------------------------
+class GfxMultiSprite(GfxOneSPrite):
+
+    # Constructor
+    def __init__(self, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "AnimSPrite"
+        # call to parent constructor
+        super().__init__(compName)
+        # set type
+        self._gfxType   = Component.TYPE_MULTI_SPRITE
+        # create Gfx element
+        self._arcadeGfx = createAnimatedSprite(params)
+        self._zIndex    = zIdx
+
+    def getNbTextures(self):
+        return len(self._arcadeGfx.textures)
+
+    def setTexture(self, index):
+        self._arcadeGfx.set_texture(index)
+
+
 #-----------------------------------
 class GfxAnimatedSprite(GfxOneSPrite):
 
@@ -240,6 +263,7 @@ class GfxAnimSpriteList(Gfx):
         # Add the arcade sprite into the arcade sprite list
         arcSpr = spriteComp.getGfx()
         self._arcadeGfx.append(arcSpr)
+        # TODO notify to the scene ?
 
     # Removing
     def removeSprite(self, spriteComp):
@@ -271,7 +295,6 @@ class GfxAnimSpriteList(Gfx):
 
     # Kill method
     def kill(self):
-        self._arcadeGfx.kill()
         self._arcadeGfx = None
 
 
