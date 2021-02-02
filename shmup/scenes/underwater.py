@@ -102,7 +102,7 @@ class UnderWater(Scene):
         eManagement.addComponent(collide2)
 
         # Create parallax Entity
-        eParallax = ParallaxFactory().create()
+        eParallax = ParallaxFactory().create(SCROLL_SPEED2)
 
         # Create bubble generation
         gfxBubbleSpriteList = GfxAnimSpriteList(ZIDX_BUBBLES,"sprListBubbles")

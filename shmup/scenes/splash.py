@@ -40,7 +40,7 @@ class SplashScreen(Scene):
         self._players = {}
 
         # Create parallax Entity
-        eParallax = ParallaxFactory().create(-5,True)
+        eParallax = ParallaxFactory().create(SCROLL_SPEED,True)
 
         # Create background image
         params = {
@@ -85,6 +85,8 @@ class SplashScreen(Scene):
         self.addEntity(entity)
         self.addEntity(entFishGen)
         self.addEntity(eParallax)
+
+
 
 
     def getTransitionColorOUT(self):

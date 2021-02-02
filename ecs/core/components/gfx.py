@@ -22,6 +22,7 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
+from arcade_utils import AnimatedSprite
 from ecs.core.components.component import Component
 from utils import *
 
@@ -189,27 +190,6 @@ class GfxSimpleSprite(GfxOneSPrite):
         self._zIndex    = zIdx
 
 
-#-----------------------------------
-class GfxMultiSprite(GfxOneSPrite):
-
-    # Constructor
-    def __init__(self, params, zIdx=0, compName=None):
-        if compName == None:
-            compName = "AnimSPrite"
-        # call to parent constructor
-        super().__init__(compName)
-        # set type
-        self._gfxType   = Component.TYPE_MULTI_SPRITE
-        # create Gfx element
-        self._arcadeGfx = createAnimatedSprite(params)
-        self._zIndex    = zIdx
-
-    def getNbTextures(self):
-        return len(self._arcadeGfx.textures)
-
-    def setTexture(self, index):
-        self._arcadeGfx.set_texture(index)
-
 
 #-----------------------------------
 class GfxAnimatedSprite(GfxOneSPrite):
@@ -221,10 +201,66 @@ class GfxAnimatedSprite(GfxOneSPrite):
         # call to parent constructor
         super().__init__(compName)
         # set type
-        self._gfxType   = Component.TYPE_ANIM_SPRITE
+        self._gfxType  = Component.TYPE_ANIM_SPRITE
+        # retrieve parameters
+        filePath       = params["filePath"]
+        textureName    = params["textureName"]
+        size           = None if "size" not in params else params["size"]
+        filterColor    = (255, 255, 255, 255) if "filterColor" not in params else params["filterColor"]
+        isMaxRatio     = False if "isMaxRatio" not in params else params["isMaxRatio"]
+        position       = (0, 0) if "position" not in params else params["position"]
+        spriteBox      = params["spriteBox"]
+        startIndex     = params["startIndex"]
+        endIndex       = params["endIndex"]
+        frameduration  = 1 / 60 if "frameDuration" not in params else params["frameDuration"]
+        flipH          = False if "flipH" not in params else params["flipH"]
+        flipV          = False if "flipv" not in params else params["flipV"]
+        counter        = 0 if "counter" not in params else params["counter"]
+        backAndForth   = False if "backAndForth" not in params else params["backAndForth"]
+        facingDirection= arcade.FACE_RIGHT if "facingDirection" not in params else params["facingDirection"]
         # create Gfx element
-        self._arcadeGfx = createAnimatedSprite(params)
+        self._arcadeGfx = AnimatedSprite()
+        # Add first animation
+        self._arcadeGfx.add_animation("first", filePath,
+                                      spriteBox[0], spriteBox[1],
+                                      spriteBox[2],spriteBox[3],
+                                      startIndex, endIndex,
+                                      frameduration,
+                                      flipH, flipV,
+                                      counter, backAndForth,
+                                      filterColor,
+                                      facingDirection
+                                      )
+        # Set scale
+        if size != None:
+            if isMaxRatio:
+                ratio = max(size[0] / self._arcadeGfx.width, size[1] / self._arcadeGfx.height)
+            else:
+                ratio = min(size[0] / self._arcadeGfx.width, size[1] / self._arcadeGfx.height)
+            self._arcadeGfx.scale = ratio
+        # Set position
+        self._arcadeGfx.position = position
+        # Set ZIndex
         self._zIndex    = zIdx
+
+    def pause(self):
+        self._arcadeGfx.pause_animation()
+
+
+#-----------------------------------
+class GfxMultiSprite(GfxAnimatedSprite):
+
+    # Constructor
+    def __init__(self, params, zIdx=0, compName=None):
+        if compName == None:
+            compName = "AnimSPrite"
+        # call to parent constructor
+        super().__init__(params, zIdx, compName)
+        # set type
+        self._gfxType   = Component.TYPE_MULTI_SPRITE
+
+    def setTexture(self, index):
+        self._arcadeGfx.select_frame(index)
 
 
 
@@ -246,7 +282,7 @@ class GfxAnimSpriteList(Gfx):
         self._zIndex = zIdx
 
     # Filling
-    # TODO when adding components, for the moment, add them according to the Z Index
+    # TODO : when adding components, for the moment, it does not take care about Z-Index
     # Improvement would be to have a local list here with zIndex in order
     # to add components one by one without knowing their order
     # in fact if we change the zIndex of a comp in the list,

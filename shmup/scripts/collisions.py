@@ -4,6 +4,7 @@ from ecs.core.components.gfx import GfxBurstEmitter
 from ecs.core.components.physic import PhysicCollision
 from ecs.core.components.script import Script
 from shmup.common.constants import ZIDX_BUBBLES, ZIDX_OUCH
+from shmup.factories.coinFactory import CoinFactory
 
 
 class FishCollisions(Script):
@@ -146,6 +147,11 @@ class BubbleCollisions(Script):
                                 burstComp = GfxBurstEmitter(params, ZIDX_BUBBLES, "BurstEmitter")
                                 # Add burst component to entity
                                 self._eCollide.addComponent(burstComp)
+                                # Create gold coin
+                                coin = CoinFactory().create(burstPos)
+                                scene = self._eCollide.getScene()
+                                if scene != None:
+                                    scene.addEntity(coin)
 
         # Look for bubbles in collisions
         for bubble in self._eBubbles:

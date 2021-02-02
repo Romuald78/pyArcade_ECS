@@ -74,117 +74,7 @@ def createSimpleSprite(params):
     return spr
 
 
-
-def createAnimatedSprite(params):
-    # retrieve parameters
-    filePath      = params["filePath"  ]
-    textureName   = params["textureName"]
-    size          = None if "size" not in params else params["size"]
-    filterColor   = (255, 255, 255, 255) if "filterColor" not in params else params["filterColor"]
-    isMaxRatio    = False  if "isMaxRatio"    not in params else params["isMaxRatio"]
-    position      = (0, 0) if "position"      not in params else params["position"]
-    spriteBox     = params["spriteBox" ]
-    startIndex    = params["startIndex"]
-    endIndex      = params["endIndex"  ]
-    frameduration = 1/60   if "frameDuration" not in params else params["frameDuration"]
-    flipH         = False  if "flipH"         not in params else params["flipH"]
-    flipV         = False  if "flipv"         not in params else params["flipV"]
-
-    # get sprite box (nb sprites X, nb Y, size X size Y)
-    nbX, nbY, szW, szH = spriteBox
-    # Instanciate sprite object
-    # BUG : use non deprecated sprite classes from arcade
-    spr = arcade.AnimatedTimeSprite()
-    spr.color = filterColor
-    # Read Horizontal first, then vertical (Careful VERTICAL is inverted in arcade : 0,0 is LOWER-LEFT)
-    for y in range(0,nbY):
-        for x in range(nbX):
-            index = x + y*nbX
-            # add index only if in range
-            if index >= startIndex and index <= endIndex:
-                texName = f"{textureName}_{index}"
-                if not ResourceLoader.hasTexture(texName):
-                    ResourceLoader.addTexture(texName, filePath, x * szW, y * szH, szW, szH, flipH, flipV, 'None')
-                tex = ResourceLoader.getTexture(texName)
-                spr.textures.append(tex)
-    # set dimensions
-    spr.update_animation()
-    spr.center_x = position[0]
-    spr.center_y = position[1]
-    if size != None:
-        if isMaxRatio:
-            ratio = max(size[0]/spr.width, size[1]/spr.height)
-        else:
-            ratio = min(size[0]/spr.width, size[1]/spr.height)
-        spr.scale = ratio
-
-    # set frame duration
-    spr.texture_change_frames = int(frameduration*60 + 0.5)
-
-    # return sprite object
-    return spr
-
-
-def createAnimatedSprite2(params):
-    # retrieve parameters
-    filePath      = params["filePath"  ]
-    textureName   = params["textureName"]
-    size          = None if "size" not in params else params["size"]
-    filterColor   = (255, 255, 255, 255) if "filterColor" not in params else params["filterColor"]
-    isMaxRatio    = False  if "isMaxRatio"    not in params else params["isMaxRatio"]
-    position      = (0, 0) if "position"      not in params else params["position"]
-    spriteBox     = params["spriteBox" ]
-    startIndex    = params["startIndex"]
-    endIndex      = params["endIndex"  ]
-    frameduration = 1/60   if "frameDuration" not in params else params["frameDuration"]
-    flipH         = False  if "flipH"         not in params else params["flipH"]
-    flipV         = False  if "flipv"         not in params else params["flipV"]
-
-    # get sprite box (nb sprites X, nb Y, size X size Y)
-    nbX, nbY, szW, szH = spriteBox
-
-    # Read Horizontal first, then vertical (Careful VERTICAL is inverted in arcade : 0,0 is LOWER-LEFT)
-    keyFrameList = []
-    for y in range(nbY-1,-1,-1):
-        for x in range(nbX):
-            index = x + y*nbX
-            # add index only if in range
-            if index >= startIndex and index <= endIndex:
-                texName = f"{textureName}_{index}"
-                if not ResourceLoader.hasTexture(texName):
-                    ResourceLoader.addTexture(texName, filePath, x * szW, y * szH, szW, szH, flipH, flipV, 'None')
-                tex = ResourceLoader.getTexture(texName)
-
-                # Create key frame and append to the list
-                key_frame = AnimationKeyframe(index, frameduration, tex)
-                keyFrameList.append(key_frame)
-
-    # Create anim sprite and add frames
-    # BUG : use non deprecated sprite classes from arcade
-    spr = arcade.AnimatedTimeBasedSprite(filePath)
-    spr.frames = keyFrameList
-
-    # Set filter color
-    spr.color = filterColor
-
-    # set position
-    spr.update_animation()
-    spr.center_x = position[0]
-    spr.center_y = position[1]
-
-    # Set scale
-    if size != None:
-        if isMaxRatio:
-            ratio = max(size[0]/spr.width, size[1]/spr.height)
-        else:
-            ratio = min(size[0]/spr.width, size[1]/spr.height)
-        spr.scale = ratio
-
-    # return sprite object
-    return spr
-
-
-
+# TODO : use the Texture Loader !!
 def createParticleBurst(params):
     # retrieve parameters
     x0            = params["x0"           ]
@@ -218,7 +108,7 @@ def createParticleBurst(params):
     return e
 
 
-
+# TODO : use the Texture Loader !!
 def createParticleEmitter(params):
     # retrieve parameters
     x0            = params["x0"          ]

@@ -27,7 +27,7 @@ class EndGameScene(Scene):
         startScript = SwitchToScene(self, startButton, "SPLASH", "SPLASH", 60)
 
         # Create parallax Entity
-        eParallax = ParallaxFactory().create(-5,True)
+        eParallax = ParallaxFactory().create(SCROLL_SPEED,True)
 
         # Add backgrounds
         params = {

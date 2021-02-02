@@ -8,7 +8,7 @@ class ParallaxFactory():
     def __init__(self):
         pass
 
-    def create(self, speed=1.5, bgOnly=False):
+    def create(self, speed=-5, bgOnly=False):
 
         eParallax = Entity()
 
@@ -19,7 +19,7 @@ class ParallaxFactory():
                             (SCREEN_WIDTH,SCREEN_HEIGHT),
                             (SCREEN_WIDTH,SCREEN_HEIGHT),
                             ZIDX_BG-i,
-                            (-i/10)*speed,
+                            (i/10)*speed,
                             "prlxBG")
             eParallax.addComponent(prlx)
 
@@ -32,7 +32,7 @@ class ParallaxFactory():
                                 (SCREEN_WIDTH,SCREEN_HEIGHT),
                                 (SCREEN_WIDTH,SCREEN_HEIGHT),
                                 ZIDX_BG-i-4,
-                                (-(i+4)/10)*speed,
+                                ((i+4)/10)*speed,
                                 "prlxPlants")
                 eParallax.addComponent(prlx)
 
@@ -43,7 +43,7 @@ class ParallaxFactory():
                             (SCREEN_WIDTH,SCREEN_HEIGHT),
                             (SCREEN_WIDTH,SCREEN_HEIGHT),
                             ZIDX_BG-7,
-                            (-7/10)*speed,
+                            (7/10)*speed,
                             "prlxSand")
             eParallax.addComponent(sand)
             # Plant front
@@ -52,7 +52,7 @@ class ParallaxFactory():
                             (SCREEN_WIDTH, SCREEN_HEIGHT),
                             (SCREEN_WIDTH, SCREEN_HEIGHT),
                              ZIDX_FG,
-                            (-8 / 10) * speed,
+                            (8 / 10) * speed,
                             "prlxPlant")
             eParallax.addComponent(plant)
             # Coral front
@@ -61,7 +61,7 @@ class ParallaxFactory():
                             (SCREEN_WIDTH, SCREEN_HEIGHT),
                             (SCREEN_WIDTH, SCREEN_HEIGHT),
                              ZIDX_FG-1,
-                            (-9 / 10) * speed,
+                            (9 / 10) * speed,
                             "prlxCoral")
             eParallax.addComponent(coral)
             # Rock front
@@ -70,7 +70,7 @@ class ParallaxFactory():
                             (SCREEN_WIDTH, SCREEN_HEIGHT),
                             (SCREEN_WIDTH, SCREEN_HEIGHT),
                             ZIDX_FG-2,
-                            (-10 / 10) * speed,
+                            (10 / 10) * speed,
                             "prlxRock")
             eParallax.addComponent(rock)
 
