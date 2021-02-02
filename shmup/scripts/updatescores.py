@@ -19,7 +19,7 @@ class UpdateScores(Script):
         # get score
         scr = self._score.getValue()
         scr = f"0000{scr}"
-        self._u.setTexture(int(scr[-1]))
-        self._d.setTexture(int(scr[-2]))
-        self._h.setTexture(int(scr[-3]))
-        self._t.setTexture(int(scr[-4]))
+        self._u.selectFrame(int(scr[-1]))
+        self._d.selectFrame(int(scr[-2]))
+        self._h.selectFrame(int(scr[-3]))
+        self._t.selectFrame(int(scr[-4]))

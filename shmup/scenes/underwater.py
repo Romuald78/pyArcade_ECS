@@ -5,10 +5,11 @@ from ecs.core.main.scene import Scene
 from ecs.user.script.scene import Pause2Buttons
 from shmup.common.constants import *
 from shmup.factories.bubbleFactory import BubbleFactory
+from shmup.factories.chestFactory import ChestFactory
 from shmup.factories.hudFactory import HudFactory
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.factories.playerFactory import InGamePlayerFactory
-from shmup.scripts.collisions import FishCollisions, BubbleCollisions
+from shmup.scripts.collisions import FishCollisions, BubbleCollisions, CoinCollisions
 from shmup.scripts.destroyPlayer import DestroyPlayer
 from shmup.scripts.endgamescr import EndGameScr
 from shmup.scripts.fishGen import FishGen
@@ -53,6 +54,7 @@ class UnderWater(Scene):
         ePlayers = []
         eFishes  = []
         eBubbles = []
+        eCoins   = []
         eHUDs    = []
 
         # Create fish sprite list component
@@ -95,11 +97,17 @@ class UnderWater(Scene):
             gfxPlayerSpriteList.addSprite(diver)
         eManagement.addComponent(gfxPlayerSpriteList)
 
+        # Create chest entity
+        chest = ChestFactory().create((SCREEN_WIDTH-64,SCREEN_HEIGHT-80))
+
         # Create collision management
         collide1 = FishCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_FISH, ePlayers)
         eManagement.addComponent(collide1)
-        collide2 = BubbleCollisions(eManagement, COLL_TYPE_FISH, COLL_TYPE_BUBBLE, eFishes, eBubbles)
+        collide2 = BubbleCollisions(eManagement, COLL_TYPE_FISH, COLL_TYPE_BUBBLE, eFishes, eBubbles, eCoins)
         eManagement.addComponent(collide2)
+        collide3 = CoinCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_COIN, eCoins, chest.getComponentsByName("chestScr")[0])
+        eManagement.addComponent(collide3)
+
 
         # Create parallax Entity
         eParallax = ParallaxFactory().create(SCROLL_SPEED2)
@@ -124,7 +132,6 @@ class UnderWater(Scene):
         endScr = EndGameScr(ePlayers)
         eManagement.addComponent(endScr)
 
-
         # Add ENTITIES to the world
         self.addEntity(eManagement)
         self.addEntity(eParallax)
@@ -132,6 +139,7 @@ class UnderWater(Scene):
             self.addEntity(entP)
         for entH in eHUDs:
             self.addEntity(entH)
+        self.addEntity(chest)
 
 
 

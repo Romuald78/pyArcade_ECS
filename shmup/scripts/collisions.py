@@ -3,7 +3,7 @@ import math
 from ecs.core.components.gfx import GfxBurstEmitter
 from ecs.core.components.physic import PhysicCollision
 from ecs.core.components.script import Script
-from shmup.common.constants import ZIDX_BUBBLES, ZIDX_OUCH
+from shmup.common.constants import ZIDX_BUBBLES, ZIDX_OUCH, ZIDX_COINS, ZIDX_HUD
 from shmup.factories.coinFactory import CoinFactory
 
 
@@ -69,9 +69,70 @@ class FishCollisions(Script):
             pass
 
 
+class CoinCollisions(Script):
+
+    def __init__(self, entCollide, colTyp1, colTyp2, eCoins, chestScr, compName=None):
+        # Call to parent
+        super().__init__(compName)
+        # Create collision components
+        cb = {
+            "begin": self._beginCollision,
+            "separate": self._endCollision
+        }
+        data = {
+        }
+        collide = PhysicCollision(colTyp1, colTyp2, cb, data)
+        entCollide.addComponent(collide)
+        self._eCollide = entCollide
+        self._eCoins = eCoins
+        self._chestScr = chestScr
+
+    def _beginCollision(self, arbiter, space, data):
+        for coin in self._eCoins:
+            phyComp = coin.getComponentsByName("coinPhy")
+            if len(phyComp) >= 1:
+                phyComp = phyComp[0]
+                for bdyShp in phyComp.getBodyList():
+                    body  = bdyShp[0]
+                    shape = bdyShp[1]
+                    for shp in arbiter.shapes:
+                        if shp == shape:
+                            # We have found a coin here destory it
+                            self._eCoins.remove(coin)
+                            coin.destroy()
+                            # Create burst emitter at the physic position of the fish
+                            burstPos = phyComp.getPosition()
+                            params = {"x0": burstPos[0],
+                                      "y0": burstPos[1],
+                                      "partSize": 128,
+                                      "partScale": 0.5,
+                                      "partSpeed": 3.0,
+                                      "lifeTime": 0.5,
+                                      "color": (0, 0, 255),
+                                      "startAlpha": 100,
+                                      "endAlpha": 50,
+                                      "imagePath": "resources/images/items/coin.png",
+                                      "partInterval": 0.02,
+                                      "totalDuration": 0.4,
+                                      }
+                            burstComp = GfxBurstEmitter(params, ZIDX_HUD-100, "coinEmitter")
+                            # Add it into the entity for coin burst
+                            self._eCollide.addComponent(burstComp)
+                            # Add this into the script to move coins
+                            self._chestScr.insertCoin(burstComp)
+                            return True
+        return True
+
+    def _endCollision(self, arbiter, space, data):
+        return True
+
+    def updateScript(self, scriptName, deltaTime):
+        pass
+
+
 class BubbleCollisions(Script):
 
-    def __init__(self, entCollide, colTyp1, colTyp2, eFishes, eBubbles, compName=None):
+    def __init__(self, entCollide, colTyp1, colTyp2, eFishes, eBubbles, eCoins, compName=None):
         # Call to parent
         super().__init__(compName)
         # Create collision components
@@ -86,7 +147,9 @@ class BubbleCollisions(Script):
         # Store entity lists
         self._eFishes  = eFishes
         self._eBubbles = eBubbles
+        self._eCoins   = eCoins
         self._eCollide = entCollide
+
 
     def _beginCollision(self, arbiter, space, data):
         # Entities to destroy
@@ -148,10 +211,12 @@ class BubbleCollisions(Script):
                                 # Add burst component to entity
                                 self._eCollide.addComponent(burstComp)
                                 # Create gold coin
-                                coin = CoinFactory().create(burstPos)
+                                coin = CoinFactory().create(burstPos, self._eCoins)
                                 scene = self._eCollide.getScene()
                                 if scene != None:
                                     scene.addEntity(coin)
+                                    self._eCoins.append(coin)
+
 
         # Look for bubbles in collisions
         for bubble in self._eBubbles:

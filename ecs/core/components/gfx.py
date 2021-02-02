@@ -48,8 +48,6 @@ class Gfx(Component):
         raise ValueError("[ERR] gfx : kill method has not been implemented yet !")
 
     def getGfx(self):
-        if self._arcadeGfx == None:
-            raise ValueError("[ERR] gfx : arcade gfx reference has not been set yet !")
         return self._arcadeGfx
 
     # type method
@@ -195,16 +193,25 @@ class GfxSimpleSprite(GfxOneSPrite):
 class GfxAnimatedSprite(GfxOneSPrite):
 
     # Constructor
-    def __init__(self, params, zIdx=0, compName=None):
+    def __init__(self, params=None, zIdx=0, compName=None):
         if compName == None:
             compName = "AnimSPrite"
         # call to parent constructor
         super().__init__(compName)
         # set type
         self._gfxType  = Component.TYPE_ANIM_SPRITE
+        # create Gfx element
+        self._arcadeGfx = AnimatedSprite()
+        # Add first animation if given
+        if params != None:
+            self.addAnimation(params, True, True)
+        # Set ZIndex
+        self._zIndex    = zIdx
+
+    def addAnimation(self,params, changePosition=False, changeScale=False):
         # retrieve parameters
         filePath       = params["filePath"]
-        textureName    = params["textureName"]
+        animName       = "defaultName" if "animName" not in params else params["animName"]
         size           = None if "size" not in params else params["size"]
         filterColor    = (255, 255, 255, 255) if "filterColor" not in params else params["filterColor"]
         isMaxRatio     = False if "isMaxRatio" not in params else params["isMaxRatio"]
@@ -218,10 +225,8 @@ class GfxAnimatedSprite(GfxOneSPrite):
         counter        = 0 if "counter" not in params else params["counter"]
         backAndForth   = False if "backAndForth" not in params else params["backAndForth"]
         facingDirection= arcade.FACE_RIGHT if "facingDirection" not in params else params["facingDirection"]
-        # create Gfx element
-        self._arcadeGfx = AnimatedSprite()
         # Add first animation
-        self._arcadeGfx.add_animation("first", filePath,
+        self._arcadeGfx.add_animation(animName, filePath,
                                       spriteBox[0], spriteBox[1],
                                       spriteBox[2],spriteBox[3],
                                       startIndex, endIndex,
@@ -232,16 +237,28 @@ class GfxAnimatedSprite(GfxOneSPrite):
                                       facingDirection
                                       )
         # Set scale
-        if size != None:
-            if isMaxRatio:
-                ratio = max(size[0] / self._arcadeGfx.width, size[1] / self._arcadeGfx.height)
-            else:
-                ratio = min(size[0] / self._arcadeGfx.width, size[1] / self._arcadeGfx.height)
-            self._arcadeGfx.scale = ratio
+        if changeScale:
+            if size != None:
+                if isMaxRatio:
+                    ratio = max(size[0] / self._arcadeGfx.width, size[1] / self._arcadeGfx.height)
+                else:
+                    ratio = min(size[0] / self._arcadeGfx.width, size[1] / self._arcadeGfx.height)
+                self._arcadeGfx.scale = ratio
         # Set position
-        self._arcadeGfx.position = position
-        # Set ZIndex
-        self._zIndex    = zIdx
+        if changePosition:
+            self._arcadeGfx.position = position
+
+    def selectFrame(self,index):
+        self._arcadeGfx.select_frame(index)
+
+    def selectAnimation(self, animName, rewind=False, resume=True):
+        self._arcadeGfx.select_animation(animName, rewind, resume)
+
+    def getCurrentAnimation(self):
+        return self._arcadeGfx.get_current_animation()
+
+    def isFinished(self):
+        return self._arcadeGfx.is_finished()
 
     def pause(self):
         self._arcadeGfx.pause_animation()
@@ -256,8 +273,6 @@ class GfxMultiSprite(GfxAnimatedSprite):
             compName = "AnimSPrite"
         # call to parent constructor
         super().__init__(params, zIdx, compName)
-        # set type
-        self._gfxType   = Component.TYPE_MULTI_SPRITE
 
     def setTexture(self, index):
         self._arcadeGfx.select_frame(index)

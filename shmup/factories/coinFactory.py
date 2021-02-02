@@ -1,8 +1,12 @@
 from random import randint
 
+import pymunk
+
 from ecs.core.components.gfx import GfxAnimatedSprite
+from ecs.core.components.physic import PhysicDisc
 from ecs.core.main.entity import Entity
-from shmup.common.constants import ZIDX_COINS
+from ecs.user.script.phyuserscripts import PhyGfxLink
+from shmup.common.constants import ZIDX_COINS, COLL_TYPE_COIN
 from shmup.scripts.movecoin import MoveCoin
 
 
@@ -12,7 +16,7 @@ class CoinFactory():
     def __init__(self):
         pass
 
-    def create(self, position):
+    def create(self, position, eCoins):
         coin = Entity()
         params = {
             "filePath": f"resources/images/items/coins.png",
@@ -28,10 +32,24 @@ class CoinFactory():
         }
         limitY = randint(90,200)
         coinGfx = GfxAnimatedSprite(params, ZIDX_COINS+limitY-90)
-        moveCoin = MoveCoin(coinGfx, limitY, 20, position)
+        moveCoin = MoveCoin(coinGfx, limitY, 20, position, eCoins)
+        params = {
+            "mass": 0.01,
+            "radius": 32,
+            "mode": pymunk.Body.KINEMATIC,
+            "pos": (10000, 10000),
+            "sensor": False,
+            "collisionType": COLL_TYPE_COIN,
+        }
+        coinPhy = PhysicDisc(params, "coinPhy")
+        phyGfxLink = PhyGfxLink(coinPhy, coinGfx, (0,0), "phygfxlink")
+
+
 
         coin.addComponent(coinGfx)
         coin.addComponent(moveCoin)
+        coin.addComponent(coinPhy)
+        coin.addComponent(phyGfxLink)
 
         # return entity
         return coin

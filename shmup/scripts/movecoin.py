@@ -4,15 +4,17 @@ from shmup.common.constants import SCROLL_SPEED2
 
 class MoveCoin(Script):
 
-    def __init__(self, gfx, downLimit, time, initPos, compName="MoveCoin"):
+    def __init__(self, gfx, downLimit, time, initPos, eCoins, compName="MoveCoin"):
         super().__init__(compName)
         self._limit   = downLimit
         self._gfx     = gfx
         self._timer   = 0
         self._initPos = initPos
         self._timeMax = time
+        self._eCoins = eCoins
 
     def updateScript(self, scriptName, deltaTime):
+        toDestroy = []
         #Get coin position
         x, y = self._gfx.getPosition()
         # Move to the left, according to the parallax ("sand") speed
@@ -31,9 +33,14 @@ class MoveCoin(Script):
                 # Destroy entity
                 ent = self._gfx.getEntity()
                 if ent != None:
-                    ent.destroy()
+                    toDestroy.append(ent)
+
         # Destroy if it gets out of the screen
         if x < -self._gfx.getWidth()/2:
             ent = self._gfx.getEntity()
             if ent != None:
-                ent.destroy()
+                toDestroy.append(ent)
+
+        for ent in toDestroy:
+            ent.destroy()
+            self._eCoins.remove(ent)

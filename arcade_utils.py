@@ -194,11 +194,19 @@ class AnimatedSprite(arcade.Sprite):
         my_dict = self._prepare_data_struct(frame_duration,back_and_forth,loop_counter,filter_color)
 
         # Now create all textures and add them into the list
+        direction = "forward"
+        if frame_start_index > frame_end_index:
+            direction = "backward"
         for y in range(nb_frames_y):
             for x in range(nb_frames_x):
                 index = x + (y * nb_frames_x)
                 # add index only if in range
-                if index >= frame_start_index and index <= frame_end_index:
+                index_ok = False
+                if direction =="forward" and index >= frame_start_index and index <= frame_end_index:
+                        index_ok = True
+                elif direction =="backward" and index >= frame_end_index and index <= frame_start_index:
+                        index_ok = True
+                if index_ok:
                     # create texture
                     tex = TextureLoader.get_texture(
                             filepath,
@@ -209,7 +217,10 @@ class AnimatedSprite(arcade.Sprite):
                             hit_box_algo,
                             use_cache)
                     # Store texture in the texture list
-                    my_dict["texture_list"].append(tex)
+                    if direction == "forward":
+                        my_dict["texture_list"].append(tex)
+                    else:
+                        my_dict["texture_list"] = [tex,] + my_dict["texture_list"]
 
         # Store this animation
         self._anims[facing_direction-1][animation_name] = my_dict
@@ -319,6 +330,9 @@ class AnimatedSprite(arcade.Sprite):
         """
         self.pause_animation()
         self.rewind_animation()
+
+    def get_current_animation(self):
+        return self._current_animation_name
 
     def is_finished(self):
         return self._percent_progression >= 1.0
