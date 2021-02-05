@@ -67,3 +67,23 @@ class Follow(Script):
     def updateScript(self, actionName, deltaTime):
         self._follower.setPosition(self._target.getPosition())
 
+
+
+class LightFollowGfx(Script):
+
+    # CONSTRUCTOR
+    def __init__(self, gfx, light, lightEnt=None, offset=(0,0),compName=None):
+        super().__init__(compName)
+        self._target = gfx
+        self._follower = light
+        self._entity = light
+        self._offset = offset
+
+    # update
+    def updateScript(self, actionName, deltaTime):
+        pos = self._target.getPosition()
+        self._follower.setPosition((pos[0]+self._offset[0],pos[1]+self._offset[1]))
+        if self._target.getGfx() == None:
+            if self._entity != None:
+                self._entity.destroy()
+

@@ -1,8 +1,12 @@
+from random import randint
+
+import arcade
 
 from ecs.core.components.component import Component
 from ecs.core.systems.gfxSystem import GfxSystem
 from ecs.core.systems.idleSystem import IdleSystem
 from ecs.core.systems.inputSystem import InputSystem
+from ecs.core.systems.lightSystem import LightSystem
 from ecs.core.systems.physicSystem import PhysicSystem
 from ecs.core.systems.scriptSystem import ScriptSystem
 
@@ -12,7 +16,7 @@ class World():
     ## -------------------------------------
     ## CONSTRUCTOR
     ## -------------------------------------
-    def __init__(self, scn):
+    def __init__(self, scn, W, H):
         # attach scene to this world
         self._scene = scn
         # Create systems
@@ -21,6 +25,7 @@ class World():
         self._scriptMgr = ScriptSystem()
         self._idleMgr   = IdleSystem()
         self._phyMgr    = PhysicSystem()
+        self._lightMgr  = LightSystem(W,H)
 
 
     ## -------------------------------------
@@ -67,6 +72,9 @@ class World():
         # PHYSIC
         elif (compType & Component.TYPE_PHYSIC_MASK) == Component.TYPE_PHYSIC_MASK:
             self._phyMgr.add(compRef)
+        # LIGHT
+        elif (compType & Component.TYPE_LIGHT_MASK) == Component.TYPE_LIGHT_MASK:
+            self._lightMgr.add(compRef)
         # /!\ UNKNOWN COMPONENT TYPES /!\
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")
@@ -82,6 +90,9 @@ class World():
         # Remove Physic
         if (cmpRef.getType() & Component.TYPE_PHYSIC_MASK) == Component.TYPE_PHYSIC_MASK:
             self._phyMgr.remove(cmpRef)
+        # Remove Light
+        if (cmpRef.getType() & Component.TYPE_LIGHT_MASK) == Component.TYPE_LIGHT_MASK:
+            self._lightMgr.remove(cmpRef)
 
 
     ## -------------------------------------
@@ -101,6 +112,13 @@ class World():
 
 
     ## -------------------------------------
+    ## LIGTH MANAGEMENT
+    ## -------------------------------------
+    def setAmbientColor(self, newColor):
+        self._lightMgr.setAmbient(newColor)
+
+
+    ## -------------------------------------
     ## PHYSIC WORLD
     ## -------------------------------------
     def addCollisionHandler(self, colTyp1, colTyp2, callbacks, data):
@@ -117,9 +135,11 @@ class World():
         self._gfxMgr.updateAllGfx(deltaTime, isOnPause)
 
     def draw(self):
-        self._gfxMgr.drawAllGfx()
-        if self._scene.isDrawDebug():
-            self._phyMgr.drawDebug()
+        with self._lightMgr.getLayer():    # code line 1
+            self._gfxMgr.drawAllGfx()
+            if self._scene.isDrawDebug():
+                self._phyMgr.drawDebug()
+        self._lightMgr.draw()              # code line 2
 
 
     ## -------------------------------------
@@ -128,6 +148,7 @@ class World():
     def onKeyEvent(self,key, isPressed):
         isOnPause = self._scene.isPaused()
         self._inputMgr.notifyKeyEvent(key, isPressed, isOnPause)
+
     def onMouseButtonEvent(self, buttonName, x, y, isPressed):
         isOnPause = self._scene.isPaused()
         self._inputMgr.notifyMouseButtonEvent(buttonName, x, y, isPressed,isOnPause)

@@ -2,13 +2,14 @@ import pymunk
 
 from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxText
 from ecs.core.components.input import GamepadAxis, GamepadButton
+from ecs.core.components.light import LightFx
 from ecs.core.components.physic import PhysicBox, PhysicDisc
 from ecs.core.main.entity import Entity
 from ecs.user.idle.counters import UserCounter
-from ecs.user.script.gfxpos import Follow
+from ecs.user.script.gfxpos import Follow, LightFollowGfx
 from ecs.user.script.phyuserscripts import GfxPhyLink, Move2DAnalogPhy, LimitBoxPhy
 from shmup.common.constants import Z_INDEX_SHIPS, SCREEN_HEIGHT, SCREEN_WIDTH, COLLISION_PLAYER_MASK, ZIDX_DIVERS, \
-    COLL_TYPE_DIVER
+    COLL_TYPE_DIVER, DEFAULT_LIGHT
 from shmup.factories.bubbleFactory import BubbleFactory
 from shmup.scripts.genBubble import GenBubble
 
@@ -105,7 +106,9 @@ class InGamePlayerFactory():
         dy = 120+offset[1]
         limitDiver = LimitBoxPhy(diverPhy,(dx,SCREEN_HEIGHT-dy+40),(SCREEN_WIDTH-dx,dy),"limitDiver")
 
-
+        # light
+        light = LightFx((-1000,-1000),160,playerColor,"soft")
+        lightFollow = LightFollowGfx(diverGfx, light)
 
         # Create antity and add all components to it
         ePlayer = Entity(playerName)
@@ -121,6 +124,9 @@ class InGamePlayerFactory():
         ePlayer.addComponent(follow)
         ePlayer.addComponent(life)
         ePlayer.addComponent(score)
+        ePlayer.addComponent(light)
+        ePlayer.addComponent(lightFollow)
+
 
         # return result
         return ePlayer

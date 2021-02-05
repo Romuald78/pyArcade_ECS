@@ -400,7 +400,9 @@ class GfxBurstEmitter(Gfx):
         self._arcadeGfx.center_x = newPos[0]
         self._arcadeGfx.center_y = newPos[1]
     def getPosition(self):
-        return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
+        if self._arcadeGfx != None:
+            return (self._arcadeGfx.center_x, self._arcadeGfx.center_y)
+        return (-10000,-10000)
 
     # process
     def isFinished(self):

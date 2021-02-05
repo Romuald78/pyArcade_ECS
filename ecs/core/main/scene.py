@@ -35,7 +35,7 @@ class Scene():
     ## -------------------------------------
     def __init__(self, scnMgr, W, H, sceneName):
         self._sceneMgr     = scnMgr
-        self._world        = World(self)
+        self._world        = World(self, W, H)
         self._consoleDebug = False
         self._drawDebug    = False
         self._drawMemory   = False
@@ -70,6 +70,8 @@ class Scene():
         self._sceneMgr.resume()
     def isPaused(self):
         return self._sceneMgr.isPaused()
+    def setAmbientColor(self, newColor):
+        self._world.setAmbientColor(newColor)
 
 
     ## -------------------------------------
@@ -148,7 +150,7 @@ class Scene():
     ## COMPONENT NOTIFICATIONS
     ## -------------------------------------
     def notifyAddComponent(self, newCmpRef):
-        # TODO check the entity of this component is already registered here in this world
+        # TODO check the entity of this component is already registered here in this scene ?
         self._world.notifyAddComponent(newCmpRef)
     def notifyRemoveComponent(self, cmpRef):
         self._world.notifyRemoveComponent(cmpRef)

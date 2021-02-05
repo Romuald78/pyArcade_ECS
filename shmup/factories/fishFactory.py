@@ -1,9 +1,11 @@
 import pymunk
 
 from ecs.core.components.gfx import GfxAnimatedSprite
+from ecs.core.components.light import LightFx
 from ecs.core.components.physic import PhysicDisc
 from ecs.core.main.entity import Entity
 from ecs.user.idle.counters import UserCounter
+from ecs.user.script.gfxpos import LightFollowGfx
 from ecs.user.script.phyuserscripts import PhyGfxLink
 from shmup.common.constants import *
 from random import randint
@@ -169,6 +171,13 @@ class FishFactory():
         eFish.addComponent(fishPhy)
         eFish.addComponent(phyGfxLink)
         eFish.addComponent(lifeCmp)
+        if idx == 5:
+            # light
+            light = LightFx((-1000, -1000), fSize[0]/2, (255, 255, 0), "soft")
+            lightFollow = LightFollowGfx(fishGfx, light, None, (-fSize[0]/2.3,fSize[1]/16))
+            eFish.addComponent(light)
+            eFish.addComponent(lightFollow)
+
 
         # return result
         return eFish

@@ -50,7 +50,9 @@ class Component():
     TYPE_PHY_COLLIDE   = TYPE_PHYSIC_MASK | 0x01
     TYPE_PHYSIC_BOX    = TYPE_PHYSIC_MASK | 0x02
     TYPE_PHYSIC_DISC   = TYPE_PHYSIC_MASK | 0x03
-
+    # Light
+    TYPE_LIGHT_MASK   = 0x20000
+    TYPE_LIGHT        = TYPE_LIGHT_MASK | 0x01
 
     # User Strings
     TYPE_INFO = {
@@ -88,6 +90,9 @@ class Component():
                                "color": (192, 64, 192)},
         TYPE_TEXT           : {"name": "GfxText",
                                "color": (255, 255, 255)},
+        TYPE_LIGHT          : {"name": "Light",
+                               "color": (255, 255, 0)},
+
     }
 
 

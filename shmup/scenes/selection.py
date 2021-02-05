@@ -23,6 +23,9 @@ class Selection(Scene):
         for ent in self.getAllEntities():
             ent.destroy()
 
+        # Ambient color
+        self.setAmbientColor(DEFAULT_LIGHT)
+
         # init player list
         self.players = {}
 

@@ -3,8 +3,10 @@ from random import randint
 import pymunk
 
 from ecs.core.components.gfx import GfxAnimatedSprite
+from ecs.core.components.light import LightFx
 from ecs.core.components.physic import PhysicDisc
 from ecs.core.main.entity import Entity
+from ecs.user.script.gfxpos import LightFollowGfx
 from ecs.user.script.phyuserscripts import PhyGfxLink
 from shmup.common.constants import ZIDX_COINS, COLL_TYPE_COIN
 from shmup.scripts.movecoin import MoveCoin
@@ -44,12 +46,18 @@ class CoinFactory():
         coinPhy = PhysicDisc(params, "coinPhy")
         phyGfxLink = PhyGfxLink(coinPhy, coinGfx, (0,0), "phygfxlink")
 
+        # light
+        light = LightFx((-1000,-1000),48,(255,255,0),"soft")
+        lightFollow = LightFollowGfx(coinGfx, light, None)
 
 
         coin.addComponent(coinGfx)
         coin.addComponent(moveCoin)
         coin.addComponent(coinPhy)
         coin.addComponent(phyGfxLink)
+        coin.addComponent(light)
+        coin.addComponent(lightFollow)
+
 
         # return entity
         return coin

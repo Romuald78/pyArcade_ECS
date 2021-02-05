@@ -18,7 +18,7 @@ class IdleSystem():
     ## -------------------------------------
     def __checkType(self, ref):
         if not isinstance(ref, Idle):
-            raise ValueError(f"[ERR] add script : bad object type. It should be ScriptInterface !\n{ref}")
+            raise ValueError(f"[ERR] add idle : bad object type. It should be ScriptInterface !\n{ref}")
 
     ## -------------------------------------
     ## Constructor

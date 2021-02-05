@@ -1,10 +1,12 @@
 from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxAnimSpriteList
 from ecs.core.components.input import GamepadButton, Input
+from ecs.core.components.light import LightFx
 from ecs.core.main.entity import Entity
 from ecs.core.main.scene import Scene
 from shmup.common.constants import *
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.scripts.fishGen import FishGen
+from shmup.scripts.moveTorch import MoveTorch
 from shmup.scripts.transitions import SwitchToScene
 
 
@@ -15,6 +17,7 @@ class SplashScreen(Scene):
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
         self.setDebugMode(False, False, False)
+        # init scene
         self.init({})
 
 
@@ -24,6 +27,8 @@ class SplashScreen(Scene):
         for ent in self.getAllEntities():
             ent.destroy()
 
+        # Set ambient color to dark
+        self.setAmbientColor(DARK_LIGHT)
 
         eFishes  = []
         entFishGen = Entity()
@@ -34,7 +39,6 @@ class SplashScreen(Scene):
         # Create fish generator
         fishGen = FishGen(self,gfxFishList, eFishes)
         entFishGen.addComponent(fishGen)
-
 
         # Store list of registered players. keys are gamepad IDs
         self._players = {}
@@ -54,8 +58,6 @@ class SplashScreen(Scene):
             "frameDuration": 1 / 1
         }
         wallpaper1 = GfxAnimatedSprite(params, ZIDX_BG-10, "splashBG")
-
-
         params = {
             "filePath": f"resources/images/backgrounds/splash_front.png",
             "size": (SCREEN_WIDTH, SCREEN_HEIGHT),
@@ -81,11 +83,18 @@ class SplashScreen(Scene):
         entity.addComponent(startButton)
         entity.addComponent(startScript)
 
+        # Create lights
+        eLights = Entity()
+        light1 = LightFx((SCREEN_WIDTH//2, SCREEN_HEIGHT//2), 500, DEFAULT_LIGHT, 'soft')
+        moveTorch = MoveTorch(light1,True)
+        eLights.addComponent(light1)
+        eLights.addComponent(moveTorch)
+
         # Add entity to the scene
         self.addEntity(entity)
         self.addEntity(entFishGen)
         self.addEntity(eParallax)
-
+        self.addEntity(eLights)
 
 
 

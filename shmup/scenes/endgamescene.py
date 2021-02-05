@@ -1,10 +1,12 @@
 from ecs.core.components.gfx import GfxSimpleSprite, GfxAnimatedSprite, GfxAnimSpriteList
 from ecs.core.components.input import GamepadButton, Input
+from ecs.core.components.light import LightFx
 from ecs.core.main.entity import Entity
 from ecs.core.main.scene import Scene
 from shmup.common.constants import *
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.scripts.fishGen import FishGen
+from shmup.scripts.moveTorch import MoveTorch
 from shmup.scripts.transitions import SwitchToScene
 
 
@@ -15,11 +17,16 @@ class EndGameScene(Scene):
         super().__init__(sceneMgr, SCREEN_WIDTH, SCREEN_HEIGHT, sceneName)
         # Set debug mode
         self.setDebugMode(False, False, False)
+        self.init({})
+
 
     def init(self, params):
         # Remove all entities from this scene
         for ent in self.getAllEntities():
             ent.destroy()
+
+        # Dark light
+        self.setAmbientColor(DARK_LIGHT)
 
         # Add gamepad button input
         startButton = GamepadButton("start", Input.ALL_GAMEPADS_ID, "MENU")
@@ -79,10 +86,17 @@ class EndGameScene(Scene):
         entity.addComponent(gfxFishList)
         entity.addComponent(fishGen)
 
+        # Create lights
+        eLights = Entity()
+        light1 = LightFx((SCREEN_WIDTH//2, SCREEN_HEIGHT//2), 500, DEFAULT_LIGHT, 'soft')
+        moveTorch = MoveTorch(light1)
+        eLights.addComponent(light1)
+        eLights.addComponent(moveTorch)
 
         # Add entity to the scene
         self.addEntity(entity)
         self.addEntity(eParallax)
+        self.addEntity(eLights)
 
     def getTransitionColorOUT(self):
         return (0,0,0)

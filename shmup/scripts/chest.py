@@ -8,7 +8,7 @@ class Chest(Script):
         self._gfx = gfx
         self._coins = []
         self._score = score
-        self._chestPos = (finalPos[0],finalPos[1]+96)
+        self._chestPos = (finalPos[0],finalPos[1]+48)
 
     def insertCoin(self, gfxEmitter):
         # Add gfx ref into the list

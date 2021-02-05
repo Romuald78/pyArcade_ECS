@@ -1,8 +1,11 @@
 import math
 
 from ecs.core.components.gfx import GfxBurstEmitter
+from ecs.core.components.light import LightFx
 from ecs.core.components.physic import PhysicCollision
 from ecs.core.components.script import Script
+from ecs.core.main.entity import Entity
+from ecs.user.script.gfxpos import LightFollowGfx
 from shmup.common.constants import ZIDX_BUBBLES, ZIDX_OUCH, ZIDX_COINS, ZIDX_HUD
 from shmup.factories.coinFactory import CoinFactory
 
@@ -71,7 +74,7 @@ class FishCollisions(Script):
 
 class CoinCollisions(Script):
 
-    def __init__(self, entCollide, colTyp1, colTyp2, eCoins, chestScr, compName=None):
+    def __init__(self, entCollide, colTyp1, colTyp2, eCoins, chestScr, scene, compName=None):
         # Call to parent
         super().__init__(compName)
         # Create collision components
@@ -86,6 +89,7 @@ class CoinCollisions(Script):
         self._eCollide = entCollide
         self._eCoins = eCoins
         self._chestScr = chestScr
+        self._scene = scene
 
     def _beginCollision(self, arbiter, space, data):
         for coin in self._eCoins:
@@ -106,16 +110,22 @@ class CoinCollisions(Script):
                                       "y0": burstPos[1],
                                       "partSize": 128,
                                       "partScale": 0.5,
-                                      "partSpeed": 3.0,
-                                      "lifeTime": 0.5,
-                                      "color": (0, 0, 255),
+                                      "partSpeed": 0.0,
+                                      "lifeTime": 0.25,
+                                      "color": (255, 255, 0),
                                       "startAlpha": 100,
-                                      "endAlpha": 50,
+                                      "endAlpha": 25,
                                       "imagePath": "resources/images/items/coin.png",
                                       "partInterval": 0.02,
-                                      "totalDuration": 0.4,
+                                      "totalDuration": 0.5,
                                       }
                             burstComp = GfxBurstEmitter(params, ZIDX_HUD-100, "coinEmitter")
+                            light = LightFx(burstPos, 48,(255,255,0),"soft")
+                            lightEntity = Entity()
+                            lightFollow = LightFollowGfx(burstComp, light, lightEntity)
+                            lightEntity.addComponent(light)
+                            lightEntity.addComponent(lightFollow)
+                            self._scene.addEntity(lightEntity)
                             # Add it into the entity for coin burst
                             self._eCollide.addComponent(burstComp)
                             # Add this into the script to move coins

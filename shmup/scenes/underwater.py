@@ -47,6 +47,9 @@ class UnderWater(Scene):
         for ent in self.getAllEntities():
             ent.destroy()
 
+        # Set ambient light
+        self.setAmbientColor(DEFAULT_LIGHT)
+
         # create Entity for global scene management
         eManagement = Entity("Management")
 
@@ -105,7 +108,7 @@ class UnderWater(Scene):
         eManagement.addComponent(collide1)
         collide2 = BubbleCollisions(eManagement, COLL_TYPE_FISH, COLL_TYPE_BUBBLE, eFishes, eBubbles, eCoins)
         eManagement.addComponent(collide2)
-        collide3 = CoinCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_COIN, eCoins, chest.getComponentsByName("chestScr")[0])
+        collide3 = CoinCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_COIN, eCoins, chest.getComponentsByName("chestScr")[0], self)
         eManagement.addComponent(collide3)
 
 

@@ -8,11 +8,11 @@ from shmup.common.constants import ZIDX_DIVERS, SCREEN_HEIGHT, MAX_PLAYERS, ZIDX
 
 class PlayerSelection(Script):
 
-    COLORS = [ (  0,  0,200) ,
-               (200,  0,  0) ,
-               (  0,200,  0) ,
-               (200,  0,200)
-             ]
+    COLORS = [
+        (0, 0, 225  ),
+        (0, 200, 0  ),
+        (0, 192, 192),
+    ]
 
     # Choose first available color
     def _getFirstAvailableColor(self):
@@ -23,7 +23,7 @@ class PlayerSelection(Script):
                     found = True
             if not found:
                 return c
-        return (255,255,255)
+        return (200,200,200)
 
     def __init__(self, playerDict, startButton, backButton, sceneRef, prevSceneName, nextSceneName):
         super().__init__("playerSelect")

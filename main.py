@@ -1,7 +1,11 @@
 ### ====================================================================================================
 ### IMPORTS
 ### ====================================================================================================
+import arcade
+from arcade.experimental.lights import LightLayer, Light
+
 from ecs.core.systems.sceneSystem import SceneSystem
+from shmup.common.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from shmup.scenes.endgamescene import EndGameScene
 from shmup.scenes.intro import DisplayGGJ, DisplayRPH, DisplayArcade
 from shmup.scenes.loading import Loading
@@ -31,6 +35,13 @@ class Main:
         self._sceneMgr.addScene(EndGameScene (self._sceneMgr, "ENDGAME"))
 
 
+        self._lightLayer2 = LightLayer(SCREEN_WIDTH,SCREEN_HEIGHT)
+        self._lightLayer3 = LightLayer(SCREEN_WIDTH,SCREEN_HEIGHT)
+        light2 = Light(500,500,250,(0,255,0),'soft')
+        light3 = Light(750, 250, 250, (255, 0, 0), 'soft')
+        self._lightLayer2.add(light2)
+        self._lightLayer3.add(light3)
+
 
     ### ====================================================================================================
     ### INIT
@@ -51,6 +62,14 @@ class Main:
     ### ====================================================================================================
     def draw(self):
         self._sceneMgr.drawCurrentScene()
+
+#        arcade.draw_rectangle_filled(750, 500, 1000, 1000, (128, 128, 255))
+#        with self._lightLayer2:
+#            arcade.draw_rectangle_filled(250,250,500,500,(128,128,128))
+#        self._lightLayer2.draw(ambient_color=(255,255,255))
+#        with self._lightLayer3:
+#            arcade.draw_rectangle_filled(750,250,500,500,(128,128,128))
+#        self._lightLayer3.draw(ambient_color=(255,255,255))
 
 
     ### ====================================================================================================
