@@ -26,7 +26,7 @@ class DirtyGen(Script):
         if self._duration > self._interval:
             self._interval = randint(7*100,15*100)/100
             self._duration = 0
-            type = randint(0,2)
+            type = randint(0,len(DirtyFactory.DIRTS)-1)
             position = (SCREEN_WIDTH,SCREEN_HEIGHT+128)
             newDirty = self._dirtyFactory.create(type,position,self._entList)
             # Add entity to list

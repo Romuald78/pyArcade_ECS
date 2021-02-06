@@ -17,22 +17,20 @@ class DirtyFactory():
 
     DIRTS = [
         {
+            "filePath": f"resources/images/items/apple.png",
+            "textureName": f"apple",
+        },
+        {
             "filePath": f"resources/images/items/shoe.png",
-            "size": (128, 128),
             "textureName": f"shoe",
-            "spriteBox": (1, 1, 128, 128),
         },
         {
             "filePath": f"resources/images/items/can.png",
-            "size": (128, 128),
             "textureName": f"can",
-            "spriteBox": (1, 1, 128, 128),
         },
         {
             "filePath": f"resources/images/items/tyre.png",
-            "size": (128, 128),
             "textureName": f"can",
-            "spriteBox": (1, 1, 128, 128),
         }
     ]
 
@@ -42,6 +40,8 @@ class DirtyFactory():
     def create(self, type, position, eDirty):
         dirty = Entity()
         params = {
+            "size": (128, 128),
+            "spriteBox": (1, 1, 128, 128),
             "position": position,
             "startIndex": 0,
             "endIndex": 0,
