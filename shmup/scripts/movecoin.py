@@ -1,17 +1,21 @@
+from random import random
+
 from ecs.core.components.script import Script
 from shmup.common.constants import SCROLL_SPEED2
 
 
 class MoveCoin(Script):
 
-    def __init__(self, gfx, downLimit, time, initPos, eCoins, compName="MoveCoin"):
+    def __init__(self, gfx, downLimit, time, initPos, eCoins, speed=10,compName="MoveCoin"):
         super().__init__(compName)
         self._limit   = downLimit
         self._gfx     = gfx
         self._timer   = 0
         self._initPos = initPos
         self._timeMax = time
-        self._eCoins = eCoins
+        self._eCoins  = eCoins
+        self._speed   = speed
+        self._turn    = (int(random() >= 0.5)*2)-1
 
     def updateScript(self, scriptName, deltaTime):
         toDestroy = []
@@ -22,7 +26,10 @@ class MoveCoin(Script):
         # If it has not reached the bottom of the sea...
         if y > self._limit:
             # ... makes it drown
-            self._gfx.move(0,-10*deltaTime*60)
+            self._gfx.move(0,-self._speed*deltaTime*60)
+            ang = self._gfx.getAngle()
+            ang += random()*self._turn
+            self._gfx.setAngle(ang)
         else:
             # ... or stop animation
             self._gfx.pause()

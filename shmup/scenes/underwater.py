@@ -6,11 +6,14 @@ from ecs.user.script.scene import Pause2Buttons
 from shmup.common.constants import *
 from shmup.factories.bubbleFactory import BubbleFactory
 from shmup.factories.chestFactory import ChestFactory
+from shmup.factories.dirtyFactory import DirtyFactory
 from shmup.factories.hudFactory import HudFactory
 from shmup.factories.parallaxFactory import ParallaxFactory
 from shmup.factories.playerFactory import InGamePlayerFactory
-from shmup.scripts.collisions import FishCollisions, BubbleCollisions, CoinCollisions
+from shmup.factories.trashFactory import TrashFactory
+from shmup.scripts.collisions import FishCollisions, BubbleCollisions, CoinCollisions, DirtyCollisions
 from shmup.scripts.destroyPlayer import DestroyPlayer
+from shmup.scripts.dirtyGen import DirtyGen
 from shmup.scripts.endgamescr import EndGameScr
 from shmup.scripts.fishGen import FishGen
 from shmup.scripts.genBubble import GenBubble
@@ -58,15 +61,20 @@ class UnderWater(Scene):
         eFishes  = []
         eBubbles = []
         eCoins   = []
+        eDirty   = []
         eHUDs    = []
 
         # Create fish sprite list component
         gfxFishList = GfxAnimSpriteList(ZIDX_FISHES,"FishList")
         eManagement.addComponent(gfxFishList)
-
         # Create fish generator
         fishGen = FishGen(self,gfxFishList, eFishes)
         eManagement.addComponent(fishGen)
+
+
+        # Create dirty generator
+        dirtyGen = DirtyGen(self, eDirty)
+        eManagement.addComponent(dirtyGen)
 
         # Create pause components for each gamepad
         for playerName in params:
@@ -100,8 +108,9 @@ class UnderWater(Scene):
             gfxPlayerSpriteList.addSprite(diver)
         eManagement.addComponent(gfxPlayerSpriteList)
 
-        # Create chest entity
+        # Create chest and trash entities
         chest = ChestFactory().create((SCREEN_WIDTH-64,SCREEN_HEIGHT-80))
+        trash = TrashFactory().create((64,SCREEN_HEIGHT-80))
 
         # Create collision management
         collide1 = FishCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_FISH, ePlayers)
@@ -110,7 +119,8 @@ class UnderWater(Scene):
         eManagement.addComponent(collide2)
         collide3 = CoinCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_COIN, eCoins, chest.getComponentsByName("chestScr")[0], self)
         eManagement.addComponent(collide3)
-
+        collide3 = DirtyCollisions(eManagement, COLL_TYPE_DIVER, COLL_TYPE_DIRTY, eDirty, trash.getComponentsByName("trashScr")[0], self)
+        eManagement.addComponent(collide3)
 
         # Create parallax Entity
         eParallax = ParallaxFactory().create(SCROLL_SPEED2)
@@ -143,7 +153,7 @@ class UnderWater(Scene):
         for entH in eHUDs:
             self.addEntity(entH)
         self.addEntity(chest)
-
+        self.addEntity(trash)
 
 
     def getTransitionColorOUT(self):

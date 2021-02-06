@@ -9,52 +9,52 @@ from ecs.user.idle.counters import UserCounter
 from shmup.common.constants import ZIDX_COINS, ZIDX_HUD, SCREEN_WIDTH, SCREEN_HEIGHT
 from shmup.scripts.chest import Chest
 from shmup.scripts.movecoin import MoveCoin
+from shmup.scripts.trash import Trash
 from shmup.scripts.updatescores import UpdateScores
 
 
-class ChestFactory():
+class TrashFactory():
 
 
     def __init__(self):
         pass
 
     def create(self, position):
-        chest = Entity()
-        chestGfx = GfxAnimatedSprite(None, ZIDX_HUD)
+        trash = Entity()
+        trashGfx = GfxAnimatedSprite(None, ZIDX_HUD)
         params = {
-            "filePath": f"resources/images/items/chest.png",
-            "size": (192, 192),
+            "filePath": f"resources/images/items/trash.png",
+            "size": (128, 384//2),
             "position": position,
             "animName": f"close",
-            "spriteBox": (3, 2, 192, 192),
-            "startIndex": 5,
+            "spriteBox": (5, 1, 256, 384),
+            "startIndex": 4,
             "endIndex": 0,
             "frameDuration": 1 / 30,
             "counter": 1,
             "backAndForth": False
         }
-        chestGfx.addAnimation(params,True,True)
+        trashGfx.addAnimation(params,True,True)
         params = {
-            "filePath": f"resources/images/items/chest.png",
-            "size": (192, 192),
+            "filePath": f"resources/images/items/trash.png",
+            "size": (256, 384),
             "position": position,
             "animName": f"open",
-            "spriteBox": (3, 2, 192, 192),
+            "spriteBox": (5, 1, 256, 384),
             "startIndex": 0,
-            "endIndex": 5,
+            "endIndex": 4,
             "frameDuration": 1 / 30,
             "counter": 1,
             "backAndForth": False
         }
-        chestGfx.addAnimation(params)
+        trashGfx.addAnimation(params)
 
         # score
         score = UserCounter(0,1000000,0)
 
         # Gfx for score + script
-        d = 20
-        refX = position[0]-200
-        refY = position[1]-16
+        refX = position[0]+64
+        refY = position[1]-32
         w = 80
         h = 128
         ratio = 0.4
@@ -94,16 +94,16 @@ class ChestFactory():
         scrUpdate = UpdateScores(score,unitGfx, decadeGfx, hundredGfx, thousandGfx)
 
         # Script to handle coin gathering
-        openClose = Chest(chestGfx,score,position,"chestScr")
+        openClose = Trash(trashGfx,score,position,"trashScr")
 
-        chest.addComponent(chestGfx)
-        chest.addComponent(openClose)
-        chest.addComponent(score)
-        chest.addComponent(unitGfx)
-        chest.addComponent(decadeGfx)
-        chest.addComponent(hundredGfx)
-        chest.addComponent(thousandGfx)
-        chest.addComponent(scrUpdate)
+        trash.addComponent(trashGfx)
+        trash.addComponent(openClose)
+        trash.addComponent(score)
+        trash.addComponent(unitGfx)
+        trash.addComponent(decadeGfx)
+        trash.addComponent(hundredGfx)
+        trash.addComponent(thousandGfx)
+        trash.addComponent(scrUpdate)
 
         # return entity
-        return chest
+        return trash

@@ -8,6 +8,7 @@ from ecs.core.main.entity import Entity
 from ecs.user.script.gfxpos import LightFollowGfx
 from shmup.common.constants import ZIDX_BUBBLES, ZIDX_OUCH, ZIDX_COINS, ZIDX_HUD
 from shmup.factories.coinFactory import CoinFactory
+from shmup.factories.dirtyFactory import DirtyFactory
 
 
 class FishCollisions(Script):
@@ -138,6 +139,80 @@ class CoinCollisions(Script):
 
     def updateScript(self, scriptName, deltaTime):
         pass
+
+
+class DirtyCollisions(Script):
+
+    def __init__(self, entCollide, colTyp1, colTyp2, eDirty, trashScr, scene, compName=None):
+        # Call to parent
+        super().__init__(compName)
+        # Create collision components
+        cb = {
+            "begin": self._beginCollision,
+            "separate": self._endCollision
+        }
+        data = {
+        }
+        collide = PhysicCollision(colTyp1, colTyp2, cb, data)
+        entCollide.addComponent(collide)
+        self._eCollide = entCollide
+        self._eDirty = eDirty
+        self._trashScr = trashScr
+        self._scene = scene
+
+    def _beginCollision(self, arbiter, space, data):
+        for dirt in self._eDirty:
+            phyComp = dirt.getComponentsByName("dirtyPhy")
+            if len(phyComp) >= 1:
+                phyComp = phyComp[0]
+                for bdyShp in phyComp.getBodyList():
+                    body  = bdyShp[0]
+                    shape = bdyShp[1]
+                    for shp in arbiter.shapes:
+                        if shp == shape:
+                            typeCmp = dirt.getComponentsByName("dirtType")
+                            type  = 0
+                            if len(typeCmp) >= 1:
+                                type = typeCmp[0].getValue()
+                            # We have found a dirty here destory it
+                            self._eDirty.remove(dirt)
+                            dirt.destroy()
+                            # Create burst emitter at the physic position of the fish
+                            burstPos = phyComp.getPosition()
+                            params = {"x0": burstPos[0],
+                                      "y0": burstPos[1],
+                                      "partSize": 128,
+                                      "partScale": 0.7,
+                                      "partSpeed": 0.0,
+                                      "lifeTime": 0.25,
+                                      "color": (255, 255, 255),
+                                      "startAlpha": 100,
+                                      "endAlpha": 25,
+                                      "partInterval": 0.02,
+                                      "totalDuration": 0.5,
+                                      }
+                            data = DirtyFactory.DIRTS[type]
+                            params["imagePath"] = data["filePath"]
+                            burstComp = GfxBurstEmitter(params, ZIDX_HUD-100, "dirtyEmitter")
+                            light = LightFx(burstPos, 60, (255, 16, 0), "soft")
+                            lightEntity = Entity()
+                            lightFollow = LightFollowGfx(burstComp, light, lightEntity)
+                            lightEntity.addComponent(light)
+                            lightEntity.addComponent(lightFollow)
+                            self._scene.addEntity(lightEntity)
+                            # Add it into the entity for coin burst
+                            self._eCollide.addComponent(burstComp)
+                            # Add this into the script to move coins
+                            self._trashScr.insertTrash(burstComp)
+                            return True
+        return True
+
+    def _endCollision(self, arbiter, space, data):
+        return True
+
+    def updateScript(self, scriptName, deltaTime):
+        pass
+
 
 
 class BubbleCollisions(Script):
