@@ -31,7 +31,7 @@ class SceneSystem():
     ## -------------------------------------
     ## Scene list management
     ## -------------------------------------
-    def addScene(self, sceneRef):
+    def addScene(self, sceneRef, params=None):
         sceneName = sceneRef.getName()
         if sceneName not in self._scenes:
             self._scenes[sceneName] = sceneRef
@@ -41,6 +41,8 @@ class SceneSystem():
                 self._currentTime      = 0
                 self._maxTime          = sceneRef.getTransitionTimeIN()
                 self._color            = sceneRef.getTransitionColorIN()
+                # Call the init method as it is the first time
+                sceneRef.init(params)
         else:
             raise ValueError(f"[ERR] cannot add scene '{sceneName}' : already in the list !")
 

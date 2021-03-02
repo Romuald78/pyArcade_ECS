@@ -9,6 +9,10 @@ from ecs.core.systems.inputSystem import InputSystem
 from ecs.core.systems.lightSystem import LightSystem
 from ecs.core.systems.physicSystem import PhysicSystem
 from ecs.core.systems.scriptSystem import ScriptSystem
+from ecs.core.systems.sfxSystem import MusicSystem
+
+
+# TODO finish 'REMOVE' service with all comp refs (access to correct system)
 
 
 class World():
@@ -26,6 +30,7 @@ class World():
         self._idleMgr   = IdleSystem()
         self._phyMgr    = PhysicSystem()
         self._lightMgr  = LightSystem(W,H)
+        self._musicMgr  = MusicSystem()
 
 
     ## -------------------------------------
@@ -75,24 +80,30 @@ class World():
         # LIGHT
         elif (compType & Component.TYPE_LIGHT_MASK) == Component.TYPE_LIGHT_MASK:
             self._lightMgr.add(compRef)
+        # MUSIC
+        elif (compType & Component.TYPE_MUSIC) == Component.TYPE_MUSIC:
+            self._musicMgr.add(compRef)
         # /!\ UNKNOWN COMPONENT TYPES /!\
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")
 
     def _unregisterComponent(self,cmpRef):
-        # TODO finish this service with all comp refs (access to correct system)
+        typ = cmpRef.getType()
         # Remove GFX component from the system
-        if (cmpRef.getType() & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
+        if (typ & Component.TYPE_GFX_MASK) == Component.TYPE_GFX_MASK:
             self._gfxMgr.removeGfx(cmpRef)
         # Remove Scripts
-        if (cmpRef.getType() & Component.TYPE_SCRIPT_MASK) == Component.TYPE_SCRIPT_MASK:
+        elif (typ & Component.TYPE_SCRIPT_MASK) == Component.TYPE_SCRIPT_MASK:
             self._scriptMgr.removeScript(cmpRef)
         # Remove Physic
-        if (cmpRef.getType() & Component.TYPE_PHYSIC_MASK) == Component.TYPE_PHYSIC_MASK:
+        elif (typ & Component.TYPE_PHYSIC_MASK) == Component.TYPE_PHYSIC_MASK:
             self._phyMgr.remove(cmpRef)
         # Remove Light
-        if (cmpRef.getType() & Component.TYPE_LIGHT_MASK) == Component.TYPE_LIGHT_MASK:
+        elif (typ & Component.TYPE_LIGHT_MASK) == Component.TYPE_LIGHT_MASK:
             self._lightMgr.remove(cmpRef)
+        # MUSIC
+        elif (typ & Component.TYPE_MUSIC) == Component.TYPE_MUSIC:
+            self._musicMgr.removeMusic(cmpRef)
 
 
     ## -------------------------------------
@@ -133,6 +144,7 @@ class World():
         self._phyMgr.updatePhysicEngine(deltaTime, isOnPause)
         self._scriptMgr.updateAllScripts(deltaTime, isOnPause)
         self._gfxMgr.updateAllGfx(deltaTime, isOnPause)
+        self._musicMgr.updateAllMusics(deltaTime, isOnPause)
 
     def draw(self):
         with self._lightMgr.getLayer():    # code line 1

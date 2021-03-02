@@ -47,6 +47,9 @@ class Scene():
         self._entByName = {}
         self._entByRef  = {}
 
+    def init(self, params):
+        pass
+
 
     ## -------------------------------------
     ## SCENE INFORMATION

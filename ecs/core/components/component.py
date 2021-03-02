@@ -53,6 +53,12 @@ class Component():
     # Light
     TYPE_LIGHT_MASK   = 0x20000
     TYPE_LIGHT        = TYPE_LIGHT_MASK | 0x01
+    # SOUNDS
+    TYPE_SFX_MASK     = 0x40000
+    TYPE_SOUND        = TYPE_SFX_MASK | 0x01
+    TYPE_MUSIC        = TYPE_SFX_MASK | 0x02
+
+
 
     # User Strings
     TYPE_INFO = {
@@ -92,6 +98,8 @@ class Component():
                                "color": (255, 255, 255)},
         TYPE_LIGHT          : {"name": "Light",
                                "color": (255, 255, 0)},
+        TYPE_MUSIC          : {"name": "Music",
+                               "color": (0, 255, 255)},
 
     }
 

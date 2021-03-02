@@ -15,7 +15,6 @@ import time
 TITLE = "pyArcade-ECS"
 
 
-
 ### ====================================================================================================
 ### GAME CLASS
 ### ====================================================================================================
@@ -71,7 +70,6 @@ class Launcher(arcade.Window):
     def __onAxisMove(self, _gamepad, axis, value):
         idx = self.gamepads[_gamepad]
         self.onAxisMove(idx, axis, value)
-
 
 
     # ----------------------------------
@@ -253,7 +251,6 @@ class Launcher(arcade.Window):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 
-
 ### ====================================================================================================
 ### MAIN PROCESS
 ### ====================================================================================================
@@ -262,10 +259,10 @@ def main():
     file_path = os.path.dirname(os.path.abspath(__file__))
     os.chdir(file_path)
 
-    width      = constants.SCREEN_WIDTH
-    height     = constants.SCREEN_HEIGHT
+    width      = constants.SCREEN_WIDTH//2
+    height     = constants.SCREEN_HEIGHT//2
     title      = TITLE
-    fullScreen = True
+    fullScreen = False
 
     game = Launcher(width, height, title, fullScreen)
     game.set_vsync(True)
