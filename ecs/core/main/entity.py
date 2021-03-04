@@ -121,6 +121,12 @@ class Entity():
             res = self._compByName[cmpName]
         return res
 
+    def getFirstComponentByName(self, cmpName):
+        res = self.getComponentsByName(cmpName)
+        if len(res)>=1:
+            res = res[0]
+        return res
+
     def hasComponent(self, cmpRef):
         return cmpRef in self._compByRef
 

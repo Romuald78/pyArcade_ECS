@@ -22,7 +22,7 @@
 ## ============================================================
 ## IMPORTS
 ## ============================================================
-from arcade_utils import AnimatedSprite
+from ecs.arcadeRGR.spriteRGR import AnimatedSprite
 from ecs.core.components.component import Component
 from utils import *
 
@@ -193,7 +193,7 @@ class GfxSimpleSprite(GfxOneSPrite):
 class GfxAnimatedSprite(GfxOneSPrite):
 
     # Constructor
-    def __init__(self, params=None, zIdx=0, compName=None):
+    def __init__(self, nbStates=1, params=None, zIdx=0, compName=None):
         if compName == None:
             compName = "AnimSPrite"
         # call to parent constructor
@@ -201,14 +201,14 @@ class GfxAnimatedSprite(GfxOneSPrite):
         # set type
         self._gfxType  = Component.TYPE_ANIM_SPRITE
         # create Gfx element
-        self._arcadeGfx = AnimatedSprite()
+        self._arcadeGfx = AnimatedSprite(nbStates)
         # Add first animation if given
         if params != None:
             self.addAnimation(params, True, True)
         # Set ZIndex
         self._zIndex    = zIdx
 
-    def addAnimation(self,params, changePosition=False, changeScale=False):
+    def addAnimation(self, params, changePosition=False, changeScale=False):
         # retrieve parameters
         filePath       = params["filePath"]
         animName       = "defaultName" if "animName" not in params else params["animName"]
@@ -253,6 +253,10 @@ class GfxAnimatedSprite(GfxOneSPrite):
 
     def selectAnimation(self, animName, rewind=False, resume=True):
         self._arcadeGfx.select_animation(animName, rewind, resume)
+
+    def selectState(self, state, rewind=False, resume=True):
+        self._arcadeGfx.select_state(state, rewind, resume)
+
 
     def getCurrentAnimation(self):
         return self._arcadeGfx.get_current_animation()

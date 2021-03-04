@@ -1,0 +1,20 @@
+
+
+SCREEN_WIDTH  = 1920
+SCREEN_HEIGHT = 1080
+
+FACE_RIGHT    = 0
+FACE_LEFT     = 1
+FACE_UP       = 2
+FACE_DOWN     = 3
+NB_DIRECTIONS = 4
+
+# Index for Gfx layers
+ZIDX_GROUND = 10000
+
+
+# Collision index
+COLL_PLAYERS = 0x1
+COLL_TREES   = 0x2
+
+

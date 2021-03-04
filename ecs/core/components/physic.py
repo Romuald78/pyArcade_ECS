@@ -66,9 +66,9 @@ class Physic(Component):
 
 
     # movement
-    def applyImpulse(self, dx, dy):
+    def applyForce(self, dx, dy):
         vect = (dx,dy)
-        return self._bodiesAndShapes[0][0].apply_impulse_at_local_point(vect)
+        return self._bodiesAndShapes[0][0].apply_force_at_local_point(vect,(0,0))
 
     # Sensor management
     def enableSensor(self):
@@ -114,13 +114,23 @@ class PhysicBox(Physic):
         # Create body, shape, and set the position
         body  = pymunk.Body(mass,moment,mode)
         shape = pymunk.Poly.create_box(body,size)
-        print(f"[Body @{body} / Shape @{shape}")
         body.position = pos
         # Store info into list (tuple : body, shape)
         self._bodiesAndShapes.append((body,shape))
+        self._size = size
+
 
     def getType(self):
         return Component.TYPE_PHYSIC_BOX
+
+    def drawDebug(self):
+        xc, yc = self.getPosition()
+        arcade.draw_rectangle_filled(xc, yc, self.getSize()[0], self.getSize()[1], (255, 255, 255,64))
+
+    def getSize(self):
+        return self._size
+
+
 
 
 class PhysicDisc(Physic):
@@ -137,13 +147,15 @@ class PhysicDisc(Physic):
         pos    = params["pos"]
         sensor = params["sensor"]
         colTyp = params["collisionType"]
+        elasticity = 0.5 if not "elasticity" in params else params["elasticity"]
+        friction   = 1.0 if not "friction"   in params else params["friction"]
         # Create body, shape, and set the position
         inertia       = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
         body          = pymunk.Body(mass, inertia, mode)
         body.position = pos
         shape                = pymunk.Circle(body, radius, (0, 0))
-        shape.elasticity     = 0.5
-        shape.friction       = 2
+        shape.elasticity     = elasticity
+        shape.friction       = friction
         shape.collision_type = colTyp
         shape.sensor         = sensor
         # Store info into list (tuple : body, shape)
@@ -155,7 +167,7 @@ class PhysicDisc(Physic):
 
     def drawDebug(self):
         xc,yc = self.getPosition()
-        arcade.draw_circle_outline(xc,yc,self.getRadius(),(255,255,255))
+        arcade.draw_circle_filled(xc,yc,self.getRadius(),(255,255,255,64))
 
     def getRadius(self):
         return self._radius

@@ -23,6 +23,7 @@ class Component():
     TYPE_MOUSE_BUTTON   = TYPE_INPUT_MASK | 0x04
     TYPE_MOUSE_MOTION   = TYPE_INPUT_MASK | 0x08
     TYPE_GAMEPAD_AXIS   = TYPE_INPUT_MASK | 0x10
+
     # Gfx
     SIMPLE    = 0x01
     ANIMATED  = 0x02
@@ -33,30 +34,36 @@ class Component():
     PARTICLES = 0x40
     TEXT      = 0x80
     MULTI     = 0x100
-    TYPE_GFX_MASK      = 0x4000
-    TYPE_SIMPLE_SPRITE = TYPE_GFX_MASK | SIMPLE    | SINGLE
-    TYPE_MULTI_SPRITE  = TYPE_GFX_MASK | SIMPLE    | MULTI
-    TYPE_ANIM_SPRITE   = TYPE_GFX_MASK | ANIMATED  | SINGLE
-    TYPE_SIMPLE_LIST   = TYPE_GFX_MASK | SIMPLE    | LIST
-    TYPE_ANIM_LIST     = TYPE_GFX_MASK | ANIMATED  | LIST
-    TYPE_EMITTER       = TYPE_GFX_MASK | UNLIMITED | PARTICLES
-    TYPE_BURST         = TYPE_GFX_MASK | LIMITED   | PARTICLES
-    TYPE_TEXT          = TYPE_GFX_MASK | TEXT
+    TYPE_GFX_MASK       = 0x4000
+    TYPE_SIMPLE_SPRITE  = TYPE_GFX_MASK | SIMPLE    | SINGLE
+    TYPE_MULTI_SPRITE   = TYPE_GFX_MASK | SIMPLE    | MULTI
+    TYPE_ANIM_SPRITE    = TYPE_GFX_MASK | ANIMATED  | SINGLE
+    TYPE_SIMPLE_LIST    = TYPE_GFX_MASK | SIMPLE    | LIST
+    TYPE_ANIM_LIST      = TYPE_GFX_MASK | ANIMATED  | LIST
+    TYPE_EMITTER        = TYPE_GFX_MASK | UNLIMITED | PARTICLES
+    TYPE_BURST          = TYPE_GFX_MASK | LIMITED   | PARTICLES
+    TYPE_TEXT           = TYPE_GFX_MASK | TEXT
     # User defined
-    TYPE_IDLE_MASK     = 0x8000
-    TYPE_IDLE          = TYPE_IDLE_MASK | 0x01
+    TYPE_IDLE_MASK      = 0x8000
+    TYPE_IDLE           = TYPE_IDLE_MASK | 0x01
     # Physic
-    TYPE_PHYSIC_MASK   = 0x10000
-    TYPE_PHY_COLLIDE   = TYPE_PHYSIC_MASK | 0x01
-    TYPE_PHYSIC_BOX    = TYPE_PHYSIC_MASK | 0x02
-    TYPE_PHYSIC_DISC   = TYPE_PHYSIC_MASK | 0x03
+    TYPE_PHYSIC_MASK    = 0x10000
+    TYPE_PHY_COLLIDE    = TYPE_PHYSIC_MASK | 0x01
+    TYPE_PHYSIC_BOX     = TYPE_PHYSIC_MASK | 0x02
+    TYPE_PHYSIC_DISC    = TYPE_PHYSIC_MASK | 0x03
     # Light
-    TYPE_LIGHT_MASK   = 0x20000
-    TYPE_LIGHT        = TYPE_LIGHT_MASK | 0x01
+    TYPE_LIGHT_MASK     = 0x20000
+    TYPE_LIGHT          = TYPE_LIGHT_MASK | 0x01
     # SOUNDS
-    TYPE_SFX_MASK     = 0x40000
-    TYPE_SOUND        = TYPE_SFX_MASK | 0x01
-    TYPE_MUSIC        = TYPE_SFX_MASK | 0x02
+    TYPE_SFX_MASK       = 0x40000
+    TYPE_SOUND          = TYPE_SFX_MASK | 0x01
+    TYPE_MUSIC          = TYPE_SFX_MASK | 0x02
+    # TRANSFORM
+    TYPE_TRANSFORM_MASK = 0x80000
+    TYPE_TRANSFORM      = TYPE_TRANSFORM_MASK | 0x01
+    # CAMERA
+    TYPE_CAMERA_MASK    = 0x100000
+    TYPE_CAMERA         = TYPE_CAMERA_MASK | 0x01
 
 
 
@@ -100,7 +107,10 @@ class Component():
                                "color": (255, 255, 0)},
         TYPE_MUSIC          : {"name": "Music",
                                "color": (0, 255, 255)},
-
+        TYPE_TRANSFORM      : {"name": "Transform",
+                               "color": (255, 255, 255)},
+        TYPE_CAMERA         : {"name": "Camera",
+                               "color": (255, 255, 255)},
     }
 
 

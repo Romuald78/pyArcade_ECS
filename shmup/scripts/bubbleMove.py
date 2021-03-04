@@ -16,8 +16,8 @@ class BubbleMove(Script):
         if not self._initialImpulse:
             self._initialImpulse = True
             dx = 30
-            self._phy.applyImpulse( dx, 0 )
+            self._phy.applyForce(dx, 0)
         else:
             dy = 0.5
-            self._phy.applyImpulse( 0, dy )
+            self._phy.applyForce(0, dy)
 

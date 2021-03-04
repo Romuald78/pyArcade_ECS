@@ -54,6 +54,8 @@ class Scene():
     ## -------------------------------------
     ## SCENE INFORMATION
     ## -------------------------------------
+    def getApplication(self):
+        return self._sceneMgr.getApplication()
     def getName(self):
         return self._name
     def getDebugName(self):
@@ -174,6 +176,12 @@ class Scene():
     def addCollisionHandler(self, colType1, colType2, callbacks, data):
         self._world.addCollisionHandler(colType1, colType2, callbacks, data)
 
+
+    ## -------------------------------------
+    ## CAMERAS
+    ## -------------------------------------
+    def setActiveCamera(self, newCam):
+        return self._world.setActiveCamera(newCam)
 
 
     ## -------------------------------------

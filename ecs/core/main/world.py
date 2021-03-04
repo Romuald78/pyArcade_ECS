@@ -3,6 +3,7 @@ from random import randint
 import arcade
 
 from ecs.core.components.component import Component
+from ecs.core.systems.cameraSystem import CameraSystem
 from ecs.core.systems.gfxSystem import GfxSystem
 from ecs.core.systems.idleSystem import IdleSystem
 from ecs.core.systems.inputSystem import InputSystem
@@ -31,6 +32,7 @@ class World():
         self._phyMgr    = PhysicSystem()
         self._lightMgr  = LightSystem(W,H)
         self._musicMgr  = MusicSystem()
+        self._cameraMgr = CameraSystem(scn)
 
 
     ## -------------------------------------
@@ -83,9 +85,21 @@ class World():
         # MUSIC
         elif (compType & Component.TYPE_MUSIC) == Component.TYPE_MUSIC:
             self._musicMgr.add(compRef)
+        # CAMERA
+        elif (compType & Component.TYPE_CAMERA) == Component.TYPE_CAMERA:
+            self._cameraMgr.add(compRef)
+
+        # TRANSFORM
+        # TODO : handle transforms in a specific system ? gfx one, with link between gfx and transform ?
+        # FEATURE : Add scale into transform ?
+        elif (compType & Component.TYPE_TRANSFORM) == Component.TYPE_TRANSFORM:
+            pass
+
         # /!\ UNKNOWN COMPONENT TYPES /!\
         else:
             raise ValueError(f"[ERR] addEntity : unknow component type {compType} !")
+
+
 
     def _unregisterComponent(self,cmpRef):
         typ = cmpRef.getType()
@@ -104,6 +118,11 @@ class World():
         # MUSIC
         elif (typ & Component.TYPE_MUSIC) == Component.TYPE_MUSIC:
             self._musicMgr.removeMusic(cmpRef)
+
+        # /!\ UNKNOWN COMPONENT TYPES /!\
+        else:
+            raise ValueError(f"[ERR] _unregisterComponent : unknow component type {typ} !")
+
 
 
     ## -------------------------------------
@@ -130,6 +149,13 @@ class World():
 
 
     ## -------------------------------------
+    ## CAMERA MANAGEMENT
+    ## -------------------------------------
+    def setActiveCamera(self, newCam):
+        return self._cameraMgr.setActiveCamera(newCam)
+
+
+    ## -------------------------------------
     ## PHYSIC WORLD
     ## -------------------------------------
     def addCollisionHandler(self, colTyp1, colTyp2, callbacks, data):
@@ -141,12 +167,14 @@ class World():
     ## -------------------------------------
     def update(self, deltaTime):
         isOnPause = self._scene.isPaused()
+        self._cameraMgr.update(deltaTime)
         self._phyMgr.updatePhysicEngine(deltaTime, isOnPause)
         self._scriptMgr.updateAllScripts(deltaTime, isOnPause)
         self._gfxMgr.updateAllGfx(deltaTime, isOnPause)
         self._musicMgr.updateAllMusics(deltaTime, isOnPause)
 
     def draw(self):
+        # TODO : add several light layers inside the LightSystem !!!
         with self._lightMgr.getLayer():    # code line 1
             self._gfxMgr.drawAllGfx()
             if self._scene.isDrawDebug():

@@ -13,7 +13,7 @@ class SceneSystem():
     ## -------------------------------------
     ## Constructor
     ## -------------------------------------
-    def __init__(self):
+    def __init__(self, application):
         # Scene names used in the main process
         self._currentSceneName = None
         self._nextSceneName    = None
@@ -26,6 +26,8 @@ class SceneSystem():
         self._currentTime      = 1
         self._maxTime          = 1
         self._color            = (0, 0, 0)
+        # Keep application reference
+        self._application = application
 
 
     ## -------------------------------------
@@ -74,6 +76,9 @@ class SceneSystem():
 
     def getCurrentSceneName(self):
         return self._currentSceneName
+
+    def getApplication(self):
+        return self._application
 
     def pause(self):
         self._onPause = True
